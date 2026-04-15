@@ -16,8 +16,8 @@ module.exports = async function handler(req, res) {
     return res.status(405).json({ ok: false, message: "Method not allowed" });
   }
 
-  const apiKey = process.env.GEMINI_API_KEY;
-  const model = process.env.GEMINI_MODEL || "gemini-3-flash-preview";
+  const apiKey = String(process.env.GEMINI_API_KEY || "").trim();
+  const model = (process.env.GEMINI_MODEL || "gemini-3-flash-preview").trim();
 
   if (!apiKey) {
     return res.status(500).json({ ok: false, message: "Missing GEMINI_API_KEY" });
