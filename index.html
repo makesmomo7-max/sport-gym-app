@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>momo fit</title>
+  <meta name="theme-color" content="#1a2b4a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="momo fit" />
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=2" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2" />
+  <script>
+    (function () {
+      var TENANT_KEY = "eap_tenant";
+      var OFFICE_KEY = "eap_office";
+      function slice64(s) {
+        return String(s == null ? "" : s).trim().slice(0, 64);
+      }
+      var params;
+      try {
+        params = new URLSearchParams(window.location.search);
+      } catch (e) {
+        params = new URLSearchParams();
+      }
+      var tUrl = slice64(params.get("tenant"));
+      var oUrl = slice64(params.get("office"));
+      if (tUrl) {
+        try {
+          localStorage.setItem(TENANT_KEY, tUrl);
+        } catch (e) {}
+      }
+      if (oUrl) {
+        try {
+          localStorage.setItem(OFFICE_KEY, oUrl);
+        } catch (e) {}
+      }
+      var t = tUrl;
+      var o = oUrl;
+      if (!t) {
+        try {
+          t = slice64(localStorage.getItem(TENANT_KEY));
+        } catch (e) {
+          t = "";
+        }
+      }
+      if (!o) {
+        try {
+          o = slice64(localStorage.getItem(OFFICE_KEY));
+        } catch (e) {
+          o = "";
+        }
+      }
+      var q = new URLSearchParams();
+      if (t) q.set("tenant", t);
+      if (o) q.set("office", o);
+      var qs = q.toString();
+      window.location.replace("/gym.html" + (qs ? "?" + qs : ""));
+    })();
+  </script>
+</head>
+<body>
+  <p>自動で移動しない場合は <a id="indexHomeLink" href="/gym.html">こちら</a> を開いてください。</p>
+  <script>
+    (function () {
+      var TENANT_KEY = "eap_tenant";
+      var OFFICE_KEY = "eap_office";
+      function slice64(s) {
+        return String(s == null ? "" : s).trim().slice(0, 64);
+      }
+      var params;
+      try {
+        params = new URLSearchParams(window.location.search);
+      } catch (e) {
+        params = new URLSearchParams();
+      }
+      var tUrl = slice64(params.get("tenant"));
+      var oUrl = slice64(params.get("office"));
+      if (tUrl) {
+        try {
+          localStorage.setItem(TENANT_KEY, tUrl);
+        } catch (e) {}
+      }
+      if (oUrl) {
+        try {
+          localStorage.setItem(OFFICE_KEY, oUrl);
+        } catch (e) {}
+      }
+      var t = tUrl;
+      var o = oUrl;
+      if (!t) {
+        try {
+          t = slice64(localStorage.getItem(TENANT_KEY));
+        } catch (e) {
+          t = "";
+        }
+      }
+      if (!o) {
+        try {
+          o = slice64(localStorage.getItem(OFFICE_KEY));
+        } catch (e) {
+          o = "";
+        }
+      }
+      var q = new URLSearchParams();
+      if (t) q.set("tenant", t);
+      if (o) q.set("office", o);
+      var qs = q.toString();
+      var a = document.getElementById("indexHomeLink");
+      if (a) a.setAttribute("href", "/gym.html" + (qs ? "?" + qs : ""));
+    })();
+  </script>
+  <script src="/pwa-register.js" defer></script>
+</body>
+</html>

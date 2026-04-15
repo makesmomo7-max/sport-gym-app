@@ -1,0 +1,12 @@
+# Secrets & local env
+.env
+.env.*
+!.env.example
+
+# Dependencies (if added later)
+node_modules/
+
+# OS / editor
+Thumbs.db
+Desktop.ini
+*.log

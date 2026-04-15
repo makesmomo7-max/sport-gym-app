@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>トレーナー共有 | momo fit</title>
+  <meta name="theme-color" content="#1a2b4a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="momo fit" />
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=2" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2" />
+  <style>
+    :root {
+      --main: #1a2b4a;
+      --accent: #2e4a7a;
+      --bg: #f4f7fc;
+      --card: #ffffff;
+      --text: #1a2b4a;
+      --muted: #5a6b85;
+      --border: #d8e0ef;
+      --shadow: rgba(26, 43, 74, 0.08);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100dvh;
+      font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
+      background: linear-gradient(165deg, #eef3fb 0%, var(--bg) 45%, #e8eef8 100%);
+      color: var(--text);
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+      padding-bottom: calc(4.25rem + env(safe-area-inset-bottom, 0px));
+    }
+    .wrap { max-width: 420px; margin: 0 auto; padding: 1.25rem 1rem 2.5rem; }
+    header { text-align: center; margin-bottom: 1.25rem; }
+    header h1 { margin: 0 0 0.35rem; font-size: 1.1rem; font-weight: 700; color: var(--main); }
+    header p { margin: 0; font-size: 0.82rem; color: var(--muted); }
+    .card {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 1rem 0.95rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 4px 20px var(--shadow);
+      border: 1px solid var(--border);
+    }
+    .card h2 {
+      margin: 0 0 0.65rem;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    .field { margin-bottom: 0.85rem; }
+    .field:last-child { margin-bottom: 0; }
+    label.lbl {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 0.35rem;
+    }
+    input[type="text"], textarea {
+      width: 100%;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 0.6rem 0.75rem;
+      font-size: 0.92rem;
+      font-family: inherit;
+      color: var(--text);
+      background: #fafcfe;
+    }
+    textarea { min-height: 4.5rem; resize: vertical; }
+    textarea.summary {
+      min-height: 12rem;
+      font-size: 0.8rem;
+      line-height: 1.5;
+    }
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(46, 74, 122, 0.12);
+    }
+    .hint { font-size: 0.72rem; color: var(--muted); margin: 0.4rem 0 0; }
+    .btn-row { display: flex; flex-direction: column; gap: 0.55rem; margin-top: 0.75rem; }
+    .btn {
+      display: block;
+      width: 100%;
+      text-align: center;
+      text-decoration: none;
+      font-size: 0.92rem;
+      font-weight: 700;
+      font-family: inherit;
+      padding: 0.85rem 1rem;
+      border-radius: 14px;
+      border: none;
+      cursor: pointer;
+      transition: transform 0.12s, filter 0.15s;
+    }
+    .btn:active { transform: scale(0.98); }
+    .btn-primary {
+      color: #fff;
+      background: linear-gradient(180deg, var(--accent) 0%, var(--main) 100%);
+      box-shadow: 0 4px 16px rgba(26, 43, 74, 0.22);
+    }
+    .btn-secondary {
+      color: var(--main);
+      background: #fff;
+      border: 2px solid var(--accent);
+      box-shadow: 0 2px 10px var(--shadow);
+    }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .toast {
+      display: none;
+      margin-top: 0.65rem;
+      padding: 0.55rem 0.75rem;
+      border-radius: 10px;
+      background: #e8f5e9;
+      color: #1b5e20;
+      font-size: 0.82rem;
+      font-weight: 600;
+      text-align: center;
+    }
+    .toast.show { display: block; }
+    .bottom-nav {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 1000;
+      display: flex;
+      justify-content: space-around;
+      align-items: stretch;
+      gap: 0.25rem;
+      padding: 0.5rem 0.5rem calc(0.5rem + env(safe-area-inset-bottom, 0px));
+      background: #fff;
+      box-shadow: 0 -1px 0 rgba(26, 43, 74, 0.08);
+    }
+    .bottom-nav a {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.15rem;
+      min-width: 0;
+      padding: 0.3rem 0.1rem;
+      text-decoration: none;
+      color: var(--main);
+      font-size: 0.55rem;
+      font-weight: 500;
+      opacity: 0.55;
+      transition: opacity 0.15s ease, transform 0.15s ease;
+    }
+    .bottom-nav a svg {
+      width: 1.2rem;
+      height: 1.2rem;
+      flex-shrink: 0;
+    }
+    .bottom-nav a[aria-current="page"] {
+      opacity: 1;
+      font-weight: 700;
+    }
+    .bottom-nav a[aria-current="page"] svg {
+      transform: scale(1.12);
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>トレーナーに共有</h1>
+      <p>この端末の記録を文章にまとめ、コピーやLINE、ジムのシートへ送れます</p>
+    </header>
+
+    <div class="card">
+      <h2>呼び名（任意）</h2>
+      <div class="field">
+        <label class="lbl" for="memberLabel">トレーナーが分かる名前</label>
+        <input type="text" id="memberLabel" maxlength="64" placeholder="例：会員番号の下3桁・ニックネーム" autocomplete="nickname" />
+      </div>
+      <div class="field">
+        <label class="lbl" for="memberNote">伝えたいこと（任意）</label>
+        <textarea id="memberNote" maxlength="800" placeholder="例：脚の日なので負荷を抑えたい、肩の違和感あり など"></textarea>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>共有用テキスト</h2>
+      <p class="hint" style="margin:0 0 0.5rem">下の「まとめを更新」で最新の記録から再生成します。</p>
+      <textarea id="summaryText" class="summary" readonly aria-label="共有用のまとめ文"></textarea>
+      <div class="btn-row">
+        <button type="button" class="btn btn-secondary" id="btnRefresh">まとめを更新</button>
+        <button type="button" class="btn btn-secondary" id="btnCopy">コピー</button>
+        <button type="button" class="btn btn-secondary" id="btnShare">他アプリで共有</button>
+        <button type="button" class="btn btn-primary" id="btnGas">ジムの記録用シートに送る</button>
+      </div>
+      <p id="toast" class="toast" role="status"></p>
+    </div>
+  </div>
+
+  <nav class="bottom-nav" aria-label="メインメニュー">
+    <a href="./gym.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      ホーム
+    </a>
+    <a href="./check.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      記録
+    </a>
+    <a href="./history.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      データ
+    </a>
+    <a href="./chat.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      AI
+    </a>
+    <a href="./share_trainer.html" aria-current="page">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+      共有
+    </a>
+  </nav>
+
+  <script>
+  (function () {
+    "use strict";
+
+    var GAS_ENDPOINT = "https://script.google.com/macros/s/AKfycbyhE8IER_lrXnEJa85ap5YJdX7O8582O2gL0k89bt9MyVoRxwfcwk4XFF8DA63tUqa-Vw/exec";
+    var TENANT_KEY = "eap_tenant";
+    var OFFICE_KEY = "eap_office";
+
+    function parseTenantFromUrl() {
+      try {
+        var q = new URLSearchParams(window.location.search).get("tenant");
+        return q ? String(q).trim().slice(0, 64) : "";
+      } catch (e) { return ""; }
+    }
+    function parseOfficeFromUrl() {
+      try {
+        var q = new URLSearchParams(window.location.search).get("office");
+        return q ? String(q).trim().slice(0, 64) : "";
+      } catch (e) { return ""; }
+    }
+    function getTenantId() {
+      var fromUrl = parseTenantFromUrl();
+      if (fromUrl) {
+        try { localStorage.setItem(TENANT_KEY, fromUrl); } catch (e) {}
+        return fromUrl;
+      }
+      try { return (localStorage.getItem(TENANT_KEY) || "").trim().slice(0, 64); } catch (e) { return ""; }
+    }
+    function getOfficeId() {
+      var fromUrl = parseOfficeFromUrl();
+      if (fromUrl) {
+        try { localStorage.setItem(OFFICE_KEY, fromUrl); } catch (e) {}
+        return fromUrl;
+      }
+      try { return (localStorage.getItem(OFFICE_KEY) || "").trim().slice(0, 64); } catch (e) { return ""; }
+    }
+
+    var LEVEL_LABEL = { "1": "とても辛い", "2": "辛い", "3": "普通", "4": "良い", "5": "とても良い" };
+
+    function loadJson(key) {
+      try {
+        var a = JSON.parse(localStorage.getItem(key) || "[]");
+        return Array.isArray(a) ? a : [];
+      } catch (e) { return []; }
+    }
+
+    function formatDt(iso) {
+      var d = new Date(iso);
+      if (isNaN(d.getTime())) return String(iso || "");
+      var w = ["日", "月", "火", "水", "木", "金", "土"];
+      return d.getFullYear() + "/" + (d.getMonth() + 1) + "/" + d.getDate() +
+        "(" + w[d.getDay()] + ") " +
+        String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0");
+    }
+
+    function buildSummary() {
+      var lines = [];
+      lines.push("【momo fit / トレーナー共有】");
+      lines.push("作成: " + new Date().toISOString());
+      lines.push("");
+      var label = (document.getElementById("memberLabel").value || "").trim();
+      var note = (document.getElementById("memberNote").value || "").trim();
+      if (label) {
+        lines.push("呼び名: " + label);
+        lines.push("");
+      }
+      if (note) {
+        lines.push("▼本人からのメッセージ");
+        lines.push(note);
+        lines.push("");
+      }
+
+      var checks = loadJson("history_check").slice(-7);
+      if (checks.length) {
+        lines.push("▼コンディション記録（直近" + checks.length + "件・この端末保存）");
+        for (var i = checks.length - 1; i >= 0; i--) {
+          var c = checks[i];
+          lines.push("- " + formatDt(c.date) +
+            " 体調:" + (LEVEL_LABEL[c.body] || c.body) +
+            " / メンタル:" + (LEVEL_LABEL[c.mood] || c.mood) +
+            (c.note ? " / 一言:「" + c.note + "」" : ""));
+        }
+        lines.push("");
+      }
+
+      var pulses = loadJson("history_pulse").slice(-5);
+      if (pulses.length) {
+        lines.push("▼自律神経チェック（直近" + pulses.length + "件）");
+        for (var j = pulses.length - 1; j >= 0; j--) {
+          var p = pulses[j];
+          lines.push("- " + formatDt(p.date) + " スコア:" + (p.score != null ? p.score : "--") +
+            " " + (p.condition || "") + " bpm:" + (p.bpm || "--") + " HRV:" + (p.hrv || "--"));
+        }
+        lines.push("");
+      }
+
+      var sleeps = loadJson("history_sleep").slice(-5);
+      if (sleeps.length) {
+        lines.push("▼睡眠ログ（直近" + sleeps.length + "件）");
+        for (var k = sleeps.length - 1; k >= 0; k--) {
+          var s = sleeps[k];
+          var hm = s.sleepMinutes != null ? Math.floor(s.sleepMinutes / 60) + "h" + (s.sleepMinutes % 60) + "m" : "--";
+          lines.push("- " + (s.recordDate || "") + " 睡眠:" + hm + " スコア目安:" + (s.score != null ? s.score : "--"));
+        }
+        lines.push("");
+      }
+
+      if (!checks.length && !pulses.length && !sleeps.length) {
+        lines.push("（まだこの端末に記録がありません。「記録」「測定」「睡眠」から入力すると、ここに反映されます。）");
+      }
+
+      lines.push("---");
+      lines.push("※スマホ内の記録の要約です。医療診断ではありません。");
+      return lines.join("\n");
+    }
+
+    var summaryEl = document.getElementById("summaryText");
+    var toast = document.getElementById("toast");
+
+    function showToast(msg) {
+      toast.textContent = msg;
+      toast.classList.add("show");
+      window.setTimeout(function () { toast.classList.remove("show"); }, 2800);
+    }
+
+    function refreshSummary() {
+      summaryEl.value = buildSummary();
+    }
+
+    document.getElementById("btnRefresh").addEventListener("click", refreshSummary);
+    document.getElementById("memberLabel").addEventListener("input", refreshSummary);
+    document.getElementById("memberNote").addEventListener("input", refreshSummary);
+
+    document.getElementById("btnCopy").addEventListener("click", function () {
+      var t = summaryEl.value;
+      if (!t) refreshSummary(), t = summaryEl.value;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(t).then(function () {
+          showToast("コピーしました");
+        }).catch(function () {
+          summaryEl.select();
+          try {
+            document.execCommand("copy");
+            showToast("コピーしました");
+          } catch (e) {
+            alert("コピーできませんでした。テキストを長押しして選択してください。");
+          }
+        });
+      } else {
+        summaryEl.select();
+        try {
+          document.execCommand("copy");
+          showToast("コピーしました");
+        } catch (e2) {
+          alert("コピーできませんでした。");
+        }
+      }
+    });
+
+    document.getElementById("btnShare").addEventListener("click", function () {
+      var t = summaryEl.value;
+      if (!t) refreshSummary(), t = summaryEl.value;
+      if (navigator.share) {
+        navigator.share({
+          title: "momo fit トレーナー共有",
+          text: t
+        }).catch(function () {});
+      } else {
+        showToast("この端末は共有メニューに未対応です。「コピー」をご利用ください");
+      }
+    });
+
+    document.getElementById("btnGas").addEventListener("click", function () {
+      var btn = document.getElementById("btnGas");
+      var t = summaryEl.value;
+      if (!t) refreshSummary(), t = summaryEl.value;
+      btn.disabled = true;
+      var params = new URLSearchParams();
+      params.set("formType", "trainerShare");
+      params.set("submittedAt", new Date().toISOString());
+      params.set("memberLabel", (document.getElementById("memberLabel").value || "").trim());
+      params.set("memberNote", (document.getElementById("memberNote").value || "").trim());
+      params.set("summaryText", t);
+      params.set("tenantId", getTenantId());
+      params.set("officeId", getOfficeId());
+
+      fetch(GAS_ENDPOINT, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
+        body: params.toString()
+      })
+        .then(function (r) {
+          return r.text().then(function (txt) {
+            var data = null;
+            try { data = JSON.parse(txt); } catch (e) {}
+            return { ok: r.ok, status: r.status, text: txt, data: data };
+          });
+        })
+        .then(function (pack) {
+          var httpOk = pack && pack.status >= 200 && pack.status < 400;
+          var jsonOk = !!(pack && pack.data && pack.data.ok === true);
+          var bodyText = (pack && pack.text ? String(pack.text) : "").trim();
+          var legacyOk = bodyText === "success" || bodyText === "ok" || bodyText === "OK";
+          if (!httpOk && !jsonOk && !legacyOk) {
+            throw new Error("status=" + (pack ? pack.status : "?") + " " + bodyText);
+          }
+          showToast("ジム側のシートに保存しました");
+        })
+        .catch(function (err) {
+          alert("送信に失敗しました。通信状況とGASのデプロイを確認してください。\n\n" + String(err && err.message ? err.message : err));
+        })
+        .finally(function () {
+          btn.disabled = false;
+        });
+    });
+
+    refreshSummary();
+  })();
+  </script>
+  <script>
+    (function () {
+      var TENANT_KEY = "eap_tenant";
+      var OFFICE_KEY = "eap_office";
+      function slice64(s) {
+        return String(s == null ? "" : s).trim().slice(0, 64);
+      }
+      var params;
+      try {
+        params = new URLSearchParams(window.location.search);
+      } catch (e) {
+        params = new URLSearchParams();
+      }
+      var tUrl = slice64(params.get("tenant"));
+      var oUrl = slice64(params.get("office"));
+      if (tUrl) {
+        try {
+          localStorage.setItem(TENANT_KEY, tUrl);
+        } catch (e) {}
+      }
+      if (oUrl) {
+        try {
+          localStorage.setItem(OFFICE_KEY, oUrl);
+        } catch (e) {}
+      }
+      var t = tUrl;
+      var o = oUrl;
+      if (!t) {
+        try {
+          t = slice64(localStorage.getItem(TENANT_KEY));
+        } catch (e) {
+          t = "";
+        }
+      }
+      if (!o) {
+        try {
+          o = slice64(localStorage.getItem(OFFICE_KEY));
+        } catch (e) {
+          o = "";
+        }
+      }
+      if (!t && !o) return;
+
+      function isAppHtmlHref(href) {
+        if (!href || /^https?:\/\//i.test(href)) return false;
+        var path = href.split("#")[0].split("?")[0];
+        return /\.html$/i.test(path);
+      }
+
+      document.querySelectorAll("a[href]").forEach(function (a) {
+        var href = a.getAttribute("href");
+        if (!isAppHtmlHref(href)) return;
+        var hashI = href.indexOf("#");
+        var hash = hashI >= 0 ? href.slice(hashI) : "";
+        var base = hashI >= 0 ? href.slice(0, hashI) : href;
+        var qI = base.indexOf("?");
+        var path = qI >= 0 ? base.slice(0, qI) : base;
+        var existing = qI >= 0 ? base.slice(qI + 1) : "";
+        var merged = new URLSearchParams(existing);
+        if (t && !merged.has("tenant")) merged.set("tenant", t);
+        if (o && !merged.has("office")) merged.set("office", o);
+        var mq = merged.toString();
+        a.setAttribute("href", path + (mq ? "?" + mq : "") + hash);
+      });
+    })();
+  </script>
+  <script src="/pwa-register.js" defer></script>
+</body>
+</html>

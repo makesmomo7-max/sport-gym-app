@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>momo fit | 会員の皆さまへ</title>
+  <meta name="theme-color" content="#1a2b4a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="momo fit" />
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=2" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2" />
+  <style>
+    :root {
+      --main: #1a2b4a;
+      --accent: #2e4a7a;
+      --bg: #f4f7fc;
+      --card: #ffffff;
+      --text: #1a2b4a;
+      --muted: #5a6b85;
+      --border: #d8e0ef;
+      --shadow: rgba(26, 43, 74, 0.08);
+      --warm: #fff8f4;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100dvh;
+      font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
+      background: linear-gradient(180deg, #eef3fb 0%, var(--bg) 35%, #e8eef8 100%);
+      color: var(--text);
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+      padding-bottom: calc(4.25rem + env(safe-area-inset-bottom, 0px));
+    }
+    .wrap { max-width: 520px; margin: 0 auto; padding: 0 1rem 2.75rem; }
+    .hero {
+      margin: 0 -1rem 1.75rem;
+      padding: 2.25rem 1.35rem 2rem;
+      background: linear-gradient(155deg, var(--main) 0%, var(--accent) 48%, #3d5a8f 100%);
+      color: #fff;
+      border-radius: 0 0 28px 28px;
+      box-shadow: 0 12px 40px rgba(26, 43, 74, 0.22);
+      text-align: center;
+    }
+    .hero-badge {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      opacity: 0.88;
+      margin-bottom: 0.85rem;
+      padding: 0.35rem 0.75rem;
+      background: rgba(255, 255, 255, 0.12);
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .hero h1 {
+      margin: 0 0 1rem;
+      font-size: clamp(1.35rem, 4.5vw, 1.65rem);
+      font-weight: 700;
+      line-height: 1.45;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+    }
+    .hero-sub { margin: 0; font-size: 0.92rem; line-height: 1.75; color: rgba(255, 255, 255, 0.92); font-weight: 500; }
+    .hero-sub .brand { font-weight: 700; color: #fff; }
+    section { margin-bottom: 1.6rem; }
+    .section-title {
+      margin: 0 0 0.85rem;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .section-title span.icon { font-size: 1.15rem; line-height: 1; }
+    .card {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 1rem 1rem 0.15rem;
+      box-shadow: 0 4px 22px var(--shadow);
+      border: 1px solid var(--border);
+    }
+    .service {
+      display: flex;
+      gap: 0.85rem;
+      padding: 0.85rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .service:last-child { border-bottom: none; padding-bottom: 0.35rem; }
+    .service:first-child { padding-top: 0.35rem; }
+    .service-ico {
+      flex-shrink: 0;
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 12px;
+      background: linear-gradient(145deg, #f0f4fc 0%, #e4ecf8 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      line-height: 1;
+      border: 1px solid var(--border);
+    }
+    .service-body h3 { margin: 0 0 0.35rem; font-size: 0.95rem; font-weight: 700; color: var(--main); }
+    .service-body p { margin: 0; font-size: 0.86rem; color: var(--muted); line-height: 1.65; }
+    .assure-card {
+      background: linear-gradient(165deg, #fffefb 0%, var(--warm) 50%, #faf6ff 100%);
+      border: 1px solid #ebe4dc;
+      border-radius: 16px;
+      padding: 1.1rem 1rem 1rem;
+      box-shadow: 0 4px 20px rgba(46, 74, 122, 0.06);
+    }
+    .assure-list { margin: 0; padding: 0; list-style: none; }
+    .assure-list li {
+      position: relative;
+      padding: 0.55rem 0 0.55rem 1.85rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--main);
+      border-bottom: 1px dashed rgba(46, 74, 122, 0.15);
+    }
+    .assure-list li:last-child { border-bottom: none; padding-bottom: 0.15rem; }
+    .assure-list li::before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 1.35rem;
+      height: 1.35rem;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #fff;
+      font-size: 0.65rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+    .actions { display: flex; flex-direction: column; gap: 0.75rem; margin-top: 0.25rem; }
+    .btn {
+      display: block;
+      width: 100%;
+      text-align: center;
+      text-decoration: none;
+      font-size: 0.95rem;
+      font-weight: 700;
+      font-family: inherit;
+      padding: 1rem 1.1rem;
+      border-radius: 14px;
+      transition: transform 0.15s, box-shadow 0.2s, filter 0.2s;
+    }
+    .btn:active { transform: scale(0.98); }
+    .btn-primary {
+      color: #fff;
+      background: linear-gradient(180deg, var(--accent) 0%, var(--main) 100%);
+      box-shadow: 0 6px 20px rgba(26, 43, 74, 0.28);
+    }
+    .btn-primary:hover { filter: brightness(1.05); }
+    .btn-secondary {
+      color: var(--main);
+      background: #fff;
+      border: 2px solid var(--accent);
+      box-shadow: 0 4px 14px var(--shadow);
+    }
+    .btn-secondary:hover { background: #f7f9fd; }
+    footer { margin-top: 1.5rem; text-align: center; font-size: 0.78rem; color: var(--muted); }
+    .bottom-nav {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 1000;
+      display: flex;
+      justify-content: space-around;
+      align-items: stretch;
+      gap: 0.25rem;
+      padding: 0.5rem 0.5rem calc(0.5rem + env(safe-area-inset-bottom, 0px));
+      background: #fff;
+      box-shadow: 0 -1px 0 rgba(26, 43, 74, 0.08);
+    }
+    .bottom-nav a {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.15rem;
+      min-width: 0;
+      padding: 0.3rem 0.1rem;
+      text-decoration: none;
+      color: var(--main);
+      font-size: 0.55rem;
+      font-weight: 500;
+      opacity: 0.55;
+      transition: opacity 0.15s ease, transform 0.15s ease;
+    }
+    .bottom-nav a svg {
+      width: 1.2rem;
+      height: 1.2rem;
+      flex-shrink: 0;
+    }
+    .bottom-nav a[aria-current="page"] {
+      opacity: 1;
+      font-weight: 700;
+    }
+    .bottom-nav a[aria-current="page"] svg {
+      transform: scale(1.12);
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="hero">
+      <p class="hero-badge">momo fit</p>
+      <h1>いつもの3ステップで、体調をつかまえる。</h1>
+      <p class="hero-sub">
+        <span class="brand">記録</span> → <span class="brand">確認</span> → <span class="brand">必要なら共有</span><br />
+        トレーニングや生活リズムに合わせて、手軽に続けられる健康管理です。
+      </p>
+    </header>
+    <section aria-labelledby="flow-heading">
+      <h2 class="section-title" id="flow-heading"><span class="icon" aria-hidden="true">📋</span>今日の流れ（いつも同じ）</h2>
+      <div class="assure-card" style="margin-bottom:1rem;">
+        <ul class="assure-list">
+          <li>① ホーム下の「記録」で体調をタップするだけ</li>
+          <li>② 「データ」で自分の推移を見る</li>
+          <li>③ 「共有」でトレーナーにまとめを渡す（任意）／「AI」で質問も可</li>
+        </ul>
+      </div>
+    </section>
+    <section aria-labelledby="svc-heading">
+      <h2 class="section-title" id="svc-heading"><span class="icon" aria-hidden="true">🏋️</span>機能一覧</h2>
+      <div class="card">
+        <article class="service">
+          <div class="service-ico" aria-hidden="true">📝</div>
+          <div class="service-body">
+            <h3>コンディション記録</h3>
+            <p>体と気分をタップするだけ。すぐ終わります。</p>
+          </div>
+        </article>
+        <article class="service">
+          <div class="service-ico" aria-hidden="true">📊</div>
+          <div class="service-body">
+            <h3>マイデータ</h3>
+            <p>この端末に保存した記録の推移をグラフで確認できます。</p>
+          </div>
+        </article>
+        <article class="service">
+          <div class="service-ico" aria-hidden="true">🤝</div>
+          <div class="service-body">
+            <h3>トレーナー共有</h3>
+            <p>直近の記録を文章にまとめ、コピーやLINE共有、ジムのシート送信ができます。</p>
+          </div>
+        </article>
+        <article class="service">
+          <div class="service-ico" aria-hidden="true">💓</div>
+          <div class="service-body">
+            <h3>自律神経チェック</h3>
+            <p>カメラで脈拍を測り、コンディションの目安を確認できます。</p>
+          </div>
+        </article>
+        <article class="service">
+          <div class="service-ico" aria-hidden="true">🌙</div>
+          <div class="service-body">
+            <h3>睡眠ログ</h3>
+            <p>睡眠の長さや質をセルフ記録。まずは端末内にだけ残ります。</p>
+          </div>
+        </article>
+        <article class="service">
+          <div class="service-ico" aria-hidden="true">💬</div>
+          <div class="service-body">
+            <h3>AIチャット</h3>
+            <p>トレーニングや体調の悩みを、いつでも文章で相談できます。</p>
+          </div>
+        </article>
+        <article class="service">
+          <div class="service-ico" aria-hidden="true">📅</div>
+          <div class="service-body">
+            <h3>レッスン・面談の予約</h3>
+            <p>トレーナーやスタッフとの予約を申し込めます。</p>
+          </div>
+        </article>
+      </div>
+    </section>
+    <section aria-labelledby="assure-heading">
+      <h2 class="section-title" id="assure-heading"><span class="icon" aria-hidden="true">💙</span>共有について</h2>
+      <div class="assure-card">
+        <ul class="assure-list">
+          <li>AIチャットの内容がトレーナーに自動で送られることはありません</li>
+          <li>トレーナーに伝えるのは、あなたが「共有」で送った内容だけです</li>
+          <li>記録の多くは端末内に保存されます（ジム設定によりスプレッドシートへ集約される場合があります）</li>
+          <li>体調に不安があるときは、無理せず医療機関の受診をご検討ください</li>
+        </ul>
+      </div>
+    </section>
+    <nav class="actions" aria-label="主な操作">
+      <a class="btn btn-primary" href="./check.html">① 今日のコンディションを記録</a>
+      <a class="btn btn-secondary" href="./history.html">② マイデータを見る</a>
+      <a class="btn btn-secondary" href="./share_trainer.html">③ トレーナーに共有</a>
+      <a class="btn btn-secondary" href="./chat.html">AIに相談する</a>
+      <a class="btn btn-secondary" href="./pulse.html">自律神経をチェック</a>
+      <a class="btn btn-secondary" href="./sleep.html">睡眠を記録</a>
+      <a class="btn btn-secondary" href="./yoyaku_employee.html">レッスン・面談を予約</a>
+    </nav>
+    <footer>momo fit</footer>
+  </div>
+  <nav class="bottom-nav" aria-label="メインメニュー">
+    <a href="./gym.html" aria-current="page">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      ホーム
+    </a>
+    <a href="./check.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      記録
+    </a>
+    <a href="./history.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      データ
+    </a>
+    <a href="./chat.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      AI
+    </a>
+    <a href="./share_trainer.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+      共有
+    </a>
+  </nav>
+  <script>
+    (function () {
+      var TENANT_KEY = "eap_tenant";
+      var OFFICE_KEY = "eap_office";
+      function slice64(s) {
+        return String(s == null ? "" : s).trim().slice(0, 64);
+      }
+      var params;
+      try {
+        params = new URLSearchParams(window.location.search);
+      } catch (e) {
+        params = new URLSearchParams();
+      }
+      var tUrl = slice64(params.get("tenant"));
+      var oUrl = slice64(params.get("office"));
+      if (tUrl) {
+        try {
+          localStorage.setItem(TENANT_KEY, tUrl);
+        } catch (e) {}
+      }
+      if (oUrl) {
+        try {
+          localStorage.setItem(OFFICE_KEY, oUrl);
+        } catch (e) {}
+      }
+      var t = tUrl;
+      var o = oUrl;
+      if (!t) {
+        try {
+          t = slice64(localStorage.getItem(TENANT_KEY));
+        } catch (e) {
+          t = "";
+        }
+      }
+      if (!o) {
+        try {
+          o = slice64(localStorage.getItem(OFFICE_KEY));
+        } catch (e) {
+          o = "";
+        }
+      }
+      if (!t && !o) return;
+
+      function isAppHtmlHref(href) {
+        if (!href || /^https?:\/\//i.test(href)) return false;
+        var path = href.split("#")[0].split("?")[0];
+        return /\.html$/i.test(path);
+      }
+
+      document.querySelectorAll("a[href]").forEach(function (a) {
+        var href = a.getAttribute("href");
+        if (!isAppHtmlHref(href)) return;
+        var hashI = href.indexOf("#");
+        var hash = hashI >= 0 ? href.slice(hashI) : "";
+        var base = hashI >= 0 ? href.slice(0, hashI) : href;
+        var qI = base.indexOf("?");
+        var path = qI >= 0 ? base.slice(0, qI) : base;
+        var existing = qI >= 0 ? base.slice(qI + 1) : "";
+        var merged = new URLSearchParams(existing);
+        if (t && !merged.has("tenant")) merged.set("tenant", t);
+        if (o && !merged.has("office")) merged.set("office", o);
+        var mq = merged.toString();
+        a.setAttribute("href", path + (mq ? "?" + mq : "") + hash);
+      });
+    })();
+  </script>
+  <script src="/pwa-register.js" defer></script>
+</body>
+</html>

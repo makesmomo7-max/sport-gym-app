@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>レッスン・面談の予約 | momo fit</title>
+  <meta name="theme-color" content="#1a2b4a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="momo fit" />
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=2" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2" />
+  <style>
+    :root {
+      --main: #1a2b4a;
+      --accent: #2e4a7a;
+      --bg: #f4f7fc;
+      --card: #ffffff;
+      --text: #1a2b4a;
+      --muted: #5a6b85;
+      --border: #d8e0ef;
+      --shadow: rgba(26, 43, 74, 0.08);
+      --warm: #fff8f4;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100dvh;
+      font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
+      background: linear-gradient(165deg, #eef3fb 0%, var(--bg) 45%, #e8eef8 100%);
+      color: var(--text);
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+      padding-bottom: calc(4.25rem + env(safe-area-inset-bottom, 0px));
+    }
+    .wrap { max-width: 440px; margin: 0 auto; padding: 1.25rem 1rem 2.5rem; }
+    header { text-align: center; margin-bottom: 1rem; }
+    header h1 { margin: 0 0 0.35rem; font-size: 1.1rem; font-weight: 700; color: var(--main); }
+    .lead { margin: 0; font-size: 0.82rem; color: var(--muted); }
+    .assure {
+      background: linear-gradient(165deg, #fffefb 0%, var(--warm) 55%, #f5f0ff 100%);
+      border: 1px solid #ebe4dc;
+      border-radius: 14px;
+      padding: 0.95rem 1rem;
+      margin-bottom: 1rem;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--main);
+      line-height: 1.7;
+      box-shadow: 0 3px 14px rgba(46, 74, 122, 0.06);
+    }
+    .assure .ico { margin-right: 0.25rem; }
+    .notice {
+      font-size: 0.78rem;
+      color: var(--muted);
+      line-height: 1.65;
+      margin: 0 0 1rem;
+      padding: 0.65rem 0.75rem;
+      background: rgba(255, 255, 255, 0.65);
+      border-radius: 10px;
+      border: 1px dashed var(--border);
+    }
+    .card {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 1.05rem 1rem;
+      margin-bottom: 0.85rem;
+      box-shadow: 0 4px 20px var(--shadow);
+      border: 1px solid var(--border);
+    }
+    .field { margin-bottom: 0.85rem; }
+    .field:last-child { margin-bottom: 0; }
+    label.lbl {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 0.35rem;
+    }
+    .req { color: #c45c5c; font-size: 0.72rem; font-weight: 700; margin-left: 0.2rem; }
+    input[type="text"],
+    input[type="email"],
+    input[type="datetime-local"],
+    input[type="date"],
+    select,
+    textarea {
+      width: 100%;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 0.65rem 0.75rem;
+      font-size: 0.95rem;
+      font-family: inherit;
+      color: var(--text);
+      background: #fafcfe;
+    }
+    input:focus,
+    select:focus,
+    textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(46, 74, 122, 0.12);
+    }
+    input::placeholder,
+    textarea::placeholder { color: #8a96ad; }
+    textarea { min-height: 88px; resize: vertical; }
+    .method-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+    .method-opt { position: relative; cursor: pointer; }
+    .method-opt input { position: absolute; opacity: 0; pointer-events: none; }
+    .method-face {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.35rem;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 0.75rem 0.5rem;
+      font-size: 0.88rem;
+      font-weight: 600;
+      background: #fafcfe;
+      transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+      min-height: 3rem;
+    }
+    .method-opt input:focus-visible + .method-face { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .method-opt input:checked + .method-face {
+      border-color: var(--accent);
+      background: linear-gradient(180deg, #f0f4fc 0%, #e4ecf8 100%);
+      box-shadow: 0 0 0 3px rgba(46, 74, 122, 0.12);
+    }
+    .hint { margin: 0.3rem 0 0; font-size: 0.72rem; color: var(--muted); }
+    .datetime-intro { margin: 0 0 0.75rem; font-size: 0.78rem; color: var(--muted); line-height: 1.55; }
+    .datetime-grid {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 1fr;
+      gap: 0.5rem;
+    }
+    .datetime-col .lbl {
+      margin-bottom: 0.25rem;
+      font-size: 0.72rem;
+      color: var(--muted);
+      font-weight: 700;
+    }
+    select option:disabled {
+      color: #9aa6bd;
+      background: #eef2f8;
+    }
+    .submit-wrap { margin-top: 1.15rem; }
+    .submit-btn {
+      width: 100%;
+      border: none;
+      border-radius: 14px;
+      padding: 0.95rem 1rem;
+      font-size: 1rem;
+      font-weight: 700;
+      font-family: inherit;
+      color: #fff;
+      background: linear-gradient(180deg, var(--accent) 0%, var(--main) 100%);
+      cursor: pointer;
+      box-shadow: 0 6px 18px rgba(26, 43, 74, 0.25);
+      transition: transform 0.15s, filter 0.2s;
+    }
+    .submit-btn:active { transform: scale(0.98); }
+    .submit-btn:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+      transform: none;
+      filter: grayscale(0.15);
+    }
+    .submit-error {
+      display: none;
+      margin: 0.55rem 0 0;
+      font-size: 0.82rem;
+      line-height: 1.55;
+      color: #b24040;
+      font-weight: 600;
+    }
+    .submit-error.show { display: block; }
+    .success-panel { display: none; text-align: center; padding: 2rem 1rem; }
+    .success-panel.show { display: block; }
+    .success-panel .icon { font-size: 3rem; margin-bottom: 0.75rem; line-height: 1; }
+    .success-panel p {
+      margin: 0;
+      font-size: 1.02rem;
+      font-weight: 700;
+      color: var(--main);
+      line-height: 1.75;
+    }
+    .success-note {
+      margin-top: 0.75rem;
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+    .bottom-nav {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 1000;
+      display: flex;
+      justify-content: space-around;
+      align-items: stretch;
+      gap: 0.25rem;
+      padding: 0.5rem 0.5rem calc(0.5rem + env(safe-area-inset-bottom, 0px));
+      background: #fff;
+      box-shadow: 0 -1px 0 rgba(26, 43, 74, 0.08);
+    }
+    .bottom-nav a {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.15rem;
+      min-width: 0;
+      padding: 0.3rem 0.1rem;
+      text-decoration: none;
+      color: var(--main);
+      font-size: 0.55rem;
+      font-weight: 500;
+      opacity: 0.55;
+      transition: opacity 0.15s ease, transform 0.15s ease;
+    }
+    .bottom-nav a svg {
+      width: 1.2rem;
+      height: 1.2rem;
+      flex-shrink: 0;
+    }
+    .bottom-nav a[aria-current="page"] {
+      opacity: 1;
+      font-weight: 700;
+    }
+    .bottom-nav a[aria-current="page"] svg {
+      transform: scale(1.12);
+    }
+    #form-root.hidden { display: none; }
+    @media (max-width: 400px) {
+      .datetime-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>レッスン・面談のご予約</h1>
+      <p class="lead">トレーナーやスタッフとの予約をお申し込みいただけます</p>
+    </header>
+
+    <div id="form-root">
+      <form id="reserveForm" novalidate>
+        <div class="assure" role="note">
+          <span class="ico" aria-hidden="true">💙</span>
+          お申し込み内容は、ジムの担当窓口に届きます。<br />
+          AIチャットの内容が自動で送られることはありません。
+        </div>
+
+        <p class="notice">
+          ※ご相談は9:00〜21:00の間で承っております。<br />
+          ※ご予約は2週間前までにお申し込みください。
+        </p>
+
+        <div class="card">
+          <div class="field">
+            <label class="lbl" for="fullName">お名前<span class="req">必須</span></label>
+            <input type="text" id="fullName" name="fullName" required autocomplete="name" placeholder="山田 太郎" />
+          </div>
+          <div class="field">
+            <label class="lbl" for="company">店舗名・会員番号など<span class="req">必須</span></label>
+            <input type="text" id="company" name="company" required autocomplete="organization" placeholder="例：〇〇店 / 会員番号12345" />
+          </div>
+          <div class="field">
+            <label class="lbl" for="email">メールアドレス<span class="req">必須</span></label>
+            <input type="email" id="email" name="email" required autocomplete="email" placeholder="example@company.co.jp" />
+          </div>
+        </div>
+
+        <div class="card">
+          <p class="lbl" id="methodLegend">希望の形式<span class="req">必須</span></p>
+          <div class="method-grid" role="radiogroup" aria-labelledby="methodLegend">
+            <label class="method-opt">
+              <input type="radio" name="method" value="face" required />
+              <span class="method-face"><span aria-hidden="true">🤝</span>対面</span>
+            </label>
+            <label class="method-opt">
+              <input type="radio" name="method" value="online" required />
+              <span class="method-face"><span aria-hidden="true">💻</span>オンライン</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="card">
+          <p class="datetime-intro">
+            日時は本日から2週間後以降、<strong>9:00〜21:00</strong>の範囲でお選びください。
+          </p>
+          <div class="field">
+            <label class="lbl" for="prefer1">希望日時・第1希望<span class="req">必須</span></label>
+            <div class="datetime-grid">
+              <div class="datetime-col">
+                <label class="lbl" for="prefer1Date">日付</label>
+                <select id="prefer1Date" required name="prefer1Date">
+                  <option value="">選択</option>
+                </select>
+              </div>
+              <div class="datetime-col">
+                <label class="lbl" for="prefer1Hour">時</label>
+                <select id="prefer1Hour" required name="prefer1Hour">
+                  <option value="">選択</option>
+                  <option value="09">9時</option><option value="10">10時</option><option value="11">11時</option>
+                  <option value="12">12時</option><option value="13">13時</option><option value="14">14時</option>
+                  <option value="15">15時</option><option value="16">16時</option><option value="17">17時</option>
+                  <option value="18">18時</option><option value="19">19時</option><option value="20">20時</option>
+                  <option value="21">21時</option>
+                </select>
+              </div>
+              <div class="datetime-col">
+                <label class="lbl" for="prefer1Minute">分</label>
+                <select id="prefer1Minute" required name="prefer1Minute">
+                  <option value="">選択</option>
+                  <option value="00">00</option>
+                  <option value="15">15</option>
+                  <option value="30">30</option>
+                  <option value="45">45</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="field">
+            <label class="lbl" for="prefer2">希望日時・第2希望<span class="req">必須</span></label>
+            <div class="datetime-grid">
+              <div class="datetime-col">
+                <label class="lbl" for="prefer2Date">日付</label>
+                <select id="prefer2Date" required name="prefer2Date">
+                  <option value="">選択</option>
+                </select>
+              </div>
+              <div class="datetime-col">
+                <label class="lbl" for="prefer2Hour">時</label>
+                <select id="prefer2Hour" required name="prefer2Hour">
+                  <option value="">選択</option>
+                  <option value="09">9時</option><option value="10">10時</option><option value="11">11時</option>
+                  <option value="12">12時</option><option value="13">13時</option><option value="14">14時</option>
+                  <option value="15">15時</option><option value="16">16時</option><option value="17">17時</option>
+                  <option value="18">18時</option><option value="19">19時</option><option value="20">20時</option>
+                  <option value="21">21時</option>
+                </select>
+              </div>
+              <div class="datetime-col">
+                <label class="lbl" for="prefer2Minute">分</label>
+                <select id="prefer2Minute" required name="prefer2Minute">
+                  <option value="">選択</option>
+                  <option value="00">00</option>
+                  <option value="15">15</option>
+                  <option value="30">30</option>
+                  <option value="45">45</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="field">
+            <label class="lbl" for="prefer3">希望日時・第3希望<span class="req">必須</span></label>
+            <div class="datetime-grid">
+              <div class="datetime-col">
+                <label class="lbl" for="prefer3Date">日付</label>
+                <select id="prefer3Date" required name="prefer3Date">
+                  <option value="">選択</option>
+                </select>
+              </div>
+              <div class="datetime-col">
+                <label class="lbl" for="prefer3Hour">時</label>
+                <select id="prefer3Hour" required name="prefer3Hour">
+                  <option value="">選択</option>
+                  <option value="09">9時</option><option value="10">10時</option><option value="11">11時</option>
+                  <option value="12">12時</option><option value="13">13時</option><option value="14">14時</option>
+                  <option value="15">15時</option><option value="16">16時</option><option value="17">17時</option>
+                  <option value="18">18時</option><option value="19">19時</option><option value="20">20時</option>
+                  <option value="21">21時</option>
+                </select>
+              </div>
+              <div class="datetime-col">
+                <label class="lbl" for="prefer3Minute">分</label>
+                <select id="prefer3Minute" required name="prefer3Minute">
+                  <option value="">選択</option>
+                  <option value="00">00</option>
+                  <option value="15">15</option>
+                  <option value="30">30</option>
+                  <option value="45">45</option>
+                </select>
+              </div>
+            </div>
+            <p class="hint">できるだけ異なる日時をご指定ください。</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="field">
+            <label class="lbl" for="detail">ご希望・メモ（任意）</label>
+            <textarea
+              id="detail"
+              name="detail"
+              maxlength="2000"
+              placeholder="例：フォームチェック希望、下半身中心、体調の相談 など"
+            ></textarea>
+          </div>
+        </div>
+
+        <div class="submit-wrap">
+          <button type="submit" class="submit-btn" id="submitBtn">予約を申し込む</button>
+          <p id="submitError" class="submit-error" role="alert" aria-live="assertive"></p>
+        </div>
+        <input type="hidden" id="prefer1" name="prefer1" />
+        <input type="hidden" id="prefer2" name="prefer2" />
+        <input type="hidden" id="prefer3" name="prefer3" />
+      </form>
+    </div>
+
+    <div class="success-panel card" id="successPanel" role="status" aria-live="polite">
+      <div class="icon" aria-hidden="true">✨</div>
+      <p>
+        送信が完了しました。<br />
+        ご予約を受け付けました。<br />
+        担当者よりご連絡いたします。お気軽にお待ちください😊
+      </p>
+      <div class="success-note">控えメールが届かない場合は、迷惑メールフォルダもご確認ください。</div>
+    </div>
+  </div>
+  <nav class="bottom-nav" aria-label="メインメニュー">
+    <a href="./gym.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      ホーム
+    </a>
+    <a href="./check.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      記録
+    </a>
+    <a href="./history.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      データ
+    </a>
+    <a href="./chat.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      AI
+    </a>
+    <a href="./share_trainer.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+      共有
+    </a>
+  </nav>
+
+  <script>
+    (function () {
+      // TODO: GASを「ウェブアプリ」としてデプロイしたURLに差し替えてください
+      // 例: https://script.google.com/macros/s/XXXXX/exec
+      var GAS_ENDPOINT = "https://script.google.com/macros/s/AKfycbyhE8IER_lrXnEJa85ap5YJdX7O8582O2gL0k89bt9MyVoRxwfcwk4XFF8DA63tUqa-Vw/exec";
+      var TENANT_KEY = "eap_tenant";
+      var OFFICE_KEY = "eap_office";
+      function parseTenantFromUrl() {
+        try {
+          var q = new URLSearchParams(window.location.search).get("tenant");
+          return q ? String(q).trim().slice(0, 64) : "";
+        } catch (e) {
+          return "";
+        }
+      }
+      function parseOfficeFromUrl() {
+        try {
+          var q = new URLSearchParams(window.location.search).get("office");
+          return q ? String(q).trim().slice(0, 64) : "";
+        } catch (e) {
+          return "";
+        }
+      }
+      function getTenantId() {
+        var fromUrl = parseTenantFromUrl();
+        if (fromUrl) {
+          try {
+            localStorage.setItem(TENANT_KEY, fromUrl);
+          } catch (e) {}
+          return fromUrl;
+        }
+        try {
+          return (localStorage.getItem(TENANT_KEY) || "").trim().slice(0, 64);
+        } catch (e) {
+          return "";
+        }
+      }
+      function getOfficeId() {
+        var fromUrl = parseOfficeFromUrl();
+        if (fromUrl) {
+          try {
+            localStorage.setItem(OFFICE_KEY, fromUrl);
+          } catch (e) {}
+          return fromUrl;
+        }
+        try {
+          return (localStorage.getItem(OFFICE_KEY) || "").trim().slice(0, 64);
+        } catch (e) {
+          return "";
+        }
+      }
+
+      var SLOT_MINUTES = [0, 15, 30, 45];
+      var BLOCK_MINUTES = 75; // 50分相談 + 10分延長バッファ + 15分準備
+      var form = document.getElementById("reserveForm");
+      var formRoot = document.getElementById("form-root");
+      var successPanel = document.getElementById("successPanel");
+      var submitBtn = document.getElementById("submitBtn");
+      var submitError = document.getElementById("submitError");
+      var preferKeys = ["prefer1", "prefer2", "prefer3"];
+      var bookedStartMinutesByDate = {};
+
+      function pad(n) {
+        return String(n).padStart(2, "0");
+      }
+
+      function toDateValue(d) {
+        return (
+          d.getFullYear() +
+          "-" +
+          pad(d.getMonth() + 1) +
+          "-" +
+          pad(d.getDate())
+        );
+      }
+
+      function minFromNowDays(days) {
+        var d = new Date();
+        d.setDate(d.getDate() + days);
+        return d;
+      }
+
+      function isTimeInServiceWindow(hourStr) {
+        var h = Number(hourStr);
+        if (isNaN(h)) return false;
+        return h >= 9 && h <= 21;
+      }
+
+      function parseDateTimeToParts(value) {
+        if (!value || typeof value !== "string") return null;
+        var s = value.trim();
+        if (!s) return null;
+        var m = s.match(/^(\d{4}-\d{2}-\d{2})[ T](\d{2}):(\d{2})/);
+        if (!m) return null;
+        return {
+          date: m[1],
+          hour: Number(m[2]),
+          minute: Number(m[3])
+        };
+      }
+
+      function toMinutes(hour, minute) {
+        return hour * 60 + minute;
+      }
+
+      function isBlockedByBooked(dateStr, candidateMinutes) {
+        var bookedList = bookedStartMinutesByDate[dateStr] || [];
+        for (var i = 0; i < bookedList.length; i++) {
+          var start = bookedList[i];
+          if (candidateMinutes >= start && candidateMinutes < start + BLOCK_MINUTES) {
+            return true;
+          }
+        }
+        return false;
+      }
+
+      function getPreferElements(prefix) {
+        return {
+          date: document.getElementById(prefix + "Date"),
+          hour: document.getElementById(prefix + "Hour"),
+          minute: document.getElementById(prefix + "Minute")
+        };
+      }
+
+      function applyBlockingToSelects(prefix) {
+        var el = getPreferElements(prefix);
+        var dateStr = el.date.value;
+
+        // 日付未選択時は全て有効化
+        if (!dateStr) {
+          Array.prototype.forEach.call(el.hour.options, function (opt) {
+            if (opt.value) opt.disabled = false;
+          });
+          Array.prototype.forEach.call(el.minute.options, function (opt) {
+            if (opt.value) opt.disabled = false;
+          });
+          return;
+        }
+
+        // hour を丸ごと無効化（その hour の 00/15/30/45 がすべて埋まる場合）
+        Array.prototype.forEach.call(el.hour.options, function (opt) {
+          if (!opt.value) return;
+          var h = Number(opt.value);
+          var available = SLOT_MINUTES.some(function (m) {
+            return !isBlockedByBooked(dateStr, toMinutes(h, m));
+          });
+          opt.disabled = !available;
+        });
+
+        if (el.hour.value && el.hour.options[el.hour.selectedIndex] && el.hour.options[el.hour.selectedIndex].disabled) {
+          el.hour.value = "";
+        }
+
+        // minute は選択中の hour に応じて無効化
+        Array.prototype.forEach.call(el.minute.options, function (opt) {
+          if (!opt.value) return;
+          if (!el.hour.value) {
+            opt.disabled = false;
+            return;
+          }
+          var candidate = toMinutes(Number(el.hour.value), Number(opt.value));
+          opt.disabled = isBlockedByBooked(dateStr, candidate);
+        });
+
+        if (el.minute.value && el.minute.options[el.minute.selectedIndex] && el.minute.options[el.minute.selectedIndex].disabled) {
+          el.minute.value = "";
+        }
+      }
+
+      function applyBlockingAll() {
+        preferKeys.forEach(function (key) { applyBlockingToSelects(key); });
+      }
+
+      function buildPreferredDateTime(prefix) {
+        var el = getPreferElements(prefix);
+        if (!el.date.value || !el.hour.value || !el.minute.value) return "";
+        return el.date.value + "T" + el.hour.value + ":" + el.minute.value;
+      }
+
+      var MIN_DAYS_AHEAD = 14;
+      var DATE_TOO_EARLY_MSG = "予約日は本日から2週間後以降を選択してください。";
+      var minDate = toDateValue(minFromNowDays(MIN_DAYS_AHEAD));
+
+      function formatDateLabel(yyyyMmDd) {
+        // "2026-04-09" -> "4/9（木）" のように表示
+        var parts = yyyyMmDd.split("-");
+        if (parts.length !== 3) return yyyyMmDd;
+        var y = Number(parts[0]);
+        var m = Number(parts[1]);
+        var d = Number(parts[2]);
+        var dt = new Date(y, m - 1, d);
+        var w = ["日", "月", "火", "水", "木", "金", "土"];
+        return m + "/" + d + "（" + w[dt.getDay()] + "）";
+      }
+
+      function addDays(dateObj, days) {
+        var d = new Date(dateObj.getTime());
+        d.setDate(d.getDate() + days);
+        return d;
+      }
+
+      function populateDateSelect(selectEl) {
+        // 2週間後〜先90日分を選択肢として提示（必要なら増減可）
+        var start = minFromNowDays(MIN_DAYS_AHEAD);
+        var end = addDays(start, 90);
+        var cursor = new Date(start.getTime());
+        while (cursor <= end) {
+          var value = toDateValue(cursor);
+          var opt = document.createElement("option");
+          opt.value = value;
+          opt.textContent = formatDateLabel(value);
+          selectEl.appendChild(opt);
+          cursor = addDays(cursor, 1);
+        }
+      }
+
+      preferKeys.forEach(function (key) {
+        populateDateSelect(getPreferElements(key).date);
+      });
+
+      function refreshPreferredValidity() {
+        var msg = "9:00〜21:00の間でお選びください。";
+        var blockedMsg = "選択した時刻は予約済みです。予約開始から75分後以降の時刻をお選びください。";
+        preferKeys.forEach(function (key) {
+          var el = getPreferElements(key);
+          var isValidDate = !el.date.value || el.date.value >= minDate;
+          var isValidHour = !el.hour.value || isTimeInServiceWindow(el.hour.value);
+          el.date.setCustomValidity(isValidDate ? "" : DATE_TOO_EARLY_MSG);
+          el.hour.setCustomValidity(isValidHour ? "" : msg);
+          el.minute.setCustomValidity("");
+
+          if (el.date.value && el.hour.value && el.minute.value) {
+            var candidate = toMinutes(Number(el.hour.value), Number(el.minute.value));
+            if (isBlockedByBooked(el.date.value, candidate)) {
+              el.minute.setCustomValidity(blockedMsg);
+            }
+          }
+        });
+      }
+
+      preferKeys.forEach(function (key) {
+        var el = getPreferElements(key);
+        el.date.addEventListener("change", function () {
+          applyBlockingToSelects(key);
+          refreshPreferredValidity();
+        });
+        el.hour.addEventListener("change", function () {
+          applyBlockingToSelects(key);
+          refreshPreferredValidity();
+        });
+        el.minute.addEventListener("change", refreshPreferredValidity);
+      });
+
+      // Netlify Forms運用では予約済みの事前取得APIは未使用
+      function loadBookedReservations() {
+        bookedStartMinutesByDate = {};
+        applyBlockingAll();
+      }
+
+      function buildPayload() {
+        var methodEl = form.querySelector('input[name="method"]:checked');
+        return {
+          formType: "reservation",
+          submittedAt: new Date().toISOString(),
+          fullName: document.getElementById("fullName").value.trim(),
+          company: document.getElementById("company").value.trim(),
+          email: document.getElementById("email").value.trim(),
+          method: methodEl ? methodEl.value : "",
+          prefer1: buildPreferredDateTime("prefer1"),
+          prefer2: buildPreferredDateTime("prefer2"),
+          prefer3: buildPreferredDateTime("prefer3"),
+          detail: document.getElementById("detail").value.trim(),
+          tenantId: getTenantId(),
+          officeId: getOfficeId()
+        };
+      }
+
+      function setSubmittingState(isSubmitting) {
+        submitBtn.disabled = isSubmitting;
+        submitBtn.textContent = isSubmitting ? "送信中..." : "予約を申し込む";
+      }
+
+      function showSubmitError(msg) {
+        submitError.textContent = msg;
+        submitError.classList.add("show");
+      }
+
+      function clearSubmitError() {
+        submitError.textContent = "";
+        submitError.classList.remove("show");
+      }
+
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        clearSubmitError();
+        refreshPreferredValidity();
+        if (!form.reportValidity()) return;
+
+        var payload = buildPayload();
+        document.getElementById("prefer1").value = payload.prefer1;
+        document.getElementById("prefer2").value = payload.prefer2;
+        document.getElementById("prefer3").value = payload.prefer3;
+
+        setSubmittingState(true);
+        var params = new URLSearchParams();
+        Object.keys(payload).forEach(function (k) {
+          params.set(k, payload[k] == null ? "" : String(payload[k]));
+        });
+
+        fetch(GAS_ENDPOINT, {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
+          body: params.toString()
+        })
+          .then(function (r) { return r.json().catch(function () { return null; }); })
+          .then(function (data) {
+            if (!data || data.ok !== true) throw new Error("保存に失敗しました");
+            (function () {
+              var q = new URLSearchParams();
+              var tid = getTenantId();
+              var oid = getOfficeId();
+              if (tid) q.set("tenant", tid);
+              if (oid) q.set("office", oid);
+              var qs = q.toString();
+              window.location.href = "./thanks.html" + (qs ? "?" + qs : "");
+            })();
+          })
+          .catch(function () {
+            setSubmittingState(false);
+            showSubmitError("送信に失敗しました。通信状況を確認して、もう一度お試しください。");
+          });
+      });
+
+      loadBookedReservations();
+    })();
+  </script>
+  <script>
+    (function () {
+      var TENANT_KEY = "eap_tenant";
+      var OFFICE_KEY = "eap_office";
+      function slice64(s) {
+        return String(s == null ? "" : s).trim().slice(0, 64);
+      }
+      var params;
+      try {
+        params = new URLSearchParams(window.location.search);
+      } catch (e) {
+        params = new URLSearchParams();
+      }
+      var tUrl = slice64(params.get("tenant"));
+      var oUrl = slice64(params.get("office"));
+      if (tUrl) {
+        try {
+          localStorage.setItem(TENANT_KEY, tUrl);
+        } catch (e) {}
+      }
+      if (oUrl) {
+        try {
+          localStorage.setItem(OFFICE_KEY, oUrl);
+        } catch (e) {}
+      }
+      var t = tUrl;
+      var o = oUrl;
+      if (!t) {
+        try {
+          t = slice64(localStorage.getItem(TENANT_KEY));
+        } catch (e) {
+          t = "";
+        }
+      }
+      if (!o) {
+        try {
+          o = slice64(localStorage.getItem(OFFICE_KEY));
+        } catch (e) {
+          o = "";
+        }
+      }
+      if (!t && !o) return;
+
+      function isAppHtmlHref(href) {
+        if (!href || /^https?:\/\//i.test(href)) return false;
+        var path = href.split("#")[0].split("?")[0];
+        return /\.html$/i.test(path);
+      }
+
+      document.querySelectorAll("a[href]").forEach(function (a) {
+        var href = a.getAttribute("href");
+        if (!isAppHtmlHref(href)) return;
+        var hashI = href.indexOf("#");
+        var hash = hashI >= 0 ? href.slice(hashI) : "";
+        var base = hashI >= 0 ? href.slice(0, hashI) : href;
+        var qI = base.indexOf("?");
+        var path = qI >= 0 ? base.slice(0, qI) : base;
+        var existing = qI >= 0 ? base.slice(qI + 1) : "";
+        var merged = new URLSearchParams(existing);
+        if (t && !merged.has("tenant")) merged.set("tenant", t);
+        if (o && !merged.has("office")) merged.set("office", o);
+        var mq = merged.toString();
+        a.setAttribute("href", path + (mq ? "?" + mq : "") + hash);
+      });
+    })();
+  </script>
+  <script src="/pwa-register.js" defer></script>
+</body>
+</html>

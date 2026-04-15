@@ -1,0 +1,11 @@
+{
+  "name": "momo-fit",
+  "private": true,
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "node -e \"process.exit(0)\"",
+    "vercel-build": "node -e \"process.exit(0)\""
+  }
+}

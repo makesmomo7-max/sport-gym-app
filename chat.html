@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>AIチャット | momo fit</title>
+  <meta name="theme-color" content="#1a2b4a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="momo fit" />
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=2" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2" />
+  <style>
+    :root {
+      --main: #1a2b4a;
+      --accent: #2e4a7a;
+      --bg: #e8edf5;
+      --chat-bg: #d5dde8;
+      --bubble-ai: #ffffff;
+      --bubble-user: linear-gradient(145deg, #3a5a94 0%, var(--accent) 100%);
+      --text: #1a2b4a;
+      --muted: #5a6b85;
+      --border: #c8d4e6;
+      --shadow: rgba(26, 43, 74, 0.1);
+      --warm: #fff8f4;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+      display: flex;
+      flex-direction: column;
+      min-height: 100dvh;
+      min-height: 100vh;
+      padding-bottom: calc(4.25rem + env(safe-area-inset-bottom, 0px));
+    }
+    .top {
+      flex-shrink: 0;
+      background: linear-gradient(180deg, var(--main) 0%, var(--accent) 100%);
+      color: #fff;
+      padding: 0.65rem 0.9rem calc(0.65rem + env(safe-area-inset-top, 0px));
+      box-shadow: 0 2px 12px var(--shadow);
+    }
+    .top h1 {
+      margin: 0 0 0.45rem;
+      font-size: 0.95rem;
+      font-weight: 700;
+      text-align: center;
+      letter-spacing: 0.02em;
+    }
+    .assure {
+      margin: 0;
+      font-size: 0.72rem;
+      font-weight: 600;
+      line-height: 1.65;
+      text-align: center;
+      opacity: 0.94;
+      background: rgba(255, 255, 255, 0.12);
+      border-radius: 10px;
+      padding: 0.5rem 0.6rem;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+    }
+    .chat-wrap {
+      flex: 1;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      max-width: 520px;
+      width: 100%;
+      margin: 0 auto;
+    }
+    .chat-scroll {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 0.85rem 0.75rem 0.5rem;
+      background: linear-gradient(180deg, #dce4f0 0%, var(--chat-bg) 40%, #cfd9e8 100%);
+      -webkit-overflow-scrolling: touch;
+    }
+    .msg {
+      display: flex;
+      margin-bottom: 0.75rem;
+      align-items: flex-end;
+      gap: 0.35rem;
+      animation: pop 0.25s ease;
+    }
+    @keyframes pop {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .msg.ai { justify-content: flex-start; }
+    .msg.user { justify-content: flex-end; }
+    .avatar {
+      width: 2rem;
+      height: 2rem;
+      border-radius: 50%;
+      background: linear-gradient(145deg, #f0f4fc, #dce6f5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      flex-shrink: 0;
+      border: 2px solid #fff;
+      box-shadow: 0 2px 6px var(--shadow);
+    }
+    .msg.user .avatar { display: none; }
+    .bubble {
+      max-width: min(82%, 340px);
+      padding: 0.65rem 0.85rem;
+      border-radius: 18px;
+      font-size: 0.88rem;
+      line-height: 1.65;
+      word-break: break-word;
+      box-shadow: 0 2px 8px var(--shadow);
+    }
+    .msg.ai .bubble {
+      background: var(--bubble-ai);
+      border: 1px solid var(--border);
+      border-bottom-left-radius: 6px;
+      color: var(--text);
+    }
+    .msg.user .bubble {
+      background: var(--bubble-user);
+      color: #fff;
+      border-bottom-right-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+    .bottom {
+      flex-shrink: 0;
+      background: linear-gradient(180deg, #f6f8fc 0%, #eef2f9 100%);
+      border-top: 1px solid var(--border);
+      padding: 0.55rem 0.65rem calc(0.55rem + env(safe-area-inset-bottom, 0px));
+      box-shadow: 0 -4px 20px rgba(26, 43, 74, 0.06);
+      max-width: 520px;
+      width: 100%;
+      margin: 0 auto;
+      margin-bottom: calc(4.25rem + env(safe-area-inset-bottom, 0px));
+    }
+    .row-send {
+      display: flex;
+      gap: 0.45rem;
+      align-items: flex-end;
+      margin-bottom: 0.55rem;
+    }
+    .row-send textarea {
+      flex: 1;
+      min-height: 2.5rem;
+      max-height: 6rem;
+      border: 2px solid var(--border);
+      border-radius: 14px;
+      padding: 0.55rem 0.7rem;
+      font-size: 0.92rem;
+      font-family: inherit;
+      resize: none;
+      line-height: 1.45;
+      background: #fff;
+      color: var(--text);
+    }
+    .row-send textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(46, 74, 122, 0.12);
+    }
+    .row-send textarea::placeholder { color: #8a96ad; }
+    .btn-send {
+      flex-shrink: 0;
+      width: 3.35rem;
+      height: 2.5rem;
+      border: none;
+      border-radius: 12px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      font-family: inherit;
+      color: #fff;
+      background: linear-gradient(180deg, var(--accent) 0%, var(--main) 100%);
+      cursor: pointer;
+      box-shadow: 0 3px 10px rgba(26, 43, 74, 0.22);
+      transition: transform 0.12s, filter 0.15s;
+    }
+    .btn-send:active { transform: scale(0.96); }
+    .btn-send:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      transform: none;
+    }
+    .btn-pro {
+      display: block;
+      width: 100%;
+      text-align: center;
+      text-decoration: none;
+      font-size: 0.88rem;
+      font-weight: 700;
+      font-family: inherit;
+      color: var(--main);
+      background: linear-gradient(165deg, #fffefb 0%, var(--warm) 100%);
+      border: 2px solid var(--accent);
+      border-radius: 14px;
+      padding: 0.75rem 0.85rem;
+      box-shadow: 0 3px 12px var(--shadow);
+      transition: transform 0.12s, background 0.15s;
+    }
+    .btn-pro:active { transform: scale(0.99); }
+    .btn-pro span { margin-right: 0.25rem; }
+    .msg.ai .bubble.bubble--risk {
+      max-width: min(92%, 360px);
+      border-color: #c45c5c;
+      box-shadow: 0 0 0 3px rgba(196, 92, 92, 0.12), 0 4px 14px var(--shadow);
+    }
+    .btn-risk-now {
+      display: block;
+      width: 100%;
+      margin-top: 0.85rem;
+      text-align: center;
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 800;
+      font-family: inherit;
+      color: #fff;
+      background: linear-gradient(180deg, #c45c5c 0%, #a53d3d 100%);
+      border: 2px solid #8b2f2f;
+      border-radius: 12px;
+      padding: 0.75rem 0.85rem;
+      box-shadow: 0 4px 16px rgba(165, 61, 61, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.2) inset;
+      animation: riskPulse 2s ease-in-out infinite;
+    }
+    @keyframes riskPulse {
+      0%, 100% { box-shadow: 0 4px 16px rgba(165, 61, 61, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.2) inset; }
+      50% { box-shadow: 0 6px 22px rgba(165, 61, 61, 0.5), 0 0 0 3px rgba(196, 92, 92, 0.25); }
+    }
+    .btn-risk-now:active { transform: scale(0.98); }
+    .bottom-nav {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 1000;
+      display: flex;
+      justify-content: space-around;
+      align-items: stretch;
+      gap: 0.25rem;
+      padding: 0.5rem 0.5rem calc(0.5rem + env(safe-area-inset-bottom, 0px));
+      background: #fff;
+      box-shadow: 0 -1px 0 rgba(26, 43, 74, 0.08);
+    }
+    .bottom-nav a {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.15rem;
+      min-width: 0;
+      padding: 0.3rem 0.1rem;
+      text-decoration: none;
+      color: var(--main);
+      font-size: 0.55rem;
+      font-weight: 500;
+      opacity: 0.55;
+      transition: opacity 0.15s ease, transform 0.15s ease;
+    }
+    .bottom-nav a svg {
+      width: 1.2rem;
+      height: 1.2rem;
+      flex-shrink: 0;
+    }
+    .bottom-nav a[aria-current="page"] {
+      opacity: 1;
+      font-weight: 700;
+    }
+    .bottom-nav a[aria-current="page"] svg {
+      transform: scale(1.12);
+    }
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <h1>momo fit AI</h1>
+    <p class="assure">
+      このチャットはトレーナーに自動では送られません。<br />
+      伝えたいときは「共有」からまとめを渡してください。
+    </p>
+    <p class="assure" style="margin-top:0.45rem;">
+      本名・住所・電話など、個人が特定できる情報は入力しないでください。
+    </p>
+  </header>
+
+  <div class="chat-wrap">
+    <div class="chat-scroll" id="chatScroll" role="log" aria-live="polite" aria-relevant="additions"></div>
+  </div>
+
+  <div class="bottom">
+    <form class="row-send" id="chatForm" autocomplete="off">
+      <label for="userInput" class="visually-hidden">メッセージ</label>
+      <textarea
+        id="userInput"
+        rows="1"
+        placeholder="メッセージを入力…"
+        maxlength="2000"
+        aria-label="メッセージ入力"
+      ></textarea>
+      <button type="submit" class="btn-send" id="btnSend">送信</button>
+    </form>
+    <a class="btn-pro" href="./yoyaku_employee.html"><span aria-hidden="true">📅</span>トレーナー予約・面談</a>
+  </div>
+  <nav class="bottom-nav" aria-label="メインメニュー">
+    <a href="./gym.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      ホーム
+    </a>
+    <a href="./check.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      記録
+    </a>
+    <a href="./history.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      データ
+    </a>
+    <a href="./chat.html" aria-current="page">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      AI
+    </a>
+    <a href="./share_trainer.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+      共有
+    </a>
+  </nav>
+
+  <!-- EAP chat: Gemini API + risk UI v3 (show API errors; client user-first messages) -->
+  <script>
+    (function () {
+      var INITIAL_AI =
+        "こんにちは。momo fitのサポートAIです。\n" +
+        "トレーニングの工夫、疲れ方、食事や睡眠のバランスなど、気になることをどうぞ。\n" +
+        "※医療診断はできません。痛みや体調不良が強いときは医療機関へ。";
+
+      var RISK_TEXT =
+        "それはとてもしんどい状況ですね。一人で抱え込まず、人に繋がってください。\n\n" +
+        "体や心の危機が疑われるときは、トレーナーやスタッフ、医療・緊急の窓口の利用を最優先にしてください。\n" +
+        "よければ、今のタイミングで予約画面からトレーナーへ相談を申し込みませんか。";
+
+      // Risk keywords: user-provided groups
+      var RISK_KEYWORDS = [
+        // 自傷・他害
+        "死にたい", "消えたい", "楽になりたい", "遺言", "殺して", "OD", "リスカ", "刃物",
+        // 身体症状
+        "眠れない", "食欲がない", "起き上がれない", "動悸", "涙が止まらない", "味覚消失",
+        "胸が痛い", "息ができない", "意識がもうろう", "吐き気が止まらない",
+        // 就業困難
+        "会社が怖い", "パワハラ", "ミスを繰り返す", "辞めるしかない", "休職", "退職",
+        // 精神的危機
+        "感情がない", "空虚", "パニック", "自分が悪い", "罪悪感", "絶望",
+        // 生活崩壊
+        "お風呂に入れない", "ゴミが捨てられない", "泥酔", "借金"
+      ];
+
+      // Context signals: "深刻な苦痛" / "機能不全" を示唆する語
+      var SEVERITY_SIGNALS = [
+        "限界", "もう無理", "しんどい", "つらい", "苦しい", "耐えられない",
+        "動けない", "行けない", "行けなくなった", "起きられない",
+        "仕事にならない", "何もできない", "誰にも言えない", "助けて"
+      ];
+
+      function includesAny(text, list) {
+        for (var i = 0; i < list.length; i++) {
+          if (text.indexOf(list[i]) !== -1) return true;
+        }
+        return false;
+      }
+
+      function assessRisk(text) {
+        var t = (text || "").trim();
+        if (!t) return { level: "none" };
+
+        var hasKeyword = includesAny(t, RISK_KEYWORDS);
+        if (!hasKeyword) return { level: "none" };
+
+        // 自傷・他害は単独でも優先度高め
+        var highImmediate = includesAny(t, ["死にたい", "消えたい", "遺言", "殺して", "OD", "リスカ", "刃物"]);
+        var hasSeverity = includesAny(t, SEVERITY_SIGNALS);
+
+        if (highImmediate) return { level: "high" };
+        if (hasSeverity) return { level: "high" };
+
+        // キーワードのみで深刻度が読み取れない場合は "medium"
+        return { level: "medium" };
+      }
+
+      var scroll = document.getElementById("chatScroll");
+      var form = document.getElementById("chatForm");
+      var input = document.getElementById("userInput");
+      var btnSend = document.getElementById("btnSend");
+      var history = [];
+
+      var SYSTEM_PROMPT =
+        "あなたはジム向けアプリ「momo fit」のサポートAIです。利用者のトレーニング、コンディション、生活習慣、メンタル面の悩みに寄り添い、安全に運動を続けられるよう短く実用的に答えます。\n\n" +
+        "## 個人情報（重要）\n" +
+        "氏名・住所・電話・会員番号の全文など、個人が特定できる情報は入力させず、入力されても復唱しないでください。\n\n" +
+        "## 回答の方針\n" +
+        "1. です・ます調。まず共感し、具体策は無理のない範囲で提案してください。\n" +
+        "2. 医療診断・治療指示は行わない。痛み、発熱、胸の痛み、動悸、意識障害などは医療受診を優先して促してください。\n" +
+        "3. 詳しいフォームや人間のトレーナーが適切なときは、画面下の予約や「トレーナー共有」を自然に案内してください。\n\n" +
+        "※深刻な危機キーワードについては、この画面で別途ボタン誘導が出ます。";
+
+      var TENANT_KEY_LS = "eap_tenant";
+      var OFFICE_KEY_LS = "eap_office";
+      function hrefWithTenantOffice(path) {
+        function slice64(s) {
+          return String(s == null ? "" : s).trim().slice(0, 64);
+        }
+        var t = "";
+        var o = "";
+        try {
+          t = slice64(localStorage.getItem(TENANT_KEY_LS));
+        } catch (e) {}
+        try {
+          o = slice64(localStorage.getItem(OFFICE_KEY_LS));
+        } catch (e) {}
+        var q = new URLSearchParams();
+        if (t) q.set("tenant", t);
+        if (o) q.set("office", o);
+        var qs = q.toString();
+        return path + (qs ? "?" + qs : "");
+      }
+
+      function escapeHtml(s) {
+        return s
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+      }
+
+      function formatBody(text) {
+        return escapeHtml(text).replace(/\n/g, "<br />");
+      }
+
+      function appendMessage(role, text) {
+        var wrap = document.createElement("div");
+        wrap.className = "msg " + (role === "user" ? "user" : "ai");
+        var bubble = document.createElement("div");
+        bubble.className = "bubble";
+        bubble.innerHTML = formatBody(text);
+        if (role === "ai") {
+          var av = document.createElement("div");
+          av.className = "avatar";
+          av.setAttribute("aria-hidden", "true");
+          av.textContent = "🤖";
+          wrap.appendChild(av);
+        }
+        wrap.appendChild(bubble);
+        scroll.appendChild(wrap);
+        scroll.scrollTop = scroll.scrollHeight;
+
+        history.push({ role: role === "user" ? "user" : "assistant", text: text });
+        if (history.length > 16) history.shift();
+      }
+
+      function appendRiskAiMessage() {
+        var wrap = document.createElement("div");
+        wrap.className = "msg ai";
+        var av = document.createElement("div");
+        av.className = "avatar";
+        av.setAttribute("aria-hidden", "true");
+        av.textContent = "🤖";
+        var bubble = document.createElement("div");
+        bubble.className = "bubble bubble--risk";
+        var link = document.createElement("a");
+        link.className = "btn-risk-now";
+        link.href = hrefWithTenantOffice("./yoyaku_employee.html");
+        link.textContent = "今すぐトレーナー予約を開く";
+        bubble.innerHTML = formatBody(RISK_TEXT);
+        bubble.appendChild(link);
+        wrap.appendChild(av);
+        wrap.appendChild(bubble);
+        scroll.appendChild(wrap);
+        scroll.scrollTop = scroll.scrollHeight;
+      }
+
+      // Gemini は先頭を user にしたいので、送信直前にも同じ整理をする（サーバと二重でも安全）
+      function buildApiMessages() {
+        var raw = history.map(function (m) {
+          return { role: m.role === "user" ? "user" : "assistant", text: m.text };
+        });
+        var start = 0;
+        while (start < raw.length && raw[start].role !== "user") {
+          start += 1;
+        }
+        return raw.slice(start);
+      }
+
+      function fetchGeminiReply(extraSystem) {
+        var sys = SYSTEM_PROMPT + (extraSystem ? "\n\n" + extraSystem : "");
+        return fetch("/api/gemini", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          cache: "no-store",
+          body: JSON.stringify({
+            system: sys,
+            messages: buildApiMessages()
+          })
+        })
+          .then(function (r) {
+            return r.json().catch(function () { return null; }).then(function (data) {
+              return { status: r.status, data: data };
+            });
+          })
+          .then(function (pack) {
+            var data = pack.data;
+            if (data && data.ok === true && data.text) return String(data.text);
+            var hint =
+              (data && data.message) ||
+              ("HTTP " + (pack.status || "?"));
+            throw new Error(hint);
+          });
+      }
+
+      function sendUserMessage() {
+        var t = input.value.trim();
+        if (!t) return;
+        appendMessage("user", t);
+        input.value = "";
+        input.style.height = "auto";
+        btnSend.disabled = true;
+        window.setTimeout(function () {
+          var risk = assessRisk(t);
+          // 緊急度が最も高いときだけ固定の危険UI。それ以外は必ず Gemini（medium は文脈付きでAPIへ）。
+          if (risk.level === "high") {
+            appendRiskAiMessage();
+            btnSend.disabled = false;
+            input.focus();
+            return;
+          }
+
+          var extra =
+            risk.level === "medium"
+              ? "ユーザーの直近の発言には、心身や生活に関する気になる表現が含まれる可能性があります。共感を最優先し、必要に応じてトレーナー相談と画面下の「トレーナー予約・面談」ボタンを自然に案内してください。"
+              : "";
+
+          fetchGeminiReply(extra)
+            .then(function (reply) {
+              appendMessage("ai", reply);
+            })
+            .catch(function (err) {
+              var detail = String(err && err.message ? err.message : err);
+              appendMessage(
+                "ai",
+                "いまAIからの返答を取得できませんでした。しばらくしてから、もう一度お試しください。\n\n" +
+                  "（状況メモ: " +
+                  detail +
+                  "）\n\n" +
+                  "※ Vercel の環境変数「GEMINI_API_KEY」の綴り・Production への設定・再デプロイもご確認ください。"
+              );
+            })
+            .finally(function () {
+              btnSend.disabled = false;
+              input.focus();
+            });
+        }, 450);
+      }
+
+      appendMessage("ai", INITIAL_AI);
+
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        sendUserMessage();
+      });
+
+      input.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" && !e.shiftKey) {
+          e.preventDefault();
+          sendUserMessage();
+        }
+      });
+
+      input.addEventListener("input", function () {
+        input.style.height = "auto";
+        input.style.height = Math.min(input.scrollHeight, 96) + "px";
+      });
+    })();
+  </script>
+  <script>
+    (function () {
+      var TENANT_KEY = "eap_tenant";
+      var OFFICE_KEY = "eap_office";
+      function slice64(s) {
+        return String(s == null ? "" : s).trim().slice(0, 64);
+      }
+      var params;
+      try {
+        params = new URLSearchParams(window.location.search);
+      } catch (e) {
+        params = new URLSearchParams();
+      }
+      var tUrl = slice64(params.get("tenant"));
+      var oUrl = slice64(params.get("office"));
+      if (tUrl) {
+        try {
+          localStorage.setItem(TENANT_KEY, tUrl);
+        } catch (e) {}
+      }
+      if (oUrl) {
+        try {
+          localStorage.setItem(OFFICE_KEY, oUrl);
+        } catch (e) {}
+      }
+      var t = tUrl;
+      var o = oUrl;
+      if (!t) {
+        try {
+          t = slice64(localStorage.getItem(TENANT_KEY));
+        } catch (e) {
+          t = "";
+        }
+      }
+      if (!o) {
+        try {
+          o = slice64(localStorage.getItem(OFFICE_KEY));
+        } catch (e) {
+          o = "";
+        }
+      }
+      if (!t && !o) return;
+
+      function isAppHtmlHref(href) {
+        if (!href || /^https?:\/\//i.test(href)) return false;
+        var path = href.split("#")[0].split("?")[0];
+        return /\.html$/i.test(path);
+      }
+
+      document.querySelectorAll("a[href]").forEach(function (a) {
+        var href = a.getAttribute("href");
+        if (!isAppHtmlHref(href)) return;
+        var hashI = href.indexOf("#");
+        var hash = hashI >= 0 ? href.slice(hashI) : "";
+        var base = hashI >= 0 ? href.slice(0, hashI) : href;
+        var qI = base.indexOf("?");
+        var path = qI >= 0 ? base.slice(0, qI) : base;
+        var existing = qI >= 0 ? base.slice(qI + 1) : "";
+        var merged = new URLSearchParams(existing);
+        if (t && !merged.has("tenant")) merged.set("tenant", t);
+        if (o && !merged.has("office")) merged.set("office", o);
+        var mq = merged.toString();
+        a.setAttribute("href", path + (mq ? "?" + mq : "") + hash);
+      });
+    })();
+  </script>
+  <script src="/pwa-register.js" defer></script>
+</body>
+</html>

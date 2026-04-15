@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>送信完了 | momo fit</title>
+  <meta name="theme-color" content="#1a2b4a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="momo fit" />
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=2" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2" />
+  <style>
+    :root {
+      --main: #1a2b4a;
+      --accent: #2e4a7a;
+      --bg: #f4f7fc;
+      --card: #ffffff;
+      --text: #1a2b4a;
+      --muted: #5a6b85;
+      --border: #d8e0ef;
+      --shadow: rgba(26, 43, 74, 0.08);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100dvh;
+      display: grid;
+      place-items: center;
+      padding: 1rem;
+      font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
+      background: linear-gradient(165deg, #eef3fb 0%, var(--bg) 45%, #e8eef8 100%);
+      color: var(--text);
+    }
+    .card {
+      width: min(440px, 100%);
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: 0 4px 20px var(--shadow);
+      text-align: center;
+      padding: 2rem 1.2rem 1.4rem;
+    }
+    .icon {
+      font-size: 3rem;
+      line-height: 1;
+      margin-bottom: 0.7rem;
+    }
+    h1 {
+      margin: 0 0 0.65rem;
+      font-size: 1.2rem;
+      color: var(--main);
+    }
+    p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.75;
+      font-size: 0.95rem;
+    }
+    .btn {
+      display: block;
+      margin-top: 1.15rem;
+      text-decoration: none;
+      border-radius: 14px;
+      padding: 0.9rem 1rem;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #fff;
+      background: linear-gradient(180deg, var(--accent) 0%, var(--main) 100%);
+      box-shadow: 0 6px 18px rgba(26, 43, 74, 0.25);
+    }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <div class="icon" aria-hidden="true">✨</div>
+    <h1>送信完了</h1>
+    <p>
+      ご予約を受け付けました。<br />
+      担当者よりご連絡いたします。お気軽にお待ちください😊
+    </p>
+    <a class="btn" href="./gym.html">ホームに戻る</a>
+  </main>
+  <script>
+    (function () {
+      var TENANT_KEY = "eap_tenant";
+      var OFFICE_KEY = "eap_office";
+      function slice64(s) {
+        return String(s == null ? "" : s).trim().slice(0, 64);
+      }
+      var params;
+      try {
+        params = new URLSearchParams(window.location.search);
+      } catch (e) {
+        params = new URLSearchParams();
+      }
+      var tUrl = slice64(params.get("tenant"));
+      var oUrl = slice64(params.get("office"));
+      if (tUrl) {
+        try {
+          localStorage.setItem(TENANT_KEY, tUrl);
+        } catch (e) {}
+      }
+      if (oUrl) {
+        try {
+          localStorage.setItem(OFFICE_KEY, oUrl);
+        } catch (e) {}
+      }
+      var t = tUrl;
+      var o = oUrl;
+      if (!t) {
+        try {
+          t = slice64(localStorage.getItem(TENANT_KEY));
+        } catch (e) {
+          t = "";
+        }
+      }
+      if (!o) {
+        try {
+          o = slice64(localStorage.getItem(OFFICE_KEY));
+        } catch (e) {
+          o = "";
+        }
+      }
+      if (!t && !o) return;
+
+      function isAppHtmlHref(href) {
+        if (!href || /^https?:\/\//i.test(href)) return false;
+        var path = href.split("#")[0].split("?")[0];
+        return /\.html$/i.test(path);
+      }
+
+      document.querySelectorAll("a[href]").forEach(function (a) {
+        var href = a.getAttribute("href");
+        if (!isAppHtmlHref(href)) return;
+        var hashI = href.indexOf("#");
+        var hash = hashI >= 0 ? href.slice(hashI) : "";
+        var base = hashI >= 0 ? href.slice(0, hashI) : href;
+        var qI = base.indexOf("?");
+        var path = qI >= 0 ? base.slice(0, qI) : base;
+        var existing = qI >= 0 ? base.slice(qI + 1) : "";
+        var merged = new URLSearchParams(existing);
+        if (t && !merged.has("tenant")) merged.set("tenant", t);
+        if (o && !merged.has("office")) merged.set("office", o);
+        var mq = merged.toString();
+        a.setAttribute("href", path + (mq ? "?" + mq : "") + hash);
+      });
+    })();
+  </script>
+  <script src="/pwa-register.js" defer></script>
+</body>
+</html>

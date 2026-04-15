@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>マイデータ | momo fit</title>
+  <meta name="theme-color" content="#1a2b4a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="momo fit" />
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=2" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2" />
+  <style>
+    :root {
+      --main: #1a2b4a;
+      --accent: #2e4a7a;
+      --bg: #f4f7fc;
+      --card: #ffffff;
+      --text: #1a2b4a;
+      --muted: #5a6b85;
+      --border: #d8e0ef;
+      --shadow: rgba(26, 43, 74, 0.08);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100dvh;
+      font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
+      background: linear-gradient(165deg, #eef3fb 0%, var(--bg) 45%, #e8eef8 100%);
+      color: var(--text);
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+      padding-bottom: calc(4.25rem + env(safe-area-inset-bottom, 0px));
+    }
+    .wrap { max-width: 420px; margin: 0 auto; padding: 1.25rem 1rem 2.5rem; }
+    header { text-align: center; margin-bottom: 1.25rem; }
+    header h1 { margin: 0 0 0.25rem; font-size: 1.15rem; font-weight: 700; color: var(--main); }
+    header p { margin: 0; font-size: 0.82rem; color: var(--muted); }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 0;
+      margin-bottom: 1rem;
+      background: var(--card);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      overflow: hidden;
+      box-shadow: 0 2px 10px var(--shadow);
+    }
+    .tab-btn {
+      flex: 1;
+      border: none;
+      background: transparent;
+      padding: 0.7rem 0.5rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      font-family: inherit;
+      color: var(--muted);
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+      position: relative;
+    }
+    .tab-btn.active {
+      background: linear-gradient(180deg, var(--accent), var(--main));
+      color: #fff;
+    }
+
+    /* Chart */
+    .chart-card {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 4px 20px var(--shadow);
+      border: 1px solid var(--border);
+    }
+    .chart-title {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--accent);
+      margin: 0 0 0.6rem;
+    }
+    .chart-area {
+      width: 100%;
+      height: 140px;
+      position: relative;
+    }
+    .chart-area canvas {
+      width: 100%;
+      height: 100%;
+    }
+    .chart-empty {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+
+    /* List */
+    .list-title {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--accent);
+      margin: 0 0 0.6rem;
+    }
+    .record-card {
+      background: var(--card);
+      border-radius: 14px;
+      padding: 0.85rem 0.9rem;
+      margin-bottom: 0.65rem;
+      box-shadow: 0 2px 12px var(--shadow);
+      border: 1px solid var(--border);
+    }
+    .record-date {
+      font-size: 0.72rem;
+      color: var(--muted);
+      margin-bottom: 0.35rem;
+    }
+    .record-main {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+    }
+    .record-score {
+      width: 3.2rem;
+      height: 3.2rem;
+      border-radius: 50%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-weight: 800;
+      font-size: 1.15rem;
+      line-height: 1;
+    }
+    .record-score .score-sub {
+      font-size: 0.5rem;
+      font-weight: 600;
+      opacity: 0.8;
+      margin-top: 0.1rem;
+    }
+    .record-info { flex: 1; min-width: 0; }
+    .record-condition {
+      font-size: 0.9rem;
+      font-weight: 700;
+      margin-bottom: 0.15rem;
+    }
+    .record-detail {
+      font-size: 0.75rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+    .check-emoji {
+      font-size: 1.6rem;
+      line-height: 1;
+      flex-shrink: 0;
+      width: 3.2rem;
+      text-align: center;
+    }
+    .record-note {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 0.3rem;
+      padding-top: 0.3rem;
+      border-top: 1px dashed var(--border);
+      line-height: 1.5;
+    }
+
+    /* Empty */
+    .empty-state {
+      text-align: center;
+      padding: 2rem 1rem;
+    }
+    .empty-state .empty-icon {
+      font-size: 2.5rem;
+      margin-bottom: 0.75rem;
+      opacity: 0.7;
+    }
+    .empty-state p {
+      margin: 0 0 1rem;
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+    .empty-state a {
+      display: inline-block;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--main);
+      text-decoration: none;
+      background: #fff;
+      border: 2px solid var(--accent);
+      border-radius: 12px;
+      padding: 0.65rem 1.2rem;
+    }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* Bottom Nav */
+    .bottom-nav {
+      position: fixed;
+      left: 0; right: 0; bottom: 0;
+      z-index: 1000;
+      display: flex;
+      justify-content: space-around;
+      align-items: stretch;
+      gap: 0.25rem;
+      padding: 0.5rem 0.5rem calc(0.5rem + env(safe-area-inset-bottom, 0px));
+      background: #fff;
+      box-shadow: 0 -1px 0 rgba(26, 43, 74, 0.08);
+    }
+    .bottom-nav a {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.15rem;
+      min-width: 0;
+      padding: 0.3rem 0.1rem;
+      text-decoration: none;
+      color: var(--main);
+      font-size: 0.55rem;
+      font-weight: 500;
+      opacity: 0.55;
+      transition: opacity 0.15s ease, transform 0.15s ease;
+    }
+    .bottom-nav a svg {
+      width: 1.2rem;
+      height: 1.2rem;
+      flex-shrink: 0;
+    }
+    .bottom-nav a[aria-current="page"] {
+      opacity: 1;
+      font-weight: 700;
+    }
+    .bottom-nav a[aria-current="page"] svg {
+      transform: scale(1.12);
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>マイデータ</h1>
+      <p>グラフと一覧は、このスマホの中だけにあります（共有画面からトレーナーへ渡せます）</p>
+    </header>
+
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="pulse" type="button">自律神経チェック</button>
+      <button class="tab-btn" data-tab="check" type="button">コンディション</button>
+    </div>
+
+    <!-- Pulse Tab -->
+    <div class="tab-content active" id="tabPulse">
+      <div class="chart-card">
+        <p class="chart-title">スコア推移（直近14回）</p>
+        <div class="chart-area"><canvas id="chartPulse"></canvas></div>
+      </div>
+      <p class="list-title">記録一覧</p>
+      <div id="listPulse"></div>
+    </div>
+
+    <!-- Check Tab -->
+    <div class="tab-content" id="tabCheck">
+      <div class="chart-card">
+        <p class="chart-title">体調・メンタル推移（直近14回）</p>
+        <div class="chart-area"><canvas id="chartCheck"></canvas></div>
+      </div>
+      <p class="list-title">記録一覧</p>
+      <div id="listCheck"></div>
+    </div>
+  </div>
+
+  <nav class="bottom-nav" aria-label="メインメニュー">
+    <a href="./gym.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      ホーム
+    </a>
+    <a href="./check.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      記録
+    </a>
+    <a href="./history.html" aria-current="page">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      データ
+    </a>
+    <a href="./chat.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      AI
+    </a>
+    <a href="./share_trainer.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+      共有
+    </a>
+  </nav>
+
+  <script>
+  (function () {
+    "use strict";
+
+    var MAX_RECORDS = 100;
+    var CHART_COUNT = 14;
+
+    var BODY_EMOJI = { "1": "😩", "2": "😞", "3": "😐", "4": "😊", "5": "😄" };
+    var MOOD_EMOJI = { "1": "😩", "2": "😞", "3": "😐", "4": "😊", "5": "😄" };
+    var LEVEL_LABEL = { "1": "とても辛い", "2": "辛い", "3": "普通", "4": "良い", "5": "とても良い" };
+
+    var PULSE_CONDITIONS = [
+      { min: 80, color: "#2e7d32", bg: "linear-gradient(145deg, #e8f5e9, #c8e6c9)" },
+      { min: 60, color: "#388e3c", bg: "linear-gradient(145deg, #f1f8e9, #dcedc8)" },
+      { min: 40, color: "#f57f17", bg: "linear-gradient(145deg, #fff8e1, #ffecb3)" },
+      { min: 20, color: "#e65100", bg: "linear-gradient(145deg, #fff3e0, #ffe0b2)" },
+      { min: 0,  color: "#c62828", bg: "linear-gradient(145deg, #fce4ec, #f8bbd0)" }
+    ];
+
+    function getPulseCond(score) {
+      for (var i = 0; i < PULSE_CONDITIONS.length; i++) {
+        if (score >= PULSE_CONDITIONS[i].min) return PULSE_CONDITIONS[i];
+      }
+      return PULSE_CONDITIONS[PULSE_CONDITIONS.length - 1];
+    }
+
+    function loadHistory(key) {
+      try {
+        var data = JSON.parse(localStorage.getItem(key) || "[]");
+        return Array.isArray(data) ? data : [];
+      } catch (e) { return []; }
+    }
+
+    function formatDate(iso) {
+      var d = new Date(iso);
+      if (isNaN(d.getTime())) return iso || "";
+      var w = ["日", "月", "火", "水", "木", "金", "土"];
+      return d.getFullYear() + "/" + (d.getMonth() + 1) + "/" + d.getDate() +
+        "（" + w[d.getDay()] + "）" +
+        String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0");
+    }
+
+    function escapeHtml(s) {
+      return String(s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    // --- Tabs ---
+    var tabBtns = document.querySelectorAll(".tab-btn");
+    var tabContents = document.querySelectorAll(".tab-content");
+    tabBtns.forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        tabBtns.forEach(function (b) { b.classList.remove("active"); });
+        tabContents.forEach(function (c) { c.classList.remove("active"); });
+        btn.classList.add("active");
+        var target = btn.getAttribute("data-tab");
+        document.getElementById(target === "pulse" ? "tabPulse" : "tabCheck").classList.add("active");
+      });
+    });
+
+    // --- Draw simple line chart on canvas ---
+    function drawLineChart(canvasId, datasets) {
+      var canvas = document.getElementById(canvasId);
+      if (!canvas) return;
+      var ctx = canvas.getContext("2d");
+      var dpr = window.devicePixelRatio || 1;
+      var rect = canvas.parentElement.getBoundingClientRect();
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      ctx.scale(dpr, dpr);
+      var W = rect.width;
+      var H = rect.height;
+
+      var pad = { top: 10, right: 12, bottom: 22, left: 30 };
+      var cW = W - pad.left - pad.right;
+      var cH = H - pad.top - pad.bottom;
+
+      var allEmpty = true;
+      for (var di = 0; di < datasets.length; di++) {
+        if (datasets[di].data.length > 0) { allEmpty = false; break; }
+      }
+      if (allEmpty) {
+        ctx.fillStyle = "#8a96ad";
+        ctx.font = "13px sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText("データがまだありません", W / 2, H / 2);
+        return;
+      }
+
+      var maxLen = 0;
+      for (var k = 0; k < datasets.length; k++) {
+        if (datasets[k].data.length > maxLen) maxLen = datasets[k].data.length;
+      }
+
+      var yMin = datasets[0].min;
+      var yMax = datasets[0].max;
+
+      // Grid
+      ctx.strokeStyle = "#e0e6f0";
+      ctx.lineWidth = 1;
+      var gridLines = 5;
+      for (var g = 0; g <= gridLines; g++) {
+        var gy = pad.top + cH - (cH * g / gridLines);
+        ctx.beginPath();
+        ctx.moveTo(pad.left, gy);
+        ctx.lineTo(pad.left + cW, gy);
+        ctx.stroke();
+
+        ctx.fillStyle = "#8a96ad";
+        ctx.font = "10px sans-serif";
+        ctx.textAlign = "right";
+        var labelVal = Math.round(yMin + (yMax - yMin) * g / gridLines);
+        ctx.fillText(String(labelVal), pad.left - 4, gy + 3);
+      }
+
+      // Lines
+      for (var si = 0; si < datasets.length; si++) {
+        var ds = datasets[si];
+        if (ds.data.length === 0) continue;
+        ctx.strokeStyle = ds.color;
+        ctx.lineWidth = 2.5;
+        ctx.lineJoin = "round";
+        ctx.beginPath();
+        for (var pi = 0; pi < ds.data.length; pi++) {
+          var x = pad.left + (maxLen === 1 ? cW / 2 : cW * pi / (maxLen - 1));
+          var y = pad.top + cH - cH * (ds.data[pi] - yMin) / (yMax - yMin || 1);
+          if (pi === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+
+        // Dots
+        ctx.fillStyle = ds.color;
+        for (var qi = 0; qi < ds.data.length; qi++) {
+          var dx = pad.left + (maxLen === 1 ? cW / 2 : cW * qi / (maxLen - 1));
+          var dy = pad.top + cH - cH * (ds.data[qi] - yMin) / (yMax - yMin || 1);
+          ctx.beginPath();
+          ctx.arc(dx, dy, 3.5, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+
+      // Labels
+      if (datasets[0].labels && datasets[0].labels.length > 0) {
+        ctx.fillStyle = "#8a96ad";
+        ctx.font = "9px sans-serif";
+        ctx.textAlign = "center";
+        var labels = datasets[0].labels;
+        var step = Math.max(1, Math.floor(labels.length / 5));
+        for (var li = 0; li < labels.length; li += step) {
+          var lx = pad.left + (maxLen === 1 ? cW / 2 : cW * li / (maxLen - 1));
+          ctx.fillText(labels[li], lx, H - 4);
+        }
+        if ((labels.length - 1) % step !== 0) {
+          var lastX = pad.left + cW;
+          ctx.fillText(labels[labels.length - 1], lastX, H - 4);
+        }
+      }
+
+      // Legend
+      if (datasets.length > 1) {
+        var legendX = pad.left + 4;
+        for (var lgi = 0; lgi < datasets.length; lgi++) {
+          ctx.fillStyle = datasets[lgi].color;
+          ctx.fillRect(legendX, 2, 10, 10);
+          ctx.fillStyle = "#5a6b85";
+          ctx.font = "9px sans-serif";
+          ctx.textAlign = "left";
+          ctx.fillText(datasets[lgi].label, legendX + 13, 11);
+          legendX += ctx.measureText(datasets[lgi].label).width + 24;
+        }
+      }
+    }
+
+    // --- Pulse Tab ---
+    function renderPulse() {
+      var data = loadHistory("history_pulse");
+      var listEl = document.getElementById("listPulse");
+
+      if (data.length === 0) {
+        listEl.innerHTML =
+          '<div class="empty-state">' +
+          '<div class="empty-icon" aria-hidden="true">💓</div>' +
+          '<p>まだ記録がありません</p>' +
+          '<a href="./pulse.html">自律神経をチェックする</a>' +
+          '</div>';
+        drawLineChart("chartPulse", [{ data: [], labels: [], min: 0, max: 100, color: "#2e7d32", label: "スコア" }]);
+        return;
+      }
+
+      var recent = data.slice(-CHART_COUNT);
+      var scores = recent.map(function (r) { return Number(r.score) || 0; });
+      var labels = recent.map(function (r) {
+        var d = new Date(r.date);
+        return isNaN(d.getTime()) ? "" : (d.getMonth() + 1) + "/" + d.getDate();
+      });
+      drawLineChart("chartPulse", [{ data: scores, labels: labels, min: 0, max: 100, color: "#2e7d32", label: "スコア" }]);
+
+      var html = "";
+      var reversed = data.slice().reverse();
+      for (var i = 0; i < reversed.length; i++) {
+        var r = reversed[i];
+        var sc = Number(r.score) || 0;
+        var cond = getPulseCond(sc);
+        html +=
+          '<div class="record-card">' +
+          '<div class="record-date">' + escapeHtml(formatDate(r.date)) + '</div>' +
+          '<div class="record-main">' +
+          '<div class="record-score" style="background:' + cond.bg + ';color:' + cond.color + '">' +
+          sc + '<span class="score-sub">点</span></div>' +
+          '<div class="record-info">' +
+          '<div class="record-condition" style="color:' + cond.color + '">' + escapeHtml(r.condition) + '</div>' +
+          '<div class="record-detail">心拍 ' + escapeHtml(r.bpm) + ' bpm / HRV ' + escapeHtml(r.hrv) + ' ms</div>' +
+          '</div></div></div>';
+      }
+      listEl.innerHTML = html;
+    }
+
+    // --- Check Tab ---
+    function renderCheck() {
+      var data = loadHistory("history_check");
+      var listEl = document.getElementById("listCheck");
+
+      if (data.length === 0) {
+        listEl.innerHTML =
+          '<div class="empty-state">' +
+          '<div class="empty-icon" aria-hidden="true">📝</div>' +
+          '<p>まだ記録がありません</p>' +
+          '<a href="./check.html">コンディションを記録する</a>' +
+          '</div>';
+        drawLineChart("chartCheck", [
+          { data: [], labels: [], min: 1, max: 5, color: "#2e7d32", label: "体調" },
+          { data: [], labels: [], min: 1, max: 5, color: "#1565c0", label: "メンタル" }
+        ]);
+        return;
+      }
+
+      var recent = data.slice(-CHART_COUNT);
+      var bodyData = recent.map(function (r) { return Number(r.body) || 3; });
+      var moodData = recent.map(function (r) { return Number(r.mood) || 3; });
+      var labels = recent.map(function (r) {
+        var d = new Date(r.date);
+        return isNaN(d.getTime()) ? "" : (d.getMonth() + 1) + "/" + d.getDate();
+      });
+      drawLineChart("chartCheck", [
+        { data: bodyData, labels: labels, min: 1, max: 5, color: "#2e7d32", label: "体調" },
+        { data: moodData, labels: labels, min: 1, max: 5, color: "#1565c0", label: "メンタル" }
+      ]);
+
+      var html = "";
+      var reversed = data.slice().reverse();
+      for (var i = 0; i < reversed.length; i++) {
+        var r = reversed[i];
+        var bEmoji = BODY_EMOJI[r.body] || "😐";
+        var mEmoji = MOOD_EMOJI[r.mood] || "😐";
+        var bLabel = LEVEL_LABEL[r.body] || "";
+        var mLabel = LEVEL_LABEL[r.mood] || "";
+        html +=
+          '<div class="record-card">' +
+          '<div class="record-date">' + escapeHtml(formatDate(r.date)) + '</div>' +
+          '<div class="record-main">' +
+          '<div class="check-emoji">' + bEmoji + '</div>' +
+          '<div class="record-info">' +
+          '<div class="record-condition">体調: ' + bEmoji + ' ' + escapeHtml(bLabel) + '　メンタル: ' + mEmoji + ' ' + escapeHtml(mLabel) + '</div>' +
+          (r.note ? '<div class="record-note">' + escapeHtml(r.note) + '</div>' : '') +
+          '</div></div></div>';
+      }
+      listEl.innerHTML = html;
+    }
+
+    renderPulse();
+    renderCheck();
+  })();
+  </script>
+  <script>
+    (function () {
+      var TENANT_KEY = "eap_tenant";
+      var OFFICE_KEY = "eap_office";
+      function slice64(s) {
+        return String(s == null ? "" : s).trim().slice(0, 64);
+      }
+      var params;
+      try {
+        params = new URLSearchParams(window.location.search);
+      } catch (e) {
+        params = new URLSearchParams();
+      }
+      var tUrl = slice64(params.get("tenant"));
+      var oUrl = slice64(params.get("office"));
+      if (tUrl) {
+        try {
+          localStorage.setItem(TENANT_KEY, tUrl);
+        } catch (e) {}
+      }
+      if (oUrl) {
+        try {
+          localStorage.setItem(OFFICE_KEY, oUrl);
+        } catch (e) {}
+      }
+      var t = tUrl;
+      var o = oUrl;
+      if (!t) {
+        try {
+          t = slice64(localStorage.getItem(TENANT_KEY));
+        } catch (e) {
+          t = "";
+        }
+      }
+      if (!o) {
+        try {
+          o = slice64(localStorage.getItem(OFFICE_KEY));
+        } catch (e) {
+          o = "";
+        }
+      }
+      if (!t && !o) return;
+
+      function isAppHtmlHref(href) {
+        if (!href || /^https?:\/\//i.test(href)) return false;
+        var path = href.split("#")[0].split("?")[0];
+        return /\.html$/i.test(path);
+      }
+
+      document.querySelectorAll("a[href]").forEach(function (a) {
+        var href = a.getAttribute("href");
+        if (!isAppHtmlHref(href)) return;
+        var hashI = href.indexOf("#");
+        var hash = hashI >= 0 ? href.slice(hashI) : "";
+        var base = hashI >= 0 ? href.slice(0, hashI) : href;
+        var qI = base.indexOf("?");
+        var path = qI >= 0 ? base.slice(0, qI) : base;
+        var existing = qI >= 0 ? base.slice(qI + 1) : "";
+        var merged = new URLSearchParams(existing);
+        if (t && !merged.has("tenant")) merged.set("tenant", t);
+        if (o && !merged.has("office")) merged.set("office", o);
+        var mq = merged.toString();
+        a.setAttribute("href", path + (mq ? "?" + mq : "") + hash);
+      });
+    })();
+  </script>
+  <script src="/pwa-register.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>睡眠ログ | momo fit</title>
+  <meta name="theme-color" content="#1a2b4a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="momo fit" />
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=2" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2" />
+  <style>
+    :root {
+      --main: #1a2b4a;
+      --accent: #2e4a7a;
+      --bg: #f4f7fc;
+      --card: #ffffff;
+      --text: #1a2b4a;
+      --muted: #5a6b85;
+      --border: #d8e0ef;
+      --shadow: rgba(26, 43, 74, 0.08);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100dvh;
+      font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
+      background: linear-gradient(165deg, #eef3fb 0%, var(--bg) 45%, #e8eef8 100%);
+      color: var(--text);
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+      padding-bottom: calc(4.25rem + env(safe-area-inset-bottom, 0px));
+    }
+    .wrap { max-width: 420px; margin: 0 auto; padding: 1.25rem 1rem 2.5rem; }
+    .hero {
+      margin: 0 -1rem 1.25rem;
+      padding: 1.75rem 1.1rem 1.5rem;
+      background: linear-gradient(155deg, var(--main) 0%, var(--accent) 48%, #3d5a8f 100%);
+      color: #fff;
+      border-radius: 0 0 24px 24px;
+      box-shadow: 0 10px 32px rgba(26, 43, 74, 0.2);
+      text-align: center;
+    }
+    .hero-badge {
+      display: inline-block;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      opacity: 0.9;
+      margin-bottom: 0.65rem;
+      padding: 0.3rem 0.65rem;
+      background: rgba(255, 255, 255, 0.12);
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .hero h1 {
+      margin: 0 0 0.5rem;
+      font-size: clamp(1.1rem, 4vw, 1.35rem);
+      font-weight: 700;
+      line-height: 1.45;
+    }
+    .hero p { margin: 0; font-size: 0.82rem; line-height: 1.65; color: rgba(255, 255, 255, 0.92); }
+    .privacy-note {
+      font-size: 0.72rem;
+      line-height: 1.55;
+      color: rgba(255, 255, 255, 0.85);
+      margin-top: 0.85rem;
+      text-align: left;
+      padding: 0.65rem 0.75rem;
+      background: rgba(0, 0, 0, 0.12);
+      border-radius: 12px;
+    }
+    .card {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 1.1rem 1rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 4px 20px var(--shadow);
+      border: 1px solid var(--border);
+    }
+    .card h2 {
+      margin: 0 0 0.75rem;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    label.field-label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--muted);
+      margin-bottom: 0.35rem;
+    }
+    input[type="date"] {
+      width: 100%;
+      padding: 0.65rem 0.75rem;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      font-size: 1rem;
+      font-family: inherit;
+      background: #fafcfe;
+    }
+    input[type="date"]:focus { outline: none; border-color: var(--accent); }
+    .range-row { margin-bottom: 0.35rem; }
+    .range-val {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--main);
+      float: right;
+    }
+    input[type="range"] {
+      width: 100%;
+      margin: 0.5rem 0 0;
+      accent-color: var(--accent);
+    }
+    .range-hint { font-size: 0.7rem; color: var(--muted); margin-top: 0.25rem; }
+    input[type="number"] {
+      width: 100%;
+      padding: 0.65rem 0.75rem;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      font-size: 1rem;
+      font-family: inherit;
+      background: #fafcfe;
+    }
+    .emoji-row { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.4rem; }
+    .emoji-btn {
+      flex: 1 1 calc(20% - 0.35rem);
+      min-width: 52px;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      background: #fafcfe;
+      padding: 0.45rem 0.2rem 0.35rem;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s, transform 0.15s;
+      font: inherit;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.1rem;
+    }
+    .emoji-btn.selected {
+      border-color: var(--accent);
+      background: linear-gradient(180deg, #f0f4fc 0%, #e4ecf8 100%);
+      box-shadow: 0 0 0 3px rgba(46, 74, 122, 0.12);
+    }
+    .emoji-btn .e { font-size: 1.4rem; }
+    .emoji-btn .t { font-size: 0.55rem; font-weight: 600; color: var(--muted); }
+    .tag-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .tag-chip {
+      position: relative;
+      cursor: pointer;
+    }
+    .tag-chip input { position: absolute; opacity: 0; pointer-events: none; }
+    .tag-face {
+      display: inline-block;
+      padding: 0.45rem 0.75rem;
+      border-radius: 999px;
+      border: 2px solid var(--border);
+      font-size: 0.78rem;
+      font-weight: 600;
+      background: #fafcfe;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .tag-chip input:checked + .tag-face {
+      border-color: var(--accent);
+      background: #e8eef8;
+      color: var(--main);
+    }
+    .submit-btn {
+      width: 100%;
+      border: none;
+      border-radius: 14px;
+      padding: 0.95rem 1rem;
+      font-size: 1rem;
+      font-weight: 700;
+      font-family: inherit;
+      color: #fff;
+      background: linear-gradient(180deg, var(--accent) 0%, var(--main) 100%);
+      cursor: pointer;
+      box-shadow: 0 6px 18px rgba(26, 43, 74, 0.25);
+      margin-top: 0.25rem;
+    }
+    .submit-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+    .tabs {
+      display: flex;
+      gap: 0;
+      margin-bottom: 1rem;
+      background: var(--card);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      overflow: hidden;
+      box-shadow: 0 2px 10px var(--shadow);
+    }
+    .tab-btn {
+      flex: 1;
+      border: none;
+      background: transparent;
+      padding: 0.65rem 0.2rem;
+      font-size: 0.68rem;
+      font-weight: 600;
+      font-family: inherit;
+      color: var(--muted);
+      cursor: pointer;
+      line-height: 1.25;
+    }
+    .tab-btn.active {
+      background: linear-gradient(180deg, var(--accent), var(--main));
+      color: #fff;
+    }
+    .panel { display: none; }
+    .panel.active { display: block; }
+    .stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.65rem;
+      margin-bottom: 0.85rem;
+    }
+    .stat-cell {
+      background: #f6f8fd;
+      border-radius: 12px;
+      padding: 0.65rem 0.75rem;
+      border: 1px solid var(--border);
+    }
+    .stat-cell .k { font-size: 0.68rem; color: var(--muted); font-weight: 600; }
+    .stat-cell .v { font-size: 1.05rem; font-weight: 800; color: var(--main); margin-top: 0.15rem; }
+    .chart-card canvas { width: 100%; height: 130px; }
+    .history-item {
+      font-size: 0.78rem;
+      padding: 0.55rem 0.65rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+    .history-item:last-child { border-bottom: none; }
+    .bottom-nav {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 1000;
+      display: flex;
+      justify-content: space-around;
+      align-items: stretch;
+      gap: 0.25rem;
+      padding: 0.5rem 0.5rem calc(0.5rem + env(safe-area-inset-bottom, 0px));
+      background: #fff;
+      box-shadow: 0 -1px 0 rgba(26, 43, 74, 0.08);
+    }
+    .bottom-nav a {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.15rem;
+      min-width: 0;
+      padding: 0.3rem 0.1rem;
+      text-decoration: none;
+      color: var(--main);
+      font-size: 0.55rem;
+      font-weight: 500;
+      opacity: 0.55;
+      transition: opacity 0.15s ease, transform 0.15s ease;
+    }
+    .bottom-nav a svg { width: 1.2rem; height: 1.2rem; flex-shrink: 0; }
+    .bottom-nav a[aria-current="page"] { opacity: 1; font-weight: 700; }
+    .bottom-nav a[aria-current="page"] svg { transform: scale(1.12); }
+    .success-panel { display: none; text-align: center; padding: 1.5rem 0.5rem; }
+    .success-panel.show { display: block; }
+    .success-panel .icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
+    .form-root.hidden { display: none; }
+    .alarm-main-wrap.hidden { display: none; }
+    .disclaimer {
+      font-size: 0.68rem;
+      color: var(--muted);
+      line-height: 1.5;
+      margin-top: 0.75rem;
+    }
+    /* --- Sleep Meister風・アラーム記録 --- */
+    .alarm-intro {
+      font-size: 0.78rem;
+      color: var(--text);
+      line-height: 1.65;
+      margin: 0 0 1rem;
+    }
+    .alarm-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 0.75rem;
+    }
+    .alarm-row label { font-size: 0.78rem; font-weight: 600; color: var(--muted); }
+    .alarm-row select {
+      padding: 0.5rem 0.65rem;
+      border-radius: 10px;
+      border: 2px solid var(--border);
+      font-size: 1rem;
+      font-family: inherit;
+      background: #fafcfe;
+    }
+    .btn-alarm-primary {
+      width: 100%;
+      border: none;
+      border-radius: 14px;
+      padding: 1rem;
+      font-size: 1rem;
+      font-weight: 700;
+      font-family: inherit;
+      color: #fff;
+      background: linear-gradient(180deg, #3949ab 0%, #1a237e 100%);
+      cursor: pointer;
+      box-shadow: 0 6px 18px rgba(26, 35, 126, 0.28);
+      margin-top: 0.5rem;
+    }
+    .btn-alarm-primary:disabled { opacity: 0.45; cursor: not-allowed; }
+    .btn-alarm-secondary {
+      width: 100%;
+      margin-top: 0.65rem;
+      padding: 0.75rem;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      background: #fff;
+      font-size: 0.9rem;
+      font-weight: 600;
+      font-family: inherit;
+      color: var(--main);
+      cursor: pointer;
+    }
+    .alarm-big-time {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--main);
+      text-align: center;
+      margin: 0.5rem 0;
+      font-variant-numeric: tabular-nums;
+    }
+    .alarm-sub {
+      font-size: 0.72rem;
+      color: var(--muted);
+      line-height: 1.55;
+      margin: 0.75rem 0 0;
+    }
+    .alarm-stats-preview {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+      margin: 1rem 0;
+    }
+    .alarm-stat-pill {
+      background: #f0f4fc;
+      border-radius: 12px;
+      padding: 0.6rem 0.5rem;
+      text-align: center;
+      border: 1px solid var(--border);
+    }
+    .alarm-stat-pill .lbl { font-size: 0.62rem; color: var(--muted); font-weight: 600; }
+    .alarm-stat-pill .val { font-size: 1.05rem; font-weight: 800; color: var(--main); margin-top: 0.15rem; }
+    .wake-quality-row { margin-top: 0.75rem; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="hero">
+      <p class="hero-badge">従業員の皆さまへ</p>
+      <h1>睡眠の記録</h1>
+      <p>momo fit の睡眠セルフログです。医療診断ではありません。</p>
+      <div class="privacy-note">
+        記録内容や詳細がそのまま会社に伝わることはありません。契約企業には、識別できない形で月次の統計サマリーが共有される場合があります。
+      </div>
+    </header>
+
+    <div class="tabs" role="tablist" aria-label="表示切替">
+      <button type="button" class="tab-btn active" id="tabRecord" role="tab" aria-selected="true">アラーム記録</button>
+      <button type="button" class="tab-btn" id="tabStats" role="tab" aria-selected="false">自分の統計</button>
+    </div>
+
+    <div id="panelRecord" class="panel active" role="tabpanel">
+      <div id="alarmMainWrap" class="alarm-main-wrap">
+        <section class="card">
+          <h2>起床アラームで記録</h2>
+          <p class="alarm-intro">
+            <strong>設定したアラーム時刻</strong>と、<strong>アラームをセットしたとき・解除したときの時刻</strong>がスプレッドシートに残ります。
+            ブラウザの通知でお知らせします（端末や設定によっては届かない場合があります。翌朝このページを開けば続きから操作できます）。
+          </p>
+        </section>
+        <div id="alarmStateIdle">
+          <section class="card">
+            <h2>1. 起床アラームの時刻</h2>
+            <div class="alarm-row">
+              <label for="alarmHour">鳴らす時刻</label>
+              <select id="alarmHour" aria-label="起床 時"></select>
+              <span>:</span>
+              <select id="alarmMinute" aria-label="起床 分"></select>
+            </div>
+            <button type="button" class="btn-alarm-primary" id="btnBedStart">アラームをセット（記録開始）</button>
+            <p class="alarm-sub">通知の許可を求められたら「許可」を選んでください。</p>
+          </section>
+        </div>
+        <div id="alarmStateTrack" style="display: none">
+          <section class="card">
+            <h2>記録中</h2>
+            <p class="alarm-sub" style="margin-top:0">アラームをセットした時刻</p>
+            <div class="alarm-big-time" id="trackSetFull">--</div>
+            <p class="alarm-sub" style="margin-top:0">設定した起床アラーム</p>
+            <div class="alarm-big-time" id="trackAlarmLabel">--:--</div>
+            <p class="alarm-sub">経過: <strong id="trackElapsed">--</strong></p>
+            <button type="button" class="btn-alarm-primary" id="btnWakeDone">アラームを解除して記録へ</button>
+            <button type="button" class="btn-alarm-secondary" id="btnAlarmCancel">取り消す</button>
+          </section>
+        </div>
+        <div id="alarmStateSummary" style="display: none">
+          <section class="card">
+            <h2>記録内容の確認</h2>
+            <div class="alarm-stats-preview">
+              <div class="alarm-stat-pill"><div class="lbl">設定したアラーム時刻</div><div class="val" id="sumAlarmHm">--:--</div></div>
+              <div class="alarm-stat-pill"><div class="lbl">アラームをセットした時刻</div><div class="val" id="sumSessionStarted" style="font-size:0.78rem">--</div></div>
+              <div class="alarm-stat-pill"><div class="lbl">アラーム解除時刻</div><div class="val" id="sumDismissed" style="font-size:0.78rem">--</div></div>
+              <div class="alarm-stat-pill"><div class="lbl">記録日（就寝日）</div><div class="val" id="sumRecordDate">--</div></div>
+            </div>
+            <p class="range-hint" style="margin:0.5rem 0 0">月次集計用に、セットから解除までの分数を睡眠時間として送信します（体動計測はありません）。</p>
+            <button type="button" class="submit-btn" id="btnAlarmSubmit">スプレッドシートに保存</button>
+            <p class="disclaimer">体調に不安がある場合は、医療機関の受診や、ジムスタッフへの相談をご検討ください。</p>
+          </section>
+        </div>
+      </div>
+      <div class="success-panel card" id="successPanel" role="status">
+        <div class="icon" aria-hidden="true">🌙</div>
+        <p style="margin:0;font-weight:700;color:var(--main)">記録を保存しました</p>
+        <button type="button" class="btn-alarm-secondary" id="btnAfterSuccess" style="margin-top:1rem">続けて記録する</button>
+      </div>
+    </div>
+
+    <div id="panelStats" class="panel" role="tabpanel" hidden>
+      <div class="card">
+        <h2>この端末に保存した記録</h2>
+        <p class="range-hint" style="margin-top:0">一覧やグラフはお使いの端末内のみにあります。</p>
+        <div class="stat-grid" id="statGrid"></div>
+        <div class="chart-card"><canvas id="sleepChart" width="400" height="140" aria-label="直近の睡眠時間"></canvas></div>
+        <div id="histList"></div>
+      </div>
+    </div>
+  </div>
+
+  <nav class="bottom-nav" aria-label="メインメニュー">
+    <a href="./gym.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      ホーム
+    </a>
+    <a href="./check.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      記録
+    </a>
+    <a href="./history.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      データ
+    </a>
+    <a href="./chat.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      AI
+    </a>
+    <a href="./share_trainer.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+      共有
+    </a>
+  </nav>
+
+  <script>
+  (function () {
+    "use strict";
+
+    var GAS_ENDPOINT = "https://script.google.com/macros/s/AKfycbyhE8IER_lrXnEJa85ap5YJdX7O8582O2gL0k89bt9MyVoRxwfcwk4XFF8DA63tUqa-Vw/exec";
+    var LS_KEY = "history_sleep";
+    var SESSION_KEY = "eap_sleep_session_v1";
+    var TENANT_KEY = "eap_tenant";
+    var OFFICE_KEY = "eap_office";
+
+    function parseTenantFromUrl() {
+      try {
+        var q = new URLSearchParams(window.location.search).get("tenant");
+        return q ? String(q).trim().slice(0, 64) : "";
+      } catch (e) { return ""; }
+    }
+
+    function parseOfficeFromUrl() {
+      try {
+        var q = new URLSearchParams(window.location.search).get("office");
+        return q ? String(q).trim().slice(0, 64) : "";
+      } catch (e) { return ""; }
+    }
+
+    function getTenantId() {
+      var fromUrl = parseTenantFromUrl();
+      if (fromUrl) {
+        try { localStorage.setItem(TENANT_KEY, fromUrl); } catch (e) {}
+        return fromUrl;
+      }
+      try { return (localStorage.getItem(TENANT_KEY) || "").trim().slice(0, 64); } catch (e) { return ""; }
+    }
+
+    function getOfficeId() {
+      var fromUrl = parseOfficeFromUrl();
+      if (fromUrl) {
+        try { localStorage.setItem(OFFICE_KEY, fromUrl); } catch (e) {}
+        return fromUrl;
+      }
+      try { return (localStorage.getItem(OFFICE_KEY) || "").trim().slice(0, 64); } catch (e) { return ""; }
+    }
+
+    function computeSleepScore(q, sm, w, lat) {
+      var durPart = Math.min(1, sm / 420) * 35;
+      var wakPart = Math.max(0, 25 - w * 5);
+      var latPart = Math.max(0, 15 - lat / 4);
+      var qPart = (q / 5) * 35;
+      return Math.round(Math.min(100, durPart + wakPart + latPart + qPart));
+    }
+
+    function ymdFromTs(ts) {
+      var d = new Date(ts);
+      var y = d.getFullYear();
+      var m = String(d.getMonth() + 1).padStart(2, "0");
+      var day = String(d.getDate()).padStart(2, "0");
+      return y + "-" + m + "-" + day;
+    }
+
+    function formatHm(ts) {
+      var d = new Date(ts);
+      return d.getHours() + ":" + String(d.getMinutes()).padStart(2, "0");
+    }
+
+    function formatDateTimeJa(ts) {
+      try {
+        return new Date(ts).toLocaleString("ja-JP", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit"
+        });
+      } catch (e) {
+        return String(ts);
+      }
+    }
+
+    function formatDurationMin(totalMin) {
+      var m = Math.max(0, Math.round(totalMin));
+      var h = Math.floor(m / 60);
+      var mm = m % 60;
+      return h + "時間" + mm + "分";
+    }
+
+    function nextAlarmAfterBed(bedTs, hour, minute) {
+      var d = new Date(bedTs);
+      d.setHours(hour, minute, 0, 0);
+      if (d.getTime() <= bedTs) d.setDate(d.getDate() + 1);
+      return d.getTime();
+    }
+
+    function loadSession() {
+      try {
+        var raw = localStorage.getItem(SESSION_KEY);
+        if (!raw) return null;
+        var o = JSON.parse(raw);
+        if (!o || typeof o.bedTs !== "number" || typeof o.alarmTs !== "number") return null;
+        return o;
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function saveSession(o) {
+      try {
+        localStorage.setItem(SESSION_KEY, JSON.stringify(o));
+      } catch (e) {}
+    }
+
+    function clearSession() {
+      try {
+        localStorage.removeItem(SESSION_KEY);
+      } catch (e) {}
+    }
+
+    var alarmNotifyTimer = null;
+    var alarmTickTimer = null;
+
+    function clearAlarmTimers() {
+      if (alarmNotifyTimer) {
+        clearTimeout(alarmNotifyTimer);
+        alarmNotifyTimer = null;
+      }
+      if (alarmTickTimer) {
+        clearInterval(alarmTickTimer);
+        alarmTickTimer = null;
+      }
+    }
+
+    function scheduleAlarmNotification(alarmTs) {
+      clearAlarmTimers();
+      var delay = alarmTs - Date.now();
+      if (delay < 0) delay = 0;
+      if (delay > 86400000 * 2) return;
+      alarmNotifyTimer = setTimeout(function () {
+        tryAlarmNotifyOnce();
+      }, delay);
+    }
+
+    function tryAlarmNotifyOnce() {
+      var s = loadSession();
+      if (!s || s.wakeTs) return;
+      if (Date.now() < s.alarmTs - 5000) return;
+      if (s.notified) return;
+      s.notified = true;
+      saveSession(s);
+      try {
+        if (typeof Notification !== "undefined" && Notification.permission === "granted") {
+          new Notification("起床の時間です", { body: "睡眠ページで「アラームを解除して記録へ」を押してください。", tag: "eap-sleep-alarm" });
+        }
+      } catch (e) {}
+    }
+
+    function submitSleepToGas(opts) {
+      var rd = opts.recordDate;
+      var sm = opts.sleepMinutes;
+      var lat = opts.latencyMin;
+      var w = opts.wakeups;
+      var q = opts.quality;
+      var tags = opts.tags || "";
+      var score = computeSleepScore(q, sm, w, lat);
+      var btn = opts.submitButton;
+      if (btn) btn.disabled = true;
+      var params = new URLSearchParams();
+      params.set("formType", "sleep");
+      params.set("submittedAt", new Date().toISOString());
+      params.set("tenantId", getTenantId());
+      params.set("officeId", getOfficeId());
+      params.set("recordDate", rd);
+      params.set("sleepMinutes", String(sm));
+      params.set("latencyMin", String(lat));
+      params.set("wakeups", String(w));
+      params.set("quality", String(q));
+      params.set("tags", tags);
+      if (opts.alarmTargetHm) params.set("alarmTargetHm", String(opts.alarmTargetHm));
+      if (opts.sessionStartedAt) params.set("sessionStartedAt", String(opts.sessionStartedAt));
+      if (opts.alarmDismissedAt) params.set("alarmDismissedAt", String(opts.alarmDismissedAt));
+
+      return fetch(GAS_ENDPOINT, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
+        body: params.toString()
+      })
+        .then(function (r) {
+          return r.text().then(function (t) {
+            var data = null;
+            try {
+              data = JSON.parse(t);
+            } catch (e) {}
+            return { ok: r.ok, status: r.status, text: t, data: data };
+          });
+        })
+        .then(function (res) {
+          var httpOk = res && res.status >= 200 && res.status < 400;
+          var jsonOk = !!(res && res.data && res.data.ok === true);
+          var bodyText = (res && res.text ? String(res.text) : "").trim();
+          var legacyOk = bodyText === "success" || bodyText === "ok" || bodyText === "OK";
+          if (!httpOk && !jsonOk && !legacyOk) {
+            throw new Error("保存に失敗しました（status=" + (res ? res.status : "?") + "）");
+          }
+          var hist = {
+            recordDate: rd,
+            sleepMinutes: sm,
+            latencyMin: lat,
+            wakeups: w,
+            quality: q,
+            tags: tags,
+            score: score,
+            at: new Date().toISOString()
+          };
+          if (opts.historyExtra) {
+            Object.keys(opts.historyExtra).forEach(function (k) {
+              hist[k] = opts.historyExtra[k];
+            });
+          }
+          saveHistory(hist);
+          if (opts.onSuccess) opts.onSuccess();
+        })
+        .catch(function (err) {
+          if (btn) btn.disabled = false;
+          if (opts.onError) opts.onError(err);
+          else alert("送信に失敗しました。通信状況を確認して再度お試しください。\n" + (err && err.message ? err.message : ""));
+        });
+    }
+
+    function activateTab(which) {
+      var tabRecord = document.getElementById("tabRecord");
+      var tabStats = document.getElementById("tabStats");
+      var panelRecord = document.getElementById("panelRecord");
+      var panelStats = document.getElementById("panelStats");
+      [tabRecord, tabStats].forEach(function (t) {
+        t.classList.remove("active");
+        t.setAttribute("aria-selected", "false");
+      });
+      [panelRecord, panelStats].forEach(function (p) {
+        p.classList.remove("active");
+        p.hidden = true;
+      });
+      if (which === "record") {
+        tabRecord.classList.add("active");
+        tabRecord.setAttribute("aria-selected", "true");
+        panelRecord.classList.add("active");
+        panelRecord.hidden = false;
+        document.getElementById("successPanel").classList.remove("show");
+        document.getElementById("alarmMainWrap").classList.remove("hidden");
+        refreshAlarmUI();
+      } else {
+        tabStats.classList.add("active");
+        tabStats.setAttribute("aria-selected", "true");
+        panelStats.classList.add("active");
+        panelStats.hidden = false;
+        renderStats();
+      }
+    }
+
+    document.getElementById("tabRecord").addEventListener("click", function () {
+      activateTab("record");
+    });
+    document.getElementById("tabStats").addEventListener("click", function () {
+      activateTab("stats");
+    });
+
+    (function populateAlarmSelects() {
+      var hEl = document.getElementById("alarmHour");
+      var mEl = document.getElementById("alarmMinute");
+      if (!hEl || !mEl) return;
+      for (var h = 0; h < 24; h++) {
+        var o = document.createElement("option");
+        o.value = String(h);
+        o.textContent = String(h);
+        hEl.appendChild(o);
+      }
+      for (var mi = 0; mi < 60; mi += 5) {
+        var om = document.createElement("option");
+        om.value = String(mi);
+        om.textContent = String(mi).padStart(2, "0");
+        mEl.appendChild(om);
+      }
+      hEl.value = "7";
+      mEl.value = "0";
+    })();
+
+    function sessionAlarmHm(s) {
+      if (s.alarmTargetHm) return s.alarmTargetHm;
+      if (typeof s.alarmHour === "number" && typeof s.alarmMinute === "number") {
+        return String(s.alarmHour).padStart(2, "0") + ":" + String(s.alarmMinute).padStart(2, "0");
+      }
+      return formatHm(s.alarmTs);
+    }
+
+    function refreshAlarmUI() {
+      var idle = document.getElementById("alarmStateIdle");
+      var track = document.getElementById("alarmStateTrack");
+      var summary = document.getElementById("alarmStateSummary");
+      var s = loadSession();
+      if (!s) {
+        idle.style.display = "block";
+        track.style.display = "none";
+        summary.style.display = "none";
+        clearAlarmTimers();
+        return;
+      }
+      if (!s.wakeTs) {
+        idle.style.display = "none";
+        track.style.display = "block";
+        summary.style.display = "none";
+        document.getElementById("trackSetFull").textContent = formatDateTimeJa(s.bedTs);
+        document.getElementById("trackAlarmLabel").textContent = sessionAlarmHm(s);
+        document.getElementById("trackElapsed").textContent = formatDurationMin((Date.now() - s.bedTs) / 60000);
+        scheduleAlarmNotification(s.alarmTs);
+        tryAlarmNotifyOnce();
+        if (!alarmTickTimer) {
+          alarmTickTimer = setInterval(function () {
+            if (document.getElementById("panelRecord").hidden) return;
+            var ss = loadSession();
+            if (ss && !ss.wakeTs) {
+              document.getElementById("trackElapsed").textContent = formatDurationMin((Date.now() - ss.bedTs) / 60000);
+              tryAlarmNotifyOnce();
+            }
+          }, 15000);
+        }
+        return;
+      }
+      idle.style.display = "none";
+      track.style.display = "none";
+      summary.style.display = "block";
+      clearAlarmTimers();
+      var bedTs = s.bedTs;
+      var wakeTs = s.wakeTs;
+      var timeInBedMin = Math.max(0, (wakeTs - bedTs) / 60000);
+      var rd = ymdFromTs(bedTs);
+      document.getElementById("sumAlarmHm").textContent = sessionAlarmHm(s);
+      document.getElementById("sumSessionStarted").textContent = formatDateTimeJa(bedTs);
+      document.getElementById("sumDismissed").textContent = formatDateTimeJa(wakeTs);
+      document.getElementById("sumRecordDate").textContent = rd;
+    }
+
+    document.getElementById("btnBedStart").addEventListener("click", function () {
+      var h = parseInt(document.getElementById("alarmHour").value, 10);
+      var m = parseInt(document.getElementById("alarmMinute").value, 10);
+      if (isNaN(h) || isNaN(m)) return;
+      try {
+        if (typeof Notification !== "undefined" && Notification.permission === "default") {
+          Notification.requestPermission();
+        }
+      } catch (e) {}
+      var bedTs = Date.now();
+      var alarmTs = nextAlarmAfterBed(bedTs, h, m);
+      var alarmTargetHm = String(h).padStart(2, "0") + ":" + String(m).padStart(2, "0");
+      saveSession({
+        bedTs: bedTs,
+        alarmTs: alarmTs,
+        alarmHour: h,
+        alarmMinute: m,
+        alarmTargetHm: alarmTargetHm,
+        wakeTs: null,
+        notified: false
+      });
+      scheduleAlarmNotification(alarmTs);
+      refreshAlarmUI();
+    });
+
+    document.getElementById("btnWakeDone").addEventListener("click", function () {
+      var sess = loadSession();
+      if (!sess || sess.wakeTs) return;
+      sess.wakeTs = Date.now();
+      saveSession(sess);
+      refreshAlarmUI();
+    });
+
+    document.getElementById("btnAlarmCancel").addEventListener("click", function () {
+      if (!confirm("この記録を破棄しますか？")) return;
+      clearSession();
+      clearAlarmTimers();
+      refreshAlarmUI();
+    });
+
+    document.getElementById("btnAlarmSubmit").addEventListener("click", function () {
+      var s = loadSession();
+      if (!s || !s.wakeTs) {
+        alert("セッションが見つかりません。");
+        return;
+      }
+      var rd = ymdFromTs(s.bedTs);
+      var rawMin = Math.round((s.wakeTs - s.bedTs) / 60000);
+      var sm = Math.max(30, Math.min(960, rawMin));
+      var sessionStartedIso = new Date(s.bedTs).toISOString();
+      var dismissedIso = new Date(s.wakeTs).toISOString();
+      var timeInBedMin = (s.wakeTs - s.bedTs) / 60000;
+      var eff = timeInBedMin > 0 ? Math.round(Math.min(100, (sm / timeInBedMin) * 100)) : null;
+      submitSleepToGas({
+        recordDate: rd,
+        sleepMinutes: sm,
+        latencyMin: 0,
+        wakeups: 0,
+        quality: 3,
+        tags: "",
+        alarmTargetHm: sessionAlarmHm(s),
+        sessionStartedAt: sessionStartedIso,
+        alarmDismissedAt: dismissedIso,
+        submitButton: document.getElementById("btnAlarmSubmit"),
+        historyExtra: {
+          mode: "alarm",
+          bedTs: s.bedTs,
+          wakeTs: s.wakeTs,
+          timeInBedMin: Math.round(timeInBedMin),
+          efficiencyPct: eff,
+          alarmTargetHm: sessionAlarmHm(s)
+        },
+        onSuccess: function () {
+          clearSession();
+          document.getElementById("alarmMainWrap").classList.add("hidden");
+          document.getElementById("successPanel").classList.add("show");
+        }
+      });
+    });
+
+    document.getElementById("btnAfterSuccess").addEventListener("click", function () {
+      document.getElementById("successPanel").classList.remove("show");
+      document.getElementById("alarmMainWrap").classList.remove("hidden");
+      refreshAlarmUI();
+    });
+
+    if (loadSession()) {
+      tryAlarmNotifyOnce();
+    }
+    document.addEventListener("visibilitychange", function () {
+      if (document.visibilityState === "visible") tryAlarmNotifyOnce();
+    });
+
+    function loadHistory() {
+      try {
+        var raw = localStorage.getItem(LS_KEY);
+        var a = raw ? JSON.parse(raw) : [];
+        return Array.isArray(a) ? a : [];
+      } catch (e) { return []; }
+    }
+
+    function saveHistory(entry) {
+      var a = loadHistory();
+      a.push(entry);
+      if (a.length > 120) a = a.slice(-120);
+      try { localStorage.setItem(LS_KEY, JSON.stringify(a)); } catch (e) {}
+    }
+
+    function renderStats() {
+      var data = loadHistory();
+      var grid = document.getElementById("statGrid");
+      var list = document.getElementById("histList");
+      if (data.length === 0) {
+        grid.innerHTML = '<div class="stat-cell" style="grid-column:1/-1"><span class="k">まだ記録がありません</span></div>';
+        list.innerHTML = "";
+        drawChart([]);
+        return;
+      }
+      var last = data.slice(-14);
+      var avgM = last.reduce(function (s, x) { return s + (x.sleepMinutes || 0); }, 0) / last.length;
+      var avgS = last.reduce(function (s, x) { return s + (x.score || 0); }, 0) / last.length;
+      grid.innerHTML =
+        '<div class="stat-cell"><div class="k">直近' + last.length + '件・平均睡眠</div><div class="v">' +
+        Math.round(avgM / 60 * 10) / 10 + "時間</div></div>" +
+        '<div class="stat-cell"><div class="k">直近スコア（目安）</div><div class="v">' +
+        Math.round(avgS * 10) / 10 + "点</div></div>";
+      drawChart(last);
+      list.innerHTML = data.slice().reverse().slice(0, 20).map(function (x) {
+        var extra = "";
+        if (x.alarmTargetHm) extra = " ・アラーム" + x.alarmTargetHm;
+        else if (x.mode === "alarm" && x.efficiencyPct != null) extra = " ・効率" + x.efficiencyPct + "%";
+        return '<div class="history-item"><span>' + x.recordDate + "</span><span>" +
+          Math.floor(x.sleepMinutes / 60) + "h" + (x.sleepMinutes % 60) + "m / " + x.score + "点" + extra + "</span></div>";
+      }).join("");
+    }
+
+    function drawChart(slice) {
+      var canvas = document.getElementById("sleepChart");
+      var ctx = canvas.getContext("2d");
+      var w = canvas.width;
+      var h = canvas.height;
+      ctx.clearRect(0, 0, w, h);
+      if (!slice.length) {
+        ctx.fillStyle = "#8a96ad";
+        ctx.font = "12px sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText("データがありません", w / 2, h / 2);
+        return;
+      }
+      var pad = 8;
+      var maxM = 660;
+      var minM = 180;
+      ctx.strokeStyle = "#d8e0ef";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(pad, h - pad);
+      ctx.lineTo(w - pad, h - pad);
+      ctx.stroke();
+      var n = slice.length;
+      var barW = (w - pad * 2) / n - 2;
+      slice.forEach(function (x, i) {
+        var m = x.sleepMinutes || 0;
+        var t = (m - minM) / (maxM - minM);
+        if (t < 0) t = 0;
+        if (t > 1) t = 1;
+        var bh = (h - pad * 2) * t;
+        var bx = pad + i * (barW + 2);
+        var by = h - pad - bh;
+        ctx.fillStyle = "#2e4a7a";
+        ctx.fillRect(bx, by, Math.max(2, barW), bh);
+      });
+    }
+
+    refreshAlarmUI();
+  })();
+  </script>
+  <script>
+    (function () {
+      var TENANT_KEY = "eap_tenant";
+      var OFFICE_KEY = "eap_office";
+      function slice64(s) {
+        return String(s == null ? "" : s).trim().slice(0, 64);
+      }
+      var params;
+      try {
+        params = new URLSearchParams(window.location.search);
+      } catch (e) {
+        params = new URLSearchParams();
+      }
+      var tUrl = slice64(params.get("tenant"));
+      var oUrl = slice64(params.get("office"));
+      if (tUrl) {
+        try {
+          localStorage.setItem(TENANT_KEY, tUrl);
+        } catch (e) {}
+      }
+      if (oUrl) {
+        try {
+          localStorage.setItem(OFFICE_KEY, oUrl);
+        } catch (e) {}
+      }
+      var t = tUrl;
+      var o = oUrl;
+      if (!t) {
+        try {
+          t = slice64(localStorage.getItem(TENANT_KEY));
+        } catch (e) {
+          t = "";
+        }
+      }
+      if (!o) {
+        try {
+          o = slice64(localStorage.getItem(OFFICE_KEY));
+        } catch (e) {
+          o = "";
+        }
+      }
+      if (!t && !o) return;
+
+      function isAppHtmlHref(href) {
+        if (!href || /^https?:\/\//i.test(href)) return false;
+        var path = href.split("#")[0].split("?")[0];
+        return /\.html$/i.test(path);
+      }
+
+      document.querySelectorAll("a[href]").forEach(function (a) {
+        var href = a.getAttribute("href");
+        if (!isAppHtmlHref(href)) return;
+        var hashI = href.indexOf("#");
+        var hash = hashI >= 0 ? href.slice(hashI) : "";
+        var base = hashI >= 0 ? href.slice(0, hashI) : href;
+        var qI = base.indexOf("?");
+        var path = qI >= 0 ? base.slice(0, qI) : base;
+        var existing = qI >= 0 ? base.slice(qI + 1) : "";
+        var merged = new URLSearchParams(existing);
+        if (t && !merged.has("tenant")) merged.set("tenant", t);
+        if (o && !merged.has("office")) merged.set("office", o);
+        var mq = merged.toString();
+        a.setAttribute("href", path + (mq ? "?" + mq : "") + hash);
+      });
+    })();
+  </script>
+  <script src="/pwa-register.js" defer></script>
+</body>
+</html>
