@@ -125,7 +125,6 @@
     .submit-btn:disabled { opacity: 0.45; cursor: not-allowed; box-shadow: none; filter: grayscale(0.2); }
     .success-panel { display: none; text-align: center; padding: 2rem 1rem; }
     .success-panel.show { display: block; }
-    .success-panel .icon { font-size: 3rem; margin-bottom: 0.75rem; line-height: 1; }
     .success-panel p { margin: 0; font-size: 1.1rem; font-weight: 700; color: var(--main); }
     #form-root.hidden { display: none; }
     .history-section { margin-top: 1.25rem; }
@@ -208,16 +207,28 @@
       .type-grid { grid-template-columns: 1fr; }
     }
   </style>
+  <link rel="stylesheet" href="/css/gym-app-shell.css" />
 </head>
 <body>
   <div class="wrap">
-    <header>
-      <h1>今日のコンディション</h1>
-      <p class="date-line" id="todayDate" aria-live="polite"></p>
-      <p style="margin:0.75rem 0 0;font-size:0.82rem;">
-        <a href="./wellness-daily.html" style="color:var(--accent);font-weight:700;">歩数・睡眠・トレなど「1日の記録」へ</a>
-      </p>
-    </header>
+    <div class="momo-app-top" role="banner">
+      <div class="momo-app-top-inner">
+        <div class="momo-app-top-text">
+          <h1>今日のコンディション</h1>
+          <p class="date-line" id="todayDate" aria-live="polite"></p>
+          <p class="momo-app-top-note">
+            <a href="./wellness-daily.html">歩数・睡眠・トレなど「1日の記録」へ</a>
+          </p>
+        </div>
+        <div class="momo-app-top-art" aria-hidden="true">
+          <svg viewBox="0 0 88 88" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="44" cy="44" r="34" fill="none" stroke="rgba(255,255,255,0.32)" stroke-width="8" />
+            <circle cx="44" cy="44" r="22" fill="none" stroke="rgba(255,255,255,0.52)" stroke-width="8" stroke-linecap="round" stroke-dasharray="85 120" transform="rotate(-90 44 44)" />
+            <circle cx="44" cy="44" r="10" fill="none" stroke="rgba(255,255,255,0.72)" stroke-width="6" stroke-linecap="round" stroke-dasharray="48 120" transform="rotate(-90 44 44)" />
+          </svg>
+        </div>
+      </div>
+    </div>
     <div id="form-root">
       <form id="checkForm" novalidate>
         <section class="card" aria-labelledby="label-body">
@@ -239,7 +250,12 @@
       </form>
     </div>
     <div class="success-panel card" id="successPanel" role="status" aria-live="polite">
-      <div class="icon" aria-hidden="true">✨</div>
+      <div class="momo-success-ring" aria-hidden="true">
+        <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="32" cy="32" r="26" fill="none" stroke="var(--border, #d8e0ef)" stroke-width="3" />
+          <path d="M18 33l10 10 18-20" fill="none" stroke="var(--accent, #2e4a7a)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </div>
       <p>記録できました。今日のトレーニングも無理のない範囲で😊</p>
     </div>
     <div class="history-section" id="checkHistory"></div>

@@ -341,11 +341,36 @@
       color: var(--muted);
       font-weight: 600;
     }
+    .section-title .momo-title-ico {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.35rem;
+      height: 1.35rem;
+      flex-shrink: 0;
+    }
+    .section-title .momo-title-ico svg {
+      width: 1.1rem;
+      height: 1.1rem;
+      stroke: var(--accent);
+      fill: none;
+      stroke-width: 2.2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
   </style>
+  <link rel="stylesheet" href="/css/gym-app-shell.css" />
 </head>
 <body>
   <div class="wrap">
-    <header class="hero">
+    <header class="hero momo-hero-app">
+      <div class="momo-hero-deco" aria-hidden="true">
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="9" />
+          <circle cx="50" cy="50" r="28" fill="none" stroke="rgba(255,255,255,0.38)" stroke-width="9" stroke-linecap="round" stroke-dasharray="110 165" transform="rotate(-88 50 50)" />
+          <circle cx="50" cy="50" r="16" fill="none" stroke="rgba(255,255,255,0.58)" stroke-width="7" stroke-linecap="round" stroke-dasharray="62 200" transform="rotate(-88 50 50)" />
+        </svg>
+      </div>
       <p class="hero-badge">momo fit</p>
       <h1>いつもの3ステップで、体調をつかまえる。</h1>
       <p class="hero-sub">
@@ -364,8 +389,36 @@
       <p class="sub" id="supportReasons"></p>
       <a class="more" href="./wellness-daily.html" id="supportWellnessLink">1日の記録をつける</a>
     </section>
+    <div class="momo-flow-strip" aria-hidden="true">
+      <div class="momo-flow-step">
+        <div class="momo-flow-orb">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+        </div>
+        <strong>記録</strong>
+        <span>タップで完了</span>
+      </div>
+      <div class="momo-flow-dash" aria-hidden="true"></div>
+      <div class="momo-flow-step">
+        <div class="momo-flow-orb">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        </div>
+        <strong>データ</strong>
+        <span>推移を把握</span>
+      </div>
+      <div class="momo-flow-dash" aria-hidden="true"></div>
+      <div class="momo-flow-step">
+        <div class="momo-flow-orb">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+        </div>
+        <strong>共有</strong>
+        <span>任意・本人のみ</span>
+      </div>
+    </div>
     <section aria-labelledby="flow-heading">
-      <h2 class="section-title" id="flow-heading"><span class="icon" aria-hidden="true">📋</span>今日の流れ（いつも同じ）</h2>
+      <h2 class="section-title" id="flow-heading">
+        <span class="momo-title-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg></span>
+        今日の流れ（いつも同じ）
+      </h2>
       <div class="assure-card" style="margin-bottom:1rem;">
         <ul class="assure-list">
           <li>① ホーム下の「記録」で体調をタップするだけ</li>
@@ -375,52 +428,69 @@
       </div>
     </section>
     <section aria-labelledby="svc-heading">
-      <h2 class="section-title" id="svc-heading"><span class="icon" aria-hidden="true">🏋️</span>機能一覧</h2>
+      <h2 class="section-title" id="svc-heading">
+        <span class="momo-title-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></span>
+        機能一覧
+      </h2>
       <div class="card">
         <article class="service">
-          <div class="service-ico" aria-hidden="true">📝</div>
+          <div class="service-ico" aria-hidden="true">
+            <svg class="momo-ico" viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>
+          </div>
           <div class="service-body">
             <h3>コンディション記録</h3>
             <p>体と気分をタップするだけ。すぐ終わります。</p>
           </div>
         </article>
         <article class="service">
-          <div class="service-ico" aria-hidden="true">📊</div>
+          <div class="service-ico" aria-hidden="true">
+            <svg class="momo-ico" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          </div>
           <div class="service-body">
             <h3>マイデータ</h3>
             <p>この端末に保存した記録の推移をグラフで確認できます。</p>
           </div>
         </article>
         <article class="service">
-          <div class="service-ico" aria-hidden="true">🤝</div>
+          <div class="service-ico" aria-hidden="true">
+            <svg class="momo-ico" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          </div>
           <div class="service-body">
             <h3>トレーナー共有</h3>
             <p>直近の記録を文章にまとめ、コピーやLINE共有、ジムのシート送信ができます。</p>
           </div>
         </article>
         <article class="service">
-          <div class="service-ico" aria-hidden="true">💓</div>
+          <div class="service-ico" aria-hidden="true">
+            <svg class="momo-ico" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+          </div>
           <div class="service-body">
             <h3>自律神経チェック</h3>
             <p>カメラで脈拍を測り、コンディションの目安を確認できます。</p>
           </div>
         </article>
         <article class="service">
-          <div class="service-ico" aria-hidden="true">🌙</div>
+          <div class="service-ico" aria-hidden="true">
+            <svg class="momo-ico" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          </div>
           <div class="service-body">
             <h3>睡眠ログ</h3>
             <p>睡眠の長さや質をセルフ記録。まずは端末内にだけ残ります。</p>
           </div>
         </article>
         <article class="service">
-          <div class="service-ico" aria-hidden="true">💬</div>
+          <div class="service-ico" aria-hidden="true">
+            <svg class="momo-ico" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          </div>
           <div class="service-body">
             <h3>AIチャット</h3>
             <p>トレーニングや体調の悩みを、いつでも文章で相談できます。</p>
           </div>
         </article>
         <article class="service">
-          <div class="service-ico" aria-hidden="true">📅</div>
+          <div class="service-ico" aria-hidden="true">
+            <svg class="momo-ico" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          </div>
           <div class="service-body">
             <h3>レッスン・面談の予約</h3>
             <p>トレーナーやスタッフとの予約を申し込めます。</p>
@@ -429,7 +499,10 @@
       </div>
     </section>
     <section aria-labelledby="assure-heading">
-      <h2 class="section-title" id="assure-heading"><span class="icon" aria-hidden="true">💙</span>共有について</h2>
+      <h2 class="section-title" id="assure-heading">
+        <span class="momo-title-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></span>
+        共有について
+      </h2>
       <div class="assure-card">
         <ul class="assure-list">
           <li>AIチャットの内容がトレーナーに自動で送られることはありません</li>
