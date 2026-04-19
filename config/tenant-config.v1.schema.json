@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:momo-fit:tenant-config:v1",
+  "title": "TenantConfigV1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "brand_name",
+    "support_url",
+    "booking_url",
+    "crisis_help_url",
+    "consult_line_url",
+    "consult_form_url",
+    "ai_enabled",
+    "health_advisor_enabled",
+    "ai_disclaimer_ja",
+    "ai_extra_rules_ja",
+    "gemini_model_override",
+    "feature_share_trainer",
+    "feature_sleep_log",
+    "feature_pulse",
+    "feature_gas_submit",
+    "privacy_policy_url",
+    "data_retention_note_ja"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1.0",
+      "description": "設定スキーマの版。後方互換の境界に使う。"
+    },
+    "brand_name": {
+      "type": "string",
+      "maxLength": 120,
+      "description": "アプリ表示名"
+    },
+    "support_url": {
+      "type": "string",
+      "maxLength": 2048,
+      "description": "問い合わせ・公式案内URL（空なら非表示扱い可）"
+    },
+    "booking_url": {
+      "type": "string",
+      "maxLength": 2048,
+      "description": "予約・面談URL"
+    },
+    "crisis_help_url": {
+      "type": "string",
+      "maxLength": 2048,
+      "description": "危機時の外部窓口など（任意）"
+    },
+    "consult_line_url": {
+      "type": "string",
+      "maxLength": 2048,
+      "description": "LINE友だち追加・LINE相談窓口などのURL（空なら非表示）"
+    },
+    "consult_form_url": {
+      "type": "string",
+      "maxLength": 2048,
+      "description": "Googleフォーム等の相談用URL（空なら非表示）"
+    },
+    "ai_enabled": {
+      "type": "boolean",
+      "description": "AIチャット全体のON/OFF"
+    },
+    "health_advisor_enabled": {
+      "type": "boolean",
+      "description": "健康管理AI（health モードAPI）のON/OFF"
+    },
+    "ai_disclaimer_ja": {
+      "type": "string",
+      "maxLength": 2000,
+      "description": "会員向け免責・注意（短文推奨）"
+    },
+    "ai_extra_rules_ja": {
+      "type": "string",
+      "maxLength": 4000,
+      "description": "ジム独自の追加ルール（プロンプト追記用）"
+    },
+    "gemini_model_override": {
+      "type": "string",
+      "maxLength": 128,
+      "description": "空ならサーバー環境変数の既定モデル"
+    },
+    "feature_share_trainer": { "type": "boolean" },
+    "feature_sleep_log": { "type": "boolean" },
+    "feature_pulse": { "type": "boolean" },
+    "feature_gas_submit": { "type": "boolean" },
+    "privacy_policy_url": {
+      "type": "string",
+      "maxLength": 2048
+    },
+    "data_retention_note_ja": {
+      "type": "string",
+      "maxLength": 2000,
+      "description": "データ保持方針の一文（実装と一致させる）"
+    }
+  }
+}

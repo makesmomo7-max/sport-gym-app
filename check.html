@@ -214,6 +214,9 @@
     <header>
       <h1>今日のコンディション</h1>
       <p class="date-line" id="todayDate" aria-live="polite"></p>
+      <p style="margin:0.75rem 0 0;font-size:0.82rem;">
+        <a href="./wellness-daily.html" style="color:var(--accent);font-weight:700;">歩数・睡眠・トレなど「1日の記録」へ</a>
+      </p>
     </header>
     <div id="form-root">
       <form id="checkForm" novalidate>
@@ -263,6 +266,7 @@
       共有
     </a>
   </nav>
+  <script src="/js/wellness-core.js"></script>
   <script>
     (function () {
       // TODO: GASを「ウェブアプリ」としてデプロイしたURLに差し替えてください
@@ -378,6 +382,75 @@
       form.insertBefore(hiddenWrap, form.firstChild);
       bodyInput = buildRow(bodyRow, "bodyLevel", hiddenWrap);
       moodInput = buildRow(moodRow, "moodLevel", hiddenWrap);
+
+      var HEALTH_CTX_LS = "eap_health_context_v1";
+
+      function isoDateLocalCheck() {
+        var d = new Date();
+        return (
+          d.getFullYear() +
+          "-" +
+          String(d.getMonth() + 1).padStart(2, "0") +
+          "-" +
+          String(d.getDate()).padStart(2, "0")
+        );
+      }
+
+      function fatigueFromBodyLevel(b) {
+        var body = parseInt(b, 10);
+        if (isNaN(body) || body < 1 || body > 5) return 3;
+        return 6 - body;
+      }
+
+      function stressFromMoodLevel(m) {
+        var mood = parseInt(m, 10);
+        if (isNaN(mood) || mood < 1) return "不明";
+        if (mood <= 2) return "high";
+        if (mood === 3) return "medium";
+        return "low";
+      }
+
+      function syncHealthContextFromCheck(bodyVal, moodVal, noteVal) {
+        var prev = {};
+        try {
+          var raw = localStorage.getItem(HEALTH_CTX_LS);
+          if (raw) prev = JSON.parse(raw) || {};
+        } catch (e) {
+          prev = {};
+        }
+        if (!prev || typeof prev !== "object") prev = {};
+
+        var noteTrim = String(noteVal || "")
+          .trim()
+          .slice(0, 280);
+        var prevNote =
+          typeof prev.note === "string"
+            ? prev.note
+                .trim()
+                .slice(0, 280)
+            : "";
+        var note = noteTrim || prevNote;
+
+        var prevSleep =
+          typeof prev.sleep === "string" && prev.sleep.trim()
+            ? prev.sleep.trim().slice(0, 40)
+            : "不明";
+        var pains = Array.isArray(prev.pain) ? prev.pain : [];
+        var uid =
+          typeof prev.user_id === "string" ? prev.user_id.trim().slice(0, 64) : "";
+
+        var next = {
+          user_id: uid,
+          date: isoDateLocalCheck(),
+          fatigue: fatigueFromBodyLevel(bodyVal),
+          sleep: prevSleep,
+          stress: stressFromMoodLevel(moodVal),
+          pain: pains,
+          note: note
+        };
+        localStorage.setItem(HEALTH_CTX_LS, JSON.stringify(next));
+      }
+
       function updateSubmit() {
         var bodyOk = bodyInput.value;
         var moodOk = moodInput.value;
@@ -440,6 +513,21 @@
               });
               if (hist.length > 100) hist = hist.slice(-100);
               localStorage.setItem("history_check", JSON.stringify(hist));
+              syncHealthContextFromCheck(
+                bodyInput.value || "",
+                moodInput.value || "",
+                (document.getElementById("note").value || "").trim()
+              );
+              if (
+                window.MomoWellness &&
+                typeof window.MomoWellness.mergeCheckIntoWellness === "function"
+              ) {
+                window.MomoWellness.mergeCheckIntoWellness(
+                  bodyInput.value || "",
+                  moodInput.value || "",
+                  (document.getElementById("note").value || "").trim()
+                );
+              }
             } catch (e) {}
           })
           .catch(function (err) {

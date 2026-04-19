@@ -287,18 +287,32 @@
       white-space: nowrap;
       border: 0;
     }
+    .ai-off-banner {
+      display: none;
+      margin: 0 0 0.5rem;
+      padding: 0.45rem 0.55rem;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-align: center;
+      border-radius: 10px;
+      background: rgba(255, 200, 120, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      color: #fff;
+    }
   </style>
 </head>
 <body>
   <header class="top">
-    <h1>momo fit AI</h1>
+    <h1 id="chatTitle">momo fit AI</h1>
+    <p id="aiOffBanner" class="ai-off-banner" role="status">この施設ではAIチャットは利用できません。</p>
     <p class="assure">
-      このチャットはトレーナーに自動では送られません。<br />
-      伝えたいときは「共有」からまとめを渡してください。
+      ウェルビーイング（心身のコンディション）の参考用です。医療診断ではありません。<br />
+      このチャットはトレーナーに自動では送られません。伝えたいときは「共有」からまとめを渡してください。
     </p>
     <p class="assure" style="margin-top:0.45rem;">
       本名・住所・電話など、個人が特定できる情報は入力しないでください。
     </p>
+    <p id="tenantDisclaimer" class="assure" style="margin-top:0.45rem; display: none;"></p>
   </header>
 
   <div class="chat-wrap">
@@ -317,7 +331,7 @@
       ></textarea>
       <button type="submit" class="btn-send" id="btnSend">送信</button>
     </form>
-    <a class="btn-pro" href="./yoyaku_employee.html"><span aria-hidden="true">📅</span>トレーナー予約・面談</a>
+    <a class="btn-pro" id="btnReserve" href="./yoyaku_employee.html"><span aria-hidden="true">📅</span>トレーナー予約・面談</a>
   </div>
   <nav class="bottom-nav" aria-label="メインメニュー">
     <a href="./gym.html">
@@ -345,10 +359,85 @@
   <!-- EAP chat: Gemini API + risk UI v3 (show API errors; client user-first messages) -->
   <script>
     (function () {
-      var INITIAL_AI =
-        "こんにちは。momo fitのサポートAIです。\n" +
-        "トレーニングの工夫、疲れ方、食事や睡眠のバランスなど、気になることをどうぞ。\n" +
-        "※医療診断はできません。痛みや体調不良が強いときは医療機関へ。";
+      var HEALTH_MODE = false;
+      var EAP_ENTRY = false;
+      try {
+        var _ps = new URLSearchParams(window.location.search);
+        HEALTH_MODE = _ps.get("health") === "1" || _ps.get("eap") === "1";
+        EAP_ENTRY = _ps.get("eap") === "1";
+      } catch (e) {}
+
+      var HEALTH_CTX_LS = "eap_health_context_v1";
+
+      function isoDateLocal() {
+        var d = new Date();
+        return (
+          d.getFullYear() +
+          "-" +
+          String(d.getMonth() + 1).padStart(2, "0") +
+          "-" +
+          String(d.getDate()).padStart(2, "0")
+        );
+      }
+
+      function loadHealthContext() {
+        var defaults = {
+          date: isoDateLocal(),
+          fatigue: 3,
+          sleep: "不明",
+          stress: "不明",
+          pain: [],
+          note: ""
+        };
+        try {
+          var raw = localStorage.getItem(HEALTH_CTX_LS);
+          if (!raw) return defaults;
+          var o = JSON.parse(raw);
+          if (!o || typeof o !== "object") return defaults;
+          return {
+            date: String(o.date || defaults.date)
+              .trim()
+              .slice(0, 32),
+            fatigue: Number(o.fatigue) || defaults.fatigue,
+            sleep: String(o.sleep != null ? o.sleep : defaults.sleep)
+              .trim()
+              .slice(0, 40),
+            stress: String(o.stress != null ? o.stress : defaults.stress)
+              .trim()
+              .slice(0, 40),
+            pain: Array.isArray(o.pain) ? o.pain : [],
+            note: String(o.note || "")
+              .trim()
+              .slice(0, 280)
+          };
+        } catch (e) {
+          return defaults;
+        }
+      }
+
+      function contextForApi() {
+        var c = loadHealthContext();
+        return {
+          date: c.date,
+          fatigue: c.fatigue,
+          sleep: c.sleep,
+          stress: c.stress,
+          pain: c.pain,
+          note: c.note
+        };
+      }
+
+      var INITIAL_AI = EAP_ENTRY
+        ? "こんにちは。今日は、落ち着くところからで大丈夫です。\n" +
+          "話したいことがなくても構いません。しんどさが続いているなら、短い言葉だけでも送ってください。\n" +
+          "※医療の診断はできません。緊急のときは119・医療機関・身近な窓口を優先してください。"
+        : HEALTH_MODE
+        ? "こんにちは。ウェルビーイング（心身のコンディション）のアドバイザーです。\n" +
+          "疲れ、睡眠、ストレス、痛みのことや、今日できるセルフケアなど、気軽にどうぞ。\n" +
+          "※医療診断はできません。つらい症状が強いときは医療機関へ。"
+        : "こんにちは。momo fitのサポートAIです。\n" +
+          "トレーニングとウェルビーイング（睡眠・ストレス・体調のリズム）のことなど、気になることをどうぞ。\n" +
+          "※医療診断はできません。痛みや体調不良が強いときは医療機関へ。";
 
       var RISK_TEXT =
         "それはとてもしんどい状況ですね。一人で抱え込まず、人に繋がってください。\n\n" +
@@ -408,8 +497,46 @@
       var btnSend = document.getElementById("btnSend");
       var history = [];
 
+      btnSend.disabled = true;
+      input.disabled = true;
+
+      var TCFG = {
+        loaded: false,
+        ai_enabled: true,
+        health_advisor_enabled: true,
+        facility_rules: "",
+        booking_url: "",
+        ai_disclaimer_ja: ""
+      };
+
+      function getTenantAndOfficeEarly() {
+        function slice64e(s) {
+          return String(s == null ? "" : s)
+            .trim()
+            .slice(0, 64);
+        }
+        var t = "";
+        var o = "";
+        try {
+          var params = new URLSearchParams(window.location.search);
+          t = slice64e(params.get("tenant"));
+          o = slice64e(params.get("office"));
+        } catch (e) {}
+        if (!t) {
+          try {
+            t = slice64e(localStorage.getItem("eap_tenant"));
+          } catch (e) {}
+        }
+        if (!o) {
+          try {
+            o = slice64e(localStorage.getItem("eap_office"));
+          } catch (e) {}
+        }
+        return { tenant: t, office: o };
+      }
+
       var SYSTEM_PROMPT =
-        "あなたはジム向けアプリ「momo fit」のサポートAIです。利用者のトレーニング、コンディション、生活習慣、メンタル面の悩みに寄り添い、安全に運動を続けられるよう短く実用的に答えます。\n\n" +
+        "あなたはジム向けアプリ「momo fit」のサポートAIです。運動とウェルビーイング（心身のコンディション、生活リズム、メンタル面の悩み）に寄り添い、安全に運動を続けられるよう短く実用的に答えます。\n\n" +
         "## 個人情報（重要）\n" +
         "氏名・住所・電話・会員番号の全文など、個人が特定できる情報は入力させず、入力されても復唱しないでください。\n\n" +
         "## 回答の方針\n" +
@@ -451,6 +578,101 @@
         return escapeHtml(text).replace(/\n/g, "<br />");
       }
 
+      function applyTenantHeader(cfg) {
+        if (!cfg || typeof cfg !== "object") cfg = {};
+        var brand = cfg.brand_name ? String(cfg.brand_name).trim().slice(0, 120) : "";
+        var h = document.getElementById("chatTitle");
+        if (h) {
+          if (brand) {
+            h.textContent = brand + (HEALTH_MODE ? " ウェルビーイングAI" : " AI");
+          } else if (HEALTH_MODE) {
+            h.textContent = "momo fit ウェルビーイングAI";
+          } else {
+            h.textContent = "momo fit AI";
+          }
+        }
+        var basePage = HEALTH_MODE ? "ウェルビーイングAI" : "AIチャット";
+        document.title = basePage + " | " + (brand || "momo fit");
+
+        var d = cfg.ai_disclaimer_ja ? String(cfg.ai_disclaimer_ja).trim() : "";
+        var el = document.getElementById("tenantDisclaimer");
+        if (el) {
+          if (d) {
+            el.style.display = "block";
+            el.innerHTML = formatBody(d);
+          } else {
+            el.style.display = "none";
+            el.innerHTML = "";
+          }
+        }
+      }
+
+      function updateReserveLink(cfg) {
+        var a = document.getElementById("btnReserve");
+        if (!a) return;
+        var url = cfg && cfg.booking_url ? String(cfg.booking_url).trim() : "";
+        if (url && /^https?:\/\//i.test(url)) {
+          a.setAttribute("href", url);
+        } else {
+          a.setAttribute("href", hrefWithTenantOffice("./yoyaku_employee.html"));
+        }
+      }
+
+      function setAiDisabledUi(disabled) {
+        var b = document.getElementById("aiOffBanner");
+        if (b) b.style.display = disabled ? "block" : "none";
+        if (input) {
+          input.disabled = !!disabled;
+          input.placeholder = disabled ? "この施設ではAIは利用できません" : "メッセージを入力…";
+        }
+        if (btnSend) btnSend.disabled = !!disabled;
+      }
+
+      function applyTenantConfig(cfg) {
+        TCFG.loaded = true;
+        if (!cfg || typeof cfg !== "object") {
+          TCFG.ai_enabled = true;
+          TCFG.health_advisor_enabled = true;
+          TCFG.facility_rules = "";
+          TCFG.booking_url = "";
+          TCFG.ai_disclaimer_ja = "";
+          applyTenantHeader(null);
+          updateReserveLink(null);
+          setAiDisabledUi(false);
+          return;
+        }
+        TCFG.ai_enabled = cfg.ai_enabled !== false;
+        TCFG.health_advisor_enabled = cfg.health_advisor_enabled !== false;
+        TCFG.facility_rules = String(cfg.ai_extra_rules_ja || "")
+          .trim()
+          .slice(0, 4000);
+        TCFG.booking_url = String(cfg.booking_url || "").trim();
+        TCFG.ai_disclaimer_ja = String(cfg.ai_disclaimer_ja || "").trim();
+        applyTenantHeader(cfg);
+        updateReserveLink(cfg);
+        setAiDisabledUi(!TCFG.ai_enabled);
+      }
+
+      function loadTenantConfigEarly() {
+        var ids = getTenantAndOfficeEarly();
+        var q = new URLSearchParams();
+        if (ids.tenant) q.set("tenant", ids.tenant);
+        if (ids.office) q.set("office", ids.office);
+        return fetch("/api/tenant-config?" + q.toString(), { cache: "no-store" })
+          .then(function (r) {
+            return r.json().catch(function () {
+              return null;
+            });
+          })
+          .then(function (data) {
+            if (data && data.ok === true && data.config) applyTenantConfig(data.config);
+            else applyTenantConfig(null);
+          })
+          .catch(function () {
+            applyTenantConfig(null);
+          });
+      }
+
       function appendMessage(role, text) {
         var wrap = document.createElement("div");
         wrap.className = "msg " + (role === "user" ? "user" : "ai");
@@ -483,7 +705,11 @@
         bubble.className = "bubble bubble--risk";
         var link = document.createElement("a");
         link.className = "btn-risk-now";
-        link.href = hrefWithTenantOffice("./yoyaku_employee.html");
+        var bu =
+          TCFG.booking_url && /^https?:\/\//i.test(TCFG.booking_url)
+            ? TCFG.booking_url
+            : hrefWithTenantOffice("./yoyaku_employee.html");
+        link.href = bu;
         link.textContent = "今すぐトレーナー予約を開く";
         bubble.innerHTML = formatBody(RISK_TEXT);
         bubble.appendChild(link);
@@ -505,8 +731,43 @@
         return raw.slice(start);
       }
 
-      function fetchGeminiReply(extraSystem) {
-        var sys = SYSTEM_PROMPT + (extraSystem ? "\n\n" + extraSystem : "");
+      function useHealthApiPath() {
+        return HEALTH_MODE && TCFG.health_advisor_enabled;
+      }
+
+      function fetchAiReply(extraHint) {
+        if (useHealthApiPath()) {
+          return fetch("/api/health-advice", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            cache: "no-store",
+            body: JSON.stringify({
+              context: contextForApi(),
+              messages: buildApiMessages(),
+              hint: extraHint || "",
+              facility_rules_ja: TCFG.facility_rules || ""
+            })
+          })
+            .then(function (r) {
+              return r.json().catch(function () { return null; }).then(function (data) {
+                return { status: r.status, data: data };
+              });
+            })
+            .then(function (pack) {
+              var data = pack.data;
+              if (data && data.ok === true && data.text) return String(data.text);
+              var hint =
+                (data && data.message) ||
+                ("HTTP " + (pack.status || "?"));
+              throw new Error(hint);
+            });
+        }
+
+        var fac =
+          TCFG.facility_rules && String(TCFG.facility_rules).trim().length
+            ? "\n\n## 施設の追加ルール（必ず守る）\n" + String(TCFG.facility_rules).trim()
+            : "";
+        var sys = SYSTEM_PROMPT + fac + (extraHint ? "\n\n" + extraHint : "");
         return fetch("/api/gemini", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -532,6 +793,7 @@
       }
 
       function sendUserMessage() {
+        if (!TCFG.ai_enabled) return;
         var t = input.value.trim();
         if (!t) return;
         appendMessage("user", t);
@@ -553,7 +815,7 @@
               ? "ユーザーの直近の発言には、心身や生活に関する気になる表現が含まれる可能性があります。共感を最優先し、必要に応じてトレーナー相談と画面下の「トレーナー予約・面談」ボタンを自然に案内してください。"
               : "";
 
-          fetchGeminiReply(extra)
+          fetchAiReply(extra)
             .then(function (reply) {
               appendMessage("ai", reply);
             })
@@ -575,7 +837,32 @@
         }, 450);
       }
 
-      appendMessage("ai", INITIAL_AI);
+      function pickInitialAi() {
+        if (!TCFG.ai_enabled) {
+          return (
+            "この施設ではAIチャットがオフになっています。\n" +
+            "ご不明点はスタッフへお問い合わせください。\n\n" +
+            (TCFG.ai_disclaimer_ja ? TCFG.ai_disclaimer_ja : "")
+          );
+        }
+        if (HEALTH_MODE && !TCFG.health_advisor_enabled) {
+          return (
+            "こんにちは。momo fitのサポートAIです。\n" +
+            "この施設ではコンディション参照付きのウェルビーイング回答はオフのため、通常のサポートとしてお答えします。\n" +
+            "トレーニングや生活リズムのことなど、気になることをどうぞ。\n" +
+            "※医療診断はできません。"
+          );
+        }
+        return INITIAL_AI;
+      }
+
+      function startChatUi() {
+        appendMessage("ai", pickInitialAi());
+      }
+
+      loadTenantConfigEarly().then(function () {
+        startChatUi();
+      });
 
       form.addEventListener("submit", function (e) {
         e.preventDefault();

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ジム向け運用ガイド（詳細手順）| momo fit</title>
+  <style>
+    body { font-family: "Hiragino Sans", "Noto Sans JP", sans-serif; color: #1a2b4a; line-height: 1.7; max-width: 800px; margin: 0 auto; padding: 1.5rem 1.25rem 3rem; }
+    h1 { font-size: 1.35rem; border-bottom: 3px solid #2e4a7a; padding-bottom: 0.5rem; line-height: 1.4; }
+    h2 { font-size: 1.08rem; margin-top: 2.25rem; color: #2e4a7a; border-bottom: 1px solid #d8e0ef; padding-bottom: 0.35rem; }
+    h3 { font-size: 0.98rem; margin-top: 1.2rem; color: #1a2b4a; }
+    p, li { font-size: 0.9rem; }
+    ul, ol { padding-left: 1.35rem; }
+    li { margin: 0.4rem 0; }
+    .meta { font-size: 0.82rem; color: #5a6b85; margin-bottom: 1rem; }
+    .box { background: #f4f7fc; border: 1px solid #d8e0ef; border-radius: 10px; padding: 0.9rem 1rem; margin: 1rem 0; font-size: 0.88rem; }
+    .warn { background: #fff8f4; border-left: 4px solid #b85c00; padding: 0.75rem 1rem; font-size: 0.86rem; margin: 1rem 0; }
+    .ok { background: #f1f8f4; border-left: 4px solid #2e7d32; padding: 0.75rem 1rem; font-size: 0.86rem; margin: 1rem 0; }
+    code { background: #eef2f8; padding: 0.12rem 0.4rem; border-radius: 4px; font-size: 0.82rem; word-break: break-all; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin: 0.75rem 0 1rem; }
+    th, td { border: 1px solid #d8e0ef; padding: 0.45rem 0.55rem; text-align: left; vertical-align: top; }
+    th { background: #eef3fb; font-weight: 700; width: 26%; }
+    .toc { background: #fff; border: 1px solid #d8e0ef; border-radius: 10px; padding: 0.85rem 1rem 0.85rem 1.25rem; margin: 1.25rem 0; font-size: 0.86rem; }
+    .toc a { color: #2e4a7a; }
+    pre.copy {
+      background: #1a2b4a; color: #e8eef8; padding: 0.75rem 1rem; border-radius: 8px; font-size: 0.8rem; white-space: pre-wrap; word-break: break-all; line-height: 1.5;
+    }
+    @media print { body { padding: 0; } h2 { break-after: avoid; } }
+  </style>
+</head>
+<body>
+
+  <h1>ジム向け運用ガイド<br /><span style="font-size:0.72em;font-weight:600;color:#5a6b85">詳細手順書（現場の管理者・店長の方向け）</span></h1>
+  <p class="meta">この文書は、<strong>ITに詳しくない方</strong>でも迷わないように書いています。専門用語はできるだけ避け、やることを<strong>順番に</strong>並べています。</p>
+
+  <div class="box">
+    <strong>あなたの役割</strong><br />
+    会員の方がアプリを<strong>迷わず使えるようにする</strong>こと、および<strong>相談が来たときに館内で受ける</strong>ことです。システムの「中身の修正」は、運営者（導入元）に依頼します。
+  </div>
+
+  <nav class="toc" aria-label="目次">
+    <strong>目次</strong>
+    <ol style="margin:0.5rem 0 0;padding-left:1.2rem;">
+      <li><a href="#receive">運営者から届くもの（受け取りチェック）</a></li>
+      <li><a href="#today3">今日やること3つ（初日）</a></li>
+      <li><a href="#member">会員への言い方（コピペ用）</a></li>
+      <li><a href="#qr">QRとポスターの注意</a></li>
+      <li><a href="#window">相談窓口の決め方（表）</a></li>
+      <li><a href="#trainer">トレーナーに伝えること（1枚）</a></li>
+      <li><a href="#screen">画面の色（🟢🟡🔴）の説明</a></li>
+      <li><a href="#faq">会員からよくある質問</a></li>
+      <li><a href="#help">困ったとき連絡する内容の型</a></li>
+    </ol>
+  </nav>
+
+  <h2 id="receive">運営者から届くもの（受け取りチェック）</h2>
+  <p>次の<strong>4つ</strong>が揃っているか、届いたメール・添付を見ながらチェックしてください。名前は多少違ってもよいですが、<strong>中身の種類</strong>が揃っているかを見てください。</p>
+  <table>
+    <tr><th>① リンク（URL）</th><td><code>https://</code> で始まる長い文字列。<strong>途中で改行されていないか</strong>メールを広げて確認してください。</td></tr>
+    <tr><th>② QRコードの画像</th><td>PNG などの画像ファイル。ポスターに貼れるものです。</td></tr>
+    <tr><th>③ この手順書（印刷）</th><td>本ページの印刷、または運営者が同梱したPDF。</td></tr>
+    <tr><th>④ 問い合わせ先</th><td>運営者（導入元）のメールまたは電話。<strong>店舗の掲示物に必ず書く</strong>とスムーズです。</td></tr>
+  </table>
+  <div class="ok"><strong>チェック完了の目安:</strong> ①を自分のスマホのブラウザに貼り付けて開き、アプリの画面が出れば、受け取りは成功に近いです（次へ）。</div>
+
+  <h2 id="today3">今日やること3つ（初日）</h2>
+  <ol>
+    <li><strong>自分のスマホで</strong> 運営者からもらった URL を1回開き、ホームが表示されるか確認する。</li>
+    <li>フロントに置く<strong>QRの印刷</strong>を1枚出す（またはデータのまま共有し、印刷担当へ回す）。</li>
+    <li>スタッフ共通のメモに、<strong>「相談が来たら誰が受けるか」</strong>を書く（次章の表を使う）。</li>
+  </ol>
+
+  <h2 id="member">会員への言い方（コピペ用）</h2>
+  <p>LINEやメールで会員に送るとき、下のどれかを<strong>そのままコピー</strong>して使えます。URLの部分だけ、運営者からもらった<strong>正しい1行</strong>に差し替えてください。</p>
+
+  <h3>短文（LINE向け）</h3>
+  <pre class="copy">【お知らせ】当ジムのウェルネス記録アプリです。下のリンクをタップして開いてください（無料の範囲でご利用ください）。
+（ここに運営者からもらったURLを1行で貼る）
+
+※リンクの一部を消さないようお願いします。
+※体調の不安が強いときは、本アプリに限らず医療機関へご相談ください。</pre>
+
+  <h3>やや丁寧（メール向け）</h3>
+  <pre class="copy">いつもご利用ありがとうございます。
+当ジムでは、日々のコンディションを手軽に記録できるアプリをご案内しています。
+
+▼開き方
+1）スマートフォンで下記のリンクをタップ
+（ここに運営者からもらったURLを貼る）
+
+2）画面の案内に沿って「記録」から入力ください（1分程度のイメージです）。
+
+※本アプリは医療の診断ではありません。
+※トレーナーへ自動で内容が送られることはありません（共有はご本人の操作が必要です）。</pre>
+
+  <h2 id="qr">QRとポスターの注意</h2>
+  <ul>
+    <li>運営者が作った <strong>QRはそのまま使って大丈夫</strong>です。ジムごとに違うのは<strong>正常</strong>です（別店舗のQRと混ぜないだけ注意）。</li>
+    <li>古いポスターに<strong>昔のQR</strong>が残っていると、会員が古いリンクを読みます。<strong>張り替え日</strong>をカレンダーにメモしてください。</li>
+    <li>QRの下に小さく「読み取れないときはフロントでURLをお渡しします」と書くとトラブルが減ります。</li>
+  </ul>
+
+  <h2 id="window">相談窓口の決め方（表）</h2>
+  <p>会員が画面の「相談」「LINE」「フォーム」などを押した<strong>あと</strong>、館内で誰が対応するかを決めておきます。下の表を印刷して、名前を書いて掲示してもよいです。</p>
+  <table>
+    <tr><th>種類</th><th>一次対応の担当（名前を書く）</th><th>休みのときの代替</th></tr>
+    <tr><td>AIチャットの使い方</td><td>　　　　　　　</td><td>　　　　　　　</td></tr>
+    <tr><td>LINEの相談</td><td>　　　　　　　</td><td>　　　　　　　</td></tr>
+    <tr><td>フォーム送信後の返信</td><td>　　　　　　　</td><td>　　　　　　　</td></tr>
+    <tr><td>予約ページの操作</td><td>　　　　　　　</td><td>　　　　　　　</td></tr>
+  </table>
+  <p class="meta">表示されないボタンは、運営者が設定していないだけです。「壊れている」のではありません。</p>
+
+  <h2 id="trainer">トレーナーに伝えること（1枚）</h2>
+  <p>トレーニング担当へ、次の4点を口頭またはチャットで共有してください。</p>
+  <ol>
+    <li>画面の 🟢🟡🔴 は<strong>目安</strong>で、医療の評価ではない。</li>
+    <li>会員への接し方は<strong>断定や命令を避け</strong>、傾聴を優先する。</li>
+    <li>AIの会話は<strong>自動でトレーナーに送られない</strong>。共有された内容だけが伝わる。</li>
+    <li>強い危機（自傷の暗示・重い体調不良など）は、<strong>館内マニュアル</strong>に従い専門窓口・医療につなぐ。</li>
+  </ol>
+
+  <h2 id="screen">画面の色（🟢🟡🔴）の説明</h2>
+  <table>
+    <tr><th>表示</th><th>会員に説明するときの例（そのまま使ってよい）</th></tr>
+    <tr><th>🟢</th><td>「大きな心配は少なめ、という<strong>目安</strong>です。無理のない範囲で続けましょう。」</td></tr>
+    <tr><th>🟡</th><td>「少し疲れが出ている<strong>目安</strong>です。睡眠や負荷を見直すヒントにしてください。」</td></tr>
+    <tr><th>🔴</th><td>「無理をせず、休みや相談を考える<strong>目安</strong>です。不安が強いときは専門の窓口や医療もご検討ください。」</td></tr>
+  </table>
+  <div class="warn">
+    <strong>重要:</strong> これらは<strong>診断結果ではありません</strong>。会員に「だからダメ」などと断定しないでください。
+  </div>
+
+  <h2 id="faq">会員からよくある質問</h2>
+  <table>
+    <tr><th>質問</th><td>答え方の例</td></tr>
+    <tr><th>データは誰に見える？</th><td>「多くはお使いのスマホの中に残ります。トレーナーに見せるのは、共有されたときだけです。」</td></tr>
+    <tr><th>病院の代わりになる？</th><td>「なりません。不安が強いときは医療機関へ。」</td></tr>
+    <tr><th>リンクが開かない</th><td>「URLをコピーし直してください。消えている文字がないか確認します。」</td></tr>
+    <tr><th>機種変更したら？</th><td>「同じリンクから開き直せますが、端末内の過去データは引き継がれないことがあります（仕様）。」</td></tr>
+  </table>
+
+  <h2 id="help">困ったとき連絡する内容の型</h2>
+  <p>運営者（導入元）に連絡するときは、次をコピーして空欄を埋めると早く返ってきやすいです。</p>
+  <pre class="copy">件名: momo fit の使い方・不具合の相談
+
+本文:
+・店舗名:
+・起きていること:（例: QRを読んでも真っ白 等）
+・使っている機種:（例: iPhone 16 / Android 〇〇）
+・試したURL（運営者から渡されたものをそのまま貼る）:</pre>
+
+  <h2>スタッフ用画面（参考）</h2>
+  <p><code>staff.html</code> は、主に<strong>1台の端末に入っている記録</strong>を見るための簡易画面です。全員分の会員一覧が出るものではありません。全員管理が必要な場合は運営者へ相談してください。</p>
+
+  <p class="meta" style="margin-top:2rem;">
+    運営者（設定・URL・QRを作る側）の詳細手順は
+    <a href="./operator-onboarding-ja.html">operator-onboarding-ja.html（契約企業オンボーディング詳細）</a> です。
+  </p>
+</body>
+</html>

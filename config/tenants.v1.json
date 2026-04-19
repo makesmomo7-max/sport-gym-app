@@ -1,0 +1,12 @@
+{
+  "tenants": {
+    "example-tenant": {
+      "brand_name": "サンプルスポーツジム",
+      "consult_line_url": "",
+      "consult_form_url": "",
+      "booking_url": "https://example.com/reserve",
+      "health_advisor_enabled": true,
+      "ai_disclaimer_ja": "（デモ）本チャットは一般情報の参考用です。医療判断は医師へお任せください。"
+    }
+  }
+}

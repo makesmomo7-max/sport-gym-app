@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>契約企業オンボーディング詳細手順（運営者向け）| momo fit</title>
+  <style>
+    body { font-family: "Hiragino Sans", "Noto Sans JP", sans-serif; color: #1a2b4a; line-height: 1.7; max-width: 800px; margin: 0 auto; padding: 1.5rem 1.25rem 3rem; }
+    h1 { font-size: 1.35rem; border-bottom: 3px solid #2e4a7a; padding-bottom: 0.5rem; line-height: 1.4; }
+    h2 { font-size: 1.08rem; margin-top: 2.25rem; color: #2e4a7a; border-bottom: 1px solid #d8e0ef; padding-bottom: 0.35rem; }
+    h3 { font-size: 0.98rem; margin-top: 1.25rem; color: #1a2b4a; }
+    p, li { font-size: 0.9rem; }
+    ul, ol { padding-left: 1.35rem; }
+    li { margin: 0.4rem 0; }
+    .meta { font-size: 0.82rem; color: #5a6b85; margin-bottom: 1rem; }
+    .box { background: #f4f7fc; border: 1px solid #d8e0ef; border-radius: 10px; padding: 0.9rem 1rem; margin: 1rem 0; font-size: 0.88rem; }
+    .box strong { color: #1a2b4a; }
+    .note { background: #fffdf8; border-left: 4px solid #b85c00; padding: 0.75rem 1rem; font-size: 0.86rem; margin: 1rem 0; }
+    .ok { background: #f1f8f4; border-left: 4px solid #2e7d32; padding: 0.75rem 1rem; font-size: 0.86rem; margin: 1rem 0; }
+    code { background: #eef2f8; padding: 0.12rem 0.4rem; border-radius: 4px; font-size: 0.82rem; word-break: break-all; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin: 0.75rem 0 1rem; }
+    th, td { border: 1px solid #d8e0ef; padding: 0.45rem 0.55rem; text-align: left; vertical-align: top; }
+    th { background: #eef3fb; font-weight: 700; width: 28%; }
+    .toc { background: #fff; border: 1px solid #d8e0ef; border-radius: 10px; padding: 0.85rem 1rem 0.85rem 1.25rem; margin: 1.25rem 0; font-size: 0.86rem; }
+    .toc a { color: #2e4a7a; }
+    .step { margin: 1rem 0; padding-left: 0.25rem; border-left: 3px solid #2e4a7a; padding-left: 0.85rem; }
+    .step b { display: block; font-size: 0.82rem; color: #2e4a7a; margin-bottom: 0.25rem; }
+    pre.copy {
+      background: #1a2b4a; color: #e8eef8; padding: 0.75rem 1rem; border-radius: 8px; font-size: 0.78rem; overflow-x: auto; white-space: pre-wrap; word-break: break-all;
+    }
+    @media print {
+      body { padding: 0; font-size: 11pt; }
+      .toc { break-inside: avoid; }
+      h2 { break-after: avoid; }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>契約企業オンボーディング<br /><span style="font-size:0.72em;font-weight:600;color:#5a6b85">詳細手順書（運営者・導入担当の方向け）</span></h1>
+  <p class="meta">この文書は、<strong>プログラムを書かない前提</strong>でも進められるように書いています。開発を外注・別担当に任せる場合は、<strong>「依頼文テンプレ」</strong>をそのまま渡してください。医療診断ではありません。</p>
+
+  <div class="box">
+    <strong>この手順書の対象者</strong><br />
+    契約ジム（企業）に momo fit を提供する<strong>貴社側の担当者</strong>です。ジム現場の受け取り用は別紙 <a href="./gym-playbook-ja.html">ジム向け運用ガイド</a> を印刷・共有してください。
+  </div>
+
+  <nav class="toc" aria-label="目次">
+    <strong>目次</strong>
+    <ol style="margin:0.5rem 0 0;padding-left:1.2rem;">
+      <li><a href="#glossary">はじめに：用語ミニ辞典</a></li>
+      <li><a href="#flow">全体の流れ（何から手をつけるか）</a></li>
+      <li><a href="#phase0">フェーズ0：契約前にそろえるもの</a></li>
+      <li><a href="#phase1">フェーズ1：テナントIDを決める</a></li>
+      <li><a href="#phase2">フェーズ2：設定ファイルを書く（依頼可）</a></li>
+      <li><a href="#phase3">フェーズ3：インターネットに公開する（デプロイ）</a></li>
+      <li><a href="#phase4">フェーズ4：URLとQRを作る</a></li>
+      <li><a href="#phase5">フェーズ5：ジムへ渡す</a></li>
+      <li><a href="#phase6">フェーズ6：公開後の動作確認</a></li>
+      <li><a href="#faq">うまくいかないとき（FAQ）</a></li>
+    </ol>
+  </nav>
+
+  <h2 id="glossary">はじめに：用語ミニ辞典</h2>
+  <table>
+    <tr><th>用語</th><td>ひとことで</td></tr>
+    <tr><th>テナントID</th><td>「どの契約ジムか」を区別する<strong>英数字の名前</strong>です。人名ではなく、会社用のコード（例: <code>tokyo-central-gym</code>）を1社（または1契約）につき1つ決めます。</td></tr>
+    <tr><th>店舗ID（office）</th><td>同じ契約の中で<strong>店舗が複数</strong>あるときだけ使う省略名です。1店舗だけなら<strong>空欄でよい</strong>ことが多いです。</td></tr>
+    <tr><th>URL</th><td>ブラウザのアドレス欄に表示される「住所」のようなものです。<code>https://</code> から始まります。</td></tr>
+    <tr><th>クエリ（?以降）</th><td>URLの末尾に付く <code>?tenant=○○</code> の部分です。<strong>ここが消えると別の施設扱い</strong>になるので、QRやリンクでは消さないでください。</td></tr>
+    <tr><th>デプロイ</th><td>パソコンにあるファイルを、<strong>インターネット上のサーバーに載せて</strong>誰でもアクセスできるようにすることです（例: Vercel）。</td></tr>
+    <tr><th>JSON</th><td>設定を書くための、<strong>決まった形のメモ書きファイル</strong>です。拡張子が <code>.json</code> のものがあります。</td></tr>
+    <tr><th>環境変数</th><td>サーバー側の「秘密の控え室」に入れる<strong>パスワード的な設定</strong>です。AIを使うときに必要になることがあります。</td></tr>
+  </table>
+
+  <h2 id="flow">全体の流れ（何から手をつけるか）</h2>
+  <ol>
+    <li><strong>契約・文面</strong>（利用規約・個人情報の説明ができる状態にする）</li>
+    <li><strong>テナントIDを1つ決める</strong>（メモに残す）</li>
+    <li><strong>開発担当に「JSONの追記」と「デプロイ」を依頼</strong>する（自分でやる場合はフェーズ2・3へ）</li>
+    <li><strong>本番URLが分かったら</strong> <a href="../qr-tenant.html">QR発行ツール</a> でQRを作る</li>
+    <li><strong>ジムに渡す</strong>（URL・QR・ジム向けガイド・問い合わせ先）</li>
+    <li><strong>スマホで実際に開いて試す</strong></li>
+  </ol>
+
+  <h2 id="phase0">フェーズ0：契約前にそろえるもの（チェックリスト）</h2>
+  <p>次を1行ずつ埋めていけば、後工程が止まりません。分からない欄は「未定」でよいです。</p>
+  <table>
+    <tr><th>項目</th><th>記入例・メモ</th></tr>
+    <tr><th>契約ジムの正式名称</th><td>株式会社○○ フィットネス新宿店</td></tr>
+    <tr><th>貴社の問い合わせ窓口</th><td>メール・電話（ジムが困ったときの連絡先）</td></tr>
+    <tr><th>会員向けの予約ページのURL</th><td>既にある予約システムのURL（なければ「なし」）</td></tr>
+    <tr><th>LINE相談のURL</th><td>友だち追加やLINE公式のURL（なければ「なし」）</td></tr>
+    <tr><th>相談フォームのURL</th><td>Googleフォーム等（なければ「なし」）</td></tr>
+    <tr><th>緊急時の外部窓口URL</th><td>いのちの電話等へのリンク方針（任意）</td></tr>
+    <tr><th>記録をスプレッドシートに送るか</th><td>使う／使わない（使う場合は説明文面が必要）</td></tr>
+  </table>
+
+  <h2 id="phase1">フェーズ1：テナントIDを決める（詳細）</h2>
+  <div class="step"><b>手順 1-1</b> メモ帳を開き、候補を2つ以上書き出します（英小文字・数字・ハイフン推奨）。<br />悪い例: スペース入り、日本語、毎回変わる日付だけ。<br />良い例: <code>partner-fit-2026-shinjuku</code></div>
+  <div class="step"><b>手順 1-2</b> すでに他社で使っていないか、貴社の一覧表があれば照合します。なければ「ユニークであればOK」として進めます。</div>
+  <div class="step"><b>手順 1-3</b> 店舗をURLで分けたい場合だけ、店舗ID（office）も決めます。1店舗ならこの段階では<strong>省略してよい</strong>です。</div>
+  <div class="ok"><strong>完了の目安:</strong> テナントIDを1行で書き写せる状態になっていればOKです。</div>
+
+  <h2 id="phase2">フェーズ2：設定ファイルを書く（自分でやる／開発に依頼する）</h2>
+  <p>リポジトリ内の <code>config/tenants.v1.json</code> に、契約ジム用のブロックを<strong>1つ追加</strong>します。エンジニアに依頼する場合は、下の【依頼文テンプレ】をコピーして空欄を埋めて送ってください。</p>
+
+  <h3>2-1. 自分で追記する場合（最小の形）</h3>
+  <ol>
+    <li>パソコンでこのプロジェクトのフォルダを開きます。</li>
+    <li><code>config</code> フォルダの中の <code>tenants.v1.json</code> をメモ帳または VS Code で開きます。</li>
+    <li>すでにある <code>"example-tenant": { ... }</code> の<strong>真上か真下</strong>に、カンマ（<code>,</code>）の位置に注意しながら、次のような形を追加します（<code>...</code> の中身は例です）。</li>
+  </ol>
+  <pre class="copy">"あなたが決めたテナントID": {
+  "brand_name": "ジムの表示名（会員に見える名前）",
+  "booking_url": "https://予約ページがあればここ",
+  "consult_line_url": "https://LINEがあればここ",
+  "consult_form_url": "https://フォームがあればここ",
+  "crisis_help_url": "",
+  "ai_disclaimer_ja": "（任意）この施設用の短い注意文"
+}</pre>
+  <div class="note"><strong>カンマに注意:</strong> JSON は「区切りのカンマを1つ多く／少なくすると全体が壊れます」。不安なら開発者にチェックを依頼してください。</div>
+
+  <h3>2-2.【依頼文テンプレ】開発担当へ送る文章</h3>
+  <pre class="copy" style="background:#2e4a7a;">件名: momo fit 新規テナント追加の依頼
+
+本文:
+以下の内容で config/tenants.v1.json にテナントを追加し、本番へデプロイをお願いします。
+
+■テナントID: （ここに英数字）
+■店舗ID office: （複数店舗で分ける場合のみ。不要なら「なし」）
+■画面上の施設名 brand_name: 
+■予約URL booking_url: （なければ空）
+■LINE consult_line_url: （なければ空）
+■フォーム consult_form_url: （なければ空）
+■危機窓口 crisis_help_url: （なければ空）
+
+公開後の本番URLも教えてください。</pre>
+
+  <h2 id="phase3">フェーズ3：インターネットに公開する（デプロイ）</h2>
+  <p>このプロジェクトは Vercel 等でホスティングされる想定です。<strong>貴社が自分で操作しない場合</strong>は、フェーズ2の依頼文に「デプロイもお願い」と一文足してください。</p>
+  <div class="step"><b>手順 3-1</b> デプロイが終わったら、開発担当から <strong>https で始まる本番の先頭アドレス</strong>（例: <code>https://xxxxx.vercel.app</code>）を受け取り、メモします。</div>
+  <div class="step"><b>手順 3-2（AIを使う場合）</b> サーバー側に <code>GEMINI_API_KEY</code> が設定されているか、担当者に確認します。未設定だとチャットの一部機能がエラーになることがあります。</div>
+
+  <h2 id="phase4">フェーズ4：URLとQRを作る（クリックの順番）</h2>
+  <p>会員に配る<strong>完成形URL</strong>は次の形です（<code>office</code> が不要なら <code>&amp;office=...</code> は付けません）。</p>
+  <pre class="copy">https://（本番ドメイン）/gym.html?tenant=（テナントID）
+※店舗分けする場合
+https://（本番ドメイン）/gym.html?tenant=（テナントID）&amp;office=（店舗ID）</pre>
+
+  <h3>4-1. QRコードを作る（推奨）</h3>
+  <ol>
+    <li>ブラウザ（Chrome 等）で、本番サイトの <a href="../qr-tenant.html"><strong>qr-tenant.html</strong></a> を開きます。<br />例: <code>https://（本番）/qr-tenant.html</code></li>
+    <li>「<strong>今のサイトから入れる</strong>」ボタンを押して、先頭アドレスが入ることを確認します。</li>
+    <li>「開くページ」は基本 <strong>gym.html のまま</strong>でよいです。</li>
+    <li>「テナントID」に、フェーズ1で決めた<strong>同じ文字列</strong>を入れます。</li>
+    <li>「<strong>QRをつくる</strong>」を押し、画像が出たら「PNGを保存」または画像の長押しで保存します。</li>
+    <li>保存したファイル名が分かるように、ジムへメールで添付します。</li>
+  </ol>
+  <div class="note">社内規程で外部送信が不可の場合: 同ページの「<strong>URLだけコピー</strong>」で完成URLをコピーし、<strong>社内で許可されたQR作成ツール</strong>に貼り付けて画像を作ってください。</div>
+
+  <h3>4-2. URLだけ渡す場合</h3>
+  <p>QRを作らない場合は、フェーズ4の先頭の <code>https://...</code> 1行をメール本文に貼り、<strong>コピーしやすいよう改行なし1行</strong>で送るとトラブルが減ります。</p>
+
+  <h2 id="phase5">フェーズ5：ジムへ渡す（渡し物リスト）</h2>
+  <p>次の4点をセットにすると現場が迷いません。</p>
+  <ol>
+    <li><strong>完成URL</strong>（1行・コピペ用）</li>
+    <li><strong>QR画像</strong>（印刷可のPNG）</li>
+    <li><strong>ジム向けガイド</strong> <a href="./gym-playbook-ja.html">gym-playbook-ja.html</a>（印刷またはPDF）</li>
+    <li><strong>貴社の問い合わせ先</strong>（メール・電話・受付時間）</li>
+  </ol>
+
+  <h2 id="phase6">フェーズ6：公開後の動作確認（最低限）</h2>
+  <ol>
+    <li>自分のスマホのブラウザ（Safari / Chrome）を開きます。</li>
+    <li>アドレス欄に、フェーズ4の完成URLを<strong>丸ごと貼り付け</strong>て開きます。</li>
+    <li>アプリのホームが表示されれば第一段階OKです。</li>
+    <li>可能なら「記録」画面を一度開き、戻る操作ができるか確認します。</li>
+    <li>LINE・フォームを設定している場合、画面下部または該当ボタンから<strong>正しいページに飛ぶか</strong>を1回ずつ確認します。</li>
+  </ol>
+  <div class="box">
+    <strong>設定が読み込まれているかの上級確認（任意）</strong><br />
+    PCブラウザで次を開き、JSON に自社の <code>brand_name</code> 等が含まれるか見ます（分からなければスキップで可）。<br />
+    <code>https://（本番）/api/tenant-config?tenant=（テナントID）</code>
+  </div>
+
+  <h2 id="faq">うまくいかないとき（FAQ）</h2>
+  <table>
+    <tr><th>症状</th><td>よくある原因と対処</td></tr>
+    <tr><th>QRを読んでも別の施設っぽい</th><td>URLの <code>?tenant=</code> 以降が欠けている。QR発行ツールで<strong>作り直し</strong>、古いポスターを撤去。</td></tr>
+    <tr><th>LINEボタンが出ない</th><td><code>consult_line_url</code> が空、または <code>https://</code> で始まっていない。JSON を直して再デプロイ。</td></tr>
+    <tr><th>AIがエラーになる</th><td><code>GEMINI_API_KEY</code> 未設定、または利用上限。サーバー担当へ連絡。</td></tr>
+    <tr><th>JSON を編集したらサイト全体が壊れた</th><td>カンマや引用符 <code>"</code> の欠け。直前のバックアップに戻すか、開発者に復旧を依頼。</td></tr>
+    <tr><th>file:// で qr-tenant を開いている</th><td>パソコンのローカルファイルでは先頭URLが入らないことがあります。<strong>必ず https の本番URL</strong>で開き直す。</td></tr>
+  </table>
+
+  <h2>参考：ファイルの場所（開発者向けの目印）</h2>
+  <ul>
+    <li><code>config/tenant-defaults.v1.json</code> … 全テナント共通の初期値</li>
+    <li><code>config/tenants.v1.json</code> … 契約ジムごとの上書き設定（ここを増やす）</li>
+    <li><code>qr-tenant.html</code> … QR発行ツール（サイトのルートに置かれたURLで開く）</li>
+  </ul>
+
+  <div class="note">
+    <strong>staff.html について:</strong> 現状は同一端末のログを見る<strong>デモ</strong>です。本番で会員一覧を管理する要件がある場合は、別途データベースとログイン機能の設計が必要です。
+  </div>
+
+  <p class="meta" style="margin-top:2.5rem;">文書の末尾・改訂日・版数（例: v1.2）は貴社内で記録してください。</p>
+</body>
+</html>

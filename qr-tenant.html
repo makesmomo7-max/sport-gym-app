@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>テナント別QRコード発行 | momo fit</title>
+  <meta name="theme-color" content="#1a2b4a" />
+  <style>
+    :root {
+      --navy: #1a2b4a;
+      --blue: #2e4a7a;
+      --muted: #5a6b85;
+      --line: #d8e0ef;
+      --bg: #f4f7fc;
+      --ok: #1b5e20;
+      --warn: #b85c00;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", system-ui, sans-serif;
+      color: var(--navy);
+      background: var(--bg);
+      line-height: 1.6;
+      padding: 1.25rem 1rem 2.5rem;
+    }
+    .wrap { max-width: 520px; margin: 0 auto; }
+    h1 { font-size: 1.2rem; font-weight: 800; margin: 0 0 0.35rem; }
+    .lead { font-size: 0.88rem; color: var(--muted); margin: 0 0 1.1rem; }
+    .flow {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 1.25rem;
+      counter-reset: s;
+    }
+    .flow li {
+      position: relative;
+      padding: 0.65rem 0.75rem 0.65rem 2.6rem;
+      margin-bottom: 0.45rem;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      font-size: 0.88rem;
+    }
+    .flow li::before {
+      counter-increment: s;
+      content: counter(s);
+      position: absolute;
+      left: 0.65rem;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 1.55rem;
+      height: 1.55rem;
+      border-radius: 50%;
+      background: linear-gradient(145deg, var(--blue), var(--navy));
+      color: #fff;
+      font-size: 0.78rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .card {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 1rem 1rem 1.1rem;
+      margin-bottom: 1rem;
+    }
+    label {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--muted);
+      margin-bottom: 0.3rem;
+    }
+    input[type="text"], select {
+      width: 100%;
+      padding: 0.6rem 0.65rem;
+      border: 2px solid var(--line);
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-family: inherit;
+      margin-bottom: 0.75rem;
+    }
+    input:focus, select:focus { outline: none; border-color: var(--blue); }
+    .row-btn { display: flex; flex-wrap: wrap; gap: 0.45rem; margin-bottom: 0.75rem; }
+    button {
+      font-family: inherit;
+      font-size: 0.86rem;
+      font-weight: 700;
+      padding: 0.55rem 0.85rem;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      background: linear-gradient(180deg, var(--blue), var(--navy));
+      color: #fff;
+    }
+    button.secondary {
+      background: #fff;
+      color: var(--navy);
+      border: 2px solid var(--blue);
+    }
+    button:disabled { opacity: 0.45; cursor: not-allowed; }
+    .url-box {
+      word-break: break-all;
+      font-size: 0.78rem;
+      background: #f6f8fc;
+      padding: 0.65rem 0.7rem;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      margin: 0.5rem 0 0.65rem;
+    }
+    #qrWrap { text-align: center; padding: 0.75rem 0 0.25rem; }
+    #qrWrap img {
+      max-width: 100%;
+      width: 280px;
+      height: auto;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: #fff;
+    }
+    .dl-row { margin-top: 0.75rem; text-align: center; font-size: 0.86rem; }
+    .dl-row a { font-weight: 700; color: var(--blue); }
+    .note { font-size: 0.76rem; color: var(--muted); margin-top: 0.85rem; line-height: 1.55; }
+    .warn {
+      background: #fff8f0;
+      border: 1px solid #e8d4c0;
+      color: var(--warn);
+      font-size: 0.8rem;
+      padding: 0.6rem 0.7rem;
+      border-radius: 10px;
+      margin-bottom: 0.85rem;
+    }
+    .ok-msg { font-size: 0.8rem; color: var(--ok); font-weight: 700; margin-top: 0.35rem; display: none; }
+    .ok-msg.show { display: block; }
+    footer { margin-top: 1.5rem; font-size: 0.75rem; color: var(--muted); text-align: center; }
+    footer a { color: var(--blue); }
+    code { font-size: 0.85em; background: #eef2f8; padding: 0.05rem 0.25rem; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>テナント別QRコード</h1>
+    <p class="lead">
+      <strong>EAPのテナントURLと同じ考え方</strong>です。企業（ジム）ごとに「このQRだけ」配れば、会員アプリが<strong>その施設用</strong>で開きます。
+    </p>
+
+    <ol class="flow">
+      <li><strong>テナントID</strong>を入れる（<code>tenants.v1.json</code> と<strong>完全一致</strong>）</li>
+      <li>「<strong>QRをつくる</strong>」を1回押す</li>
+      <li>画像を保存 or 印刷して配布（LINE・ポスター・レッスン表など）</li>
+    </ol>
+
+    <p id="fileWarn" class="warn" style="display: none;">
+      <strong>注意:</strong> このファイルをパソコンでダブルクリック（<code>file://</code>）だけで開いていると、先頭アドレスが自動で入らないことがあります。デプロイした <code>https://…</code> のURLでこのページを開き直してください。
+    </p>
+
+    <div class="card">
+      <label for="baseUrl">① サイトの先頭（このQRで開いてほしいサイト）</label>
+      <input type="text" id="baseUrl" autocomplete="url" placeholder="https://あなたのドメイン.vercel.app" />
+      <div class="row-btn">
+        <button type="button" class="secondary" id="btnFillOrigin">今のサイトから入れる</button>
+      </div>
+
+      <label for="entryPage">② 開くページ</label>
+      <select id="entryPage">
+        <option value="gym.html">会員ホーム（gym.html）← おすすめ</option>
+        <option value="landing.html">サービス案内（landing.html）</option>
+        <option value="index.html">入口（index.html）→ 自動で gym へ</option>
+      </select>
+
+      <label for="tenantId">③ テナントID（必須）</label>
+      <input type="text" id="tenantId" maxlength="64" placeholder="例: example-tenant" autocomplete="off" />
+
+      <label for="officeId">④ 店舗ID（office・なくてよい）</label>
+      <input type="text" id="officeId" maxlength="64" placeholder="店舗で分けるときだけ" autocomplete="off" />
+
+      <label>完成URL（中身の確認）</label>
+      <div class="url-box" id="urlPreview">テナントIDを入れるとここに表示されます</div>
+
+      <div class="row-btn">
+        <button type="button" id="btnBuild">QRをつくる</button>
+        <button type="button" class="secondary" id="btnCopy">URLだけコピー</button>
+      </div>
+      <p class="ok-msg" id="copyOk" role="status">コピーしました</p>
+
+      <div id="qrWrap">
+        <p class="note" id="qrPlaceholder">まだQRがありません。</p>
+        <img id="qrImg" alt="テナント用QRコード" width="280" height="280" style="display: none" />
+      </div>
+      <div class="dl-row">
+        <button type="button" class="secondary" id="btnDl" style="display: none">PNGを保存</button>
+        <span id="dlHint" class="note" style="display: none; margin-top: 0.35rem;">保存できないときは、上の画像を<strong>長押し／右クリック</strong>で保存してください。</span>
+      </div>
+
+      <p class="note">
+        <strong>QR画像について:</strong> 画像は <code>api.qrserver.com</code> を使って生成しています（完成URLが同サービスに送られます）。社内規程で外部送信が不可の場合は、「URLだけコピー」して、社内許可済みのQRツールに貼り付けてください。
+      </p>
+    </div>
+
+    <footer>
+      <a href="./docs/operator-onboarding-ja.html">運営者向けオンボーディング</a>
+      ·
+      <a href="./landing.html">LPへ</a>
+    </footer>
+  </div>
+
+  <script>
+    (function () {
+      if (location.protocol === "file:") {
+        var w = document.getElementById("fileWarn");
+        if (w) w.style.display = "block";
+      }
+
+      function stripSlash(s) {
+        return String(s || "")
+          .trim()
+          .replace(/\/+$/, "");
+      }
+
+      function buildFullUrl() {
+        var base = stripSlash(document.getElementById("baseUrl").value);
+        var page = String(document.getElementById("entryPage").value || "gym.html").replace(/^\/+/, "");
+        var t = String(document.getElementById("tenantId").value || "")
+          .trim()
+          .slice(0, 64);
+        var o = String(document.getElementById("officeId").value || "")
+          .trim()
+          .slice(0, 64);
+        if (!base) return { error: "① サイトの先頭アドレスを入れてください。", url: "" };
+        if (!/^https?:\/\//i.test(base)) {
+          return { error: "先頭アドレスは https:// で始まる形にしてください。", url: "" };
+        }
+        if (!t) return { error: "③ テナントIDを入れてください。", url: "" };
+        var q = new URLSearchParams();
+        q.set("tenant", t);
+        if (o) q.set("office", o);
+        var url = base + "/" + page + "?" + q.toString();
+        try {
+          new URL(url);
+        } catch (e) {
+          return { error: "URLの形が正しくありません。", url: "" };
+        }
+        return { error: "", url: url };
+      }
+
+      function qrServiceUrl(targetUrl) {
+        return (
+          "https://api.qrserver.com/v1/create-qr-code/?size=280x280&margin=12&charset-source=UTF-8&data=" +
+          encodeURIComponent(targetUrl)
+        );
+      }
+
+      function updatePreview() {
+        var r = buildFullUrl();
+        document.getElementById("urlPreview").textContent = r.error || r.url || "—";
+      }
+
+      ["input", "change"].forEach(function (ev) {
+        document.getElementById("baseUrl").addEventListener(ev, updatePreview);
+        document.getElementById("entryPage").addEventListener(ev, updatePreview);
+        document.getElementById("tenantId").addEventListener(ev, updatePreview);
+        document.getElementById("officeId").addEventListener(ev, updatePreview);
+      });
+
+      document.getElementById("btnFillOrigin").addEventListener("click", function () {
+        if (/^https?:/i.test(location.protocol)) {
+          document.getElementById("baseUrl").value = stripSlash(location.origin);
+        } else {
+          alert("https でこのページを開いているときだけ使えます。");
+        }
+        updatePreview();
+      });
+
+      var b0 = document.getElementById("baseUrl");
+      if (b0 && !b0.value && /^https?:/i.test(location.protocol)) {
+        b0.value = stripSlash(location.origin);
+      }
+      updatePreview();
+
+      document.getElementById("btnCopy").addEventListener("click", function () {
+        var r = buildFullUrl();
+        document.getElementById("copyOk").classList.remove("show");
+        if (r.error || !r.url) {
+          alert(r.error || "URLを作成できません。");
+          return;
+        }
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(r.url).then(
+            function () {
+              document.getElementById("copyOk").classList.add("show");
+              setTimeout(function () {
+                document.getElementById("copyOk").classList.remove("show");
+              }, 2000);
+            },
+            function () {
+              prompt("手動でコピーしてください:", r.url);
+            }
+          );
+        } else {
+          prompt("手動でコピーしてください:", r.url);
+        }
+      });
+
+      document.getElementById("btnBuild").addEventListener("click", function () {
+        var r = buildFullUrl();
+        document.getElementById("copyOk").classList.remove("show");
+        if (r.error || !r.url) {
+          alert(r.error || "URLを作成できません。");
+          return;
+        }
+        var img = document.getElementById("qrImg");
+        var ph = document.getElementById("qrPlaceholder");
+        var btnDl = document.getElementById("btnDl");
+        var dlHint = document.getElementById("dlHint");
+        var svc = qrServiceUrl(r.url);
+        img.onload = function () {
+          if (ph) ph.style.display = "none";
+          img.style.display = "";
+        };
+        img.onerror = function () {
+          alert("QR画像の取得に失敗しました。通信かブロック設定を確認してください。");
+          if (ph) ph.style.display = "";
+          img.style.display = "none";
+          btnDl.style.display = "none";
+          dlHint.style.display = "none";
+        };
+        img.src = svc;
+        btnDl.style.display = "inline-block";
+        dlHint.style.display = "block";
+        btnDl.onclick = function () {
+          fetch(svc)
+            .then(function (res) {
+              if (!res.ok) throw new Error("fetch");
+              return res.blob();
+            })
+            .then(function (blob) {
+              var a = document.createElement("a");
+              var t = String(document.getElementById("tenantId").value || "tenant")
+                .trim()
+                .replace(/[^\w\-]+/g, "_")
+                .slice(0, 40);
+              a.href = URL.createObjectURL(blob);
+              a.download = "momo-fit-qr-" + t + ".png";
+              a.click();
+              URL.revokeObjectURL(a.href);
+            })
+            .catch(function () {
+              alert("自動保存できませんでした。画像を長押し／右クリックで保存してください。");
+            });
+        };
+      });
+    })();
+  </script>
+</body>
+</html>

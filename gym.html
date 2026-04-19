@@ -32,7 +32,7 @@
       color: var(--text);
       line-height: 1.65;
       -webkit-font-smoothing: antialiased;
-      padding-bottom: calc(4.25rem + env(safe-area-inset-bottom, 0px));
+      padding-bottom: calc(8.25rem + env(safe-area-inset-bottom, 0px));
     }
     .wrap { max-width: 520px; margin: 0 auto; padding: 0 1rem 2.75rem; }
     .hero {
@@ -212,6 +212,135 @@
     .bottom-nav a[aria-current="page"] svg {
       transform: scale(1.12);
     }
+    .support-snippet {
+      background: linear-gradient(165deg, #ffffff 0%, #f7f9ff 100%);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1rem 1rem 0.95rem;
+      margin-bottom: 1.35rem;
+      box-shadow: 0 4px 20px var(--shadow);
+    }
+    .support-snippet .row1 {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      margin-bottom: 0.65rem;
+    }
+    .support-snippet .badge {
+      font-size: 1.35rem;
+      line-height: 1;
+    }
+    .support-snippet .lbl {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+    }
+    .support-snippet .msg {
+      margin: 0;
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: var(--main);
+      line-height: 1.55;
+    }
+    .support-snippet .sub {
+      margin: 0.55rem 0 0;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+    .support-snippet a.more {
+      display: inline-block;
+      margin-top: 0.65rem;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    .consult-dock {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: calc(3.35rem + env(safe-area-inset-bottom, 0px));
+      z-index: 999;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.45rem;
+      padding: 0.45rem 0.65rem;
+      background: rgba(255, 252, 248, 0.97);
+      border-top: 1px solid #ebe4dc;
+      box-shadow: 0 -4px 18px rgba(26, 43, 74, 0.06);
+    }
+    .consult-dock a {
+      text-align: center;
+      text-decoration: none;
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: var(--main);
+      padding: 0.55rem 0.4rem;
+      border-radius: 12px;
+      border: 2px solid var(--accent);
+      background: #fff;
+    }
+    .consult-dock a:active { transform: scale(0.98); }
+    .eap-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 2000;
+      background: rgba(26, 43, 74, 0.45);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1.25rem;
+    }
+    .eap-backdrop.show { display: flex; }
+    .eap-panel {
+      background: #fff;
+      border-radius: 18px;
+      padding: 1.35rem 1.15rem 1.15rem;
+      max-width: 360px;
+      width: 100%;
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.18);
+      text-align: center;
+    }
+    .eap-panel p {
+      margin: 0 0 1rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      line-height: 1.6;
+      color: var(--main);
+    }
+    .eap-panel .eap-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .eap-panel a, .eap-panel button {
+      display: block;
+      width: 100%;
+      font-family: inherit;
+      font-size: 0.92rem;
+      font-weight: 700;
+      padding: 0.85rem 0.75rem;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      text-align: center;
+    }
+    .eap-panel a.primary {
+      background: linear-gradient(180deg, var(--accent) 0%, var(--main) 100%);
+      color: #fff;
+    }
+    .eap-panel a.secondary {
+      background: #fff;
+      color: var(--main);
+      border: 2px solid var(--border);
+    }
+    .eap-panel button.ghost {
+      background: transparent;
+      color: var(--muted);
+      font-weight: 600;
+    }
   </style>
 </head>
 <body>
@@ -221,9 +350,20 @@
       <h1>いつもの3ステップで、体調をつかまえる。</h1>
       <p class="hero-sub">
         <span class="brand">記録</span> → <span class="brand">確認</span> → <span class="brand">必要なら共有</span><br />
-        トレーニングや生活リズムに合わせて、手軽に続けられる健康管理です。
+        トレーニングや生活リズムに合わせて、手軽に続けられる<span class="brand">ウェルビーイング</span>（心身のコンディション）です。<span style="font-size:0.88em;opacity:0.92">※医療診断ではありません。</span>
       </p>
     </header>
+    <section class="support-snippet" id="supportSnippet" aria-labelledby="support-h">
+      <div class="row1">
+        <div>
+          <p class="lbl" id="support-h">今日のひとこと（参考）</p>
+          <span class="badge" id="supportBadge" aria-hidden="true">🟢</span>
+        </div>
+      </div>
+      <p class="msg" id="supportLine">いい流れです、この調子でいきましょう</p>
+      <p class="sub" id="supportReasons"></p>
+      <a class="more" href="./wellness-daily.html" id="supportWellnessLink">1日の記録をつける</a>
+    </section>
     <section aria-labelledby="flow-heading">
       <h2 class="section-title" id="flow-heading"><span class="icon" aria-hidden="true">📋</span>今日の流れ（いつも同じ）</h2>
       <div class="assure-card" style="margin-bottom:1rem;">
@@ -301,14 +441,41 @@
     </section>
     <nav class="actions" aria-label="主な操作">
       <a class="btn btn-primary" href="./check.html">① 今日のコンディションを記録</a>
+      <a class="btn btn-secondary" href="./wellness-daily.html">歩数・睡眠・ストレス・トレなど「1日の記録」</a>
       <a class="btn btn-secondary" href="./history.html">② マイデータを見る</a>
       <a class="btn btn-secondary" href="./share_trainer.html">③ トレーナーに共有</a>
       <a class="btn btn-secondary" href="./chat.html">AIに相談する</a>
+      <a class="btn btn-secondary" href="./chat.html?health=1">ウェルビーイングAI（コンディション参照）</a>
       <a class="btn btn-secondary" href="./pulse.html">自律神経をチェック</a>
       <a class="btn btn-secondary" href="./sleep.html">睡眠を記録</a>
       <a class="btn btn-secondary" href="./yoyaku_employee.html">レッスン・面談を予約</a>
     </nav>
-    <footer>momo fit</footer>
+    <footer>
+      momo fit
+      <span style="display:block;margin-top:0.35rem;font-size:0.78rem;font-weight:600;">
+        <a href="./landing.html" style="color:var(--accent);">サービス案内（LP）</a>
+      </span>
+      <span style="display:block;margin-top:0.35rem;font-size:0.72rem;">
+        <a href="./staff.html" style="color:var(--muted);">スタッフ向け一覧（デモ）</a>
+      </span>
+    </footer>
+  </div>
+  <div class="consult-dock" role="region" aria-label="相談導線">
+    <a href="./chat.html?eap=1" id="consultChatLink">ちょっと相談する</a>
+    <a href="./yoyaku_employee.html" id="consultBookLink">しんどいときはこちら</a>
+    <a href="#" id="consultLineLink" style="display: none" target="_blank" rel="noopener noreferrer">LINEはこちら</a>
+    <a href="#" id="consultFormLink" style="display: none" target="_blank" rel="noopener noreferrer">フォームで相談</a>
+  </div>
+  <div class="eap-backdrop" id="eapBackdrop" role="dialog" aria-modal="true" aria-labelledby="eapTitle">
+    <div class="eap-panel">
+      <p id="eapTitle">最近少しお疲れのようです。気軽に相談できます。</p>
+      <div class="eap-actions">
+        <a class="primary" href="./chat.html?eap=1" id="eapChatBtn">無料で相談する</a>
+        <a class="secondary" href="#" id="eapLineBtn" style="display: none" target="_blank" rel="noopener noreferrer">LINEを開く</a>
+        <a class="secondary" href="#" id="eapFormBtn" style="display: none" target="_blank" rel="noopener noreferrer">フォームで相談</a>
+        <button type="button" class="ghost" id="eapLaterBtn">またあとで</button>
+      </div>
+    </div>
   </div>
   <nav class="bottom-nav" aria-label="メインメニュー">
     <a href="./gym.html" aria-current="page">
@@ -332,6 +499,36 @@
       共有
     </a>
   </nav>
+  <script src="/js/wellness-core.js"></script>
+  <script src="/js/tenant-consult.js"></script>
+  <script>
+    (function () {
+      if (!window.MomoWellness) return;
+      var st = window.MomoWellness.computeRiskState();
+      var badgeEl = document.getElementById("supportBadge");
+      var lineEl = document.getElementById("supportLine");
+      var reasonsEl = document.getElementById("supportReasons");
+      var b = st.level === "red" ? "🔴" : st.level === "yellow" ? "🟡" : "🟢";
+      if (badgeEl) badgeEl.textContent = b;
+      if (lineEl) lineEl.textContent = st.templateLine;
+      if (reasonsEl) {
+        reasonsEl.textContent =
+          st.reasons && st.reasons.length ? "目安: " + st.reasons.join("／") : "※セルフチェック用の目安です。指導ではありません。";
+      }
+      var backdrop = document.getElementById("eapBackdrop");
+      if (st.level === "red" && !window.MomoWellness.isEapDismissedToday() && backdrop) {
+        backdrop.classList.add("show");
+      }
+      var later = document.getElementById("eapLaterBtn");
+      if (later) {
+        later.addEventListener("click", function () {
+          window.MomoWellness.dismissEapForToday();
+          if (backdrop) backdrop.classList.remove("show");
+        });
+      }
+      if (window.MomoTenantConsult) window.MomoTenantConsult.load();
+    })();
+  </script>
   <script>
     (function () {
       var TENANT_KEY = "eap_tenant";

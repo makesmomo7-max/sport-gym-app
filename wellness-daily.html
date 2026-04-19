@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>1日の記録 | momo fit</title>
+  <meta name="theme-color" content="#1a2b4a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="momo fit" />
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=2" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2" />
+  <style>
+    :root {
+      --main: #1a2b4a;
+      --accent: #2e4a7a;
+      --bg: #f4f7fc;
+      --card: #ffffff;
+      --text: #1a2b4a;
+      --muted: #5a6b85;
+      --border: #d8e0ef;
+      --shadow: rgba(26, 43, 74, 0.08);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100dvh;
+      font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
+      background: linear-gradient(165deg, #eef3fb 0%, var(--bg) 45%, #e8eef8 100%);
+      color: var(--text);
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+      padding-bottom: calc(4.25rem + env(safe-area-inset-bottom, 0px));
+    }
+    .wrap { max-width: 440px; margin: 0 auto; padding: 1.25rem 1rem 2.5rem; }
+    header { text-align: center; margin-bottom: 1.25rem; }
+    header h1 { margin: 0 0 0.35rem; font-size: 1.12rem; font-weight: 700; color: var(--main); }
+    .sub { margin: 0; font-size: 0.82rem; color: var(--muted); }
+    .card {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 1rem 0.95rem;
+      margin-bottom: 0.9rem;
+      box-shadow: 0 4px 20px var(--shadow);
+      border: 1px solid var(--border);
+    }
+    .card h2 {
+      margin: 0 0 0.65rem;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    label.lbl { display: block; font-size: 0.74rem; font-weight: 600; color: var(--muted); margin-bottom: 0.3rem; }
+    input[type="number"], input[type="date"], input[type="text"] {
+      width: 100%;
+      padding: 0.6rem 0.7rem;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      font-size: 1rem;
+      font-family: inherit;
+      background: #fafcfe;
+    }
+    input:focus { outline: none; border-color: var(--accent); }
+    .scale-row { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+    .scale-btn {
+      flex: 1 1 calc(20% - 0.3rem);
+      min-width: 52px;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      background: #fafcfe;
+      padding: 0.45rem 0.2rem;
+      cursor: pointer;
+      font: inherit;
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: var(--main);
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .scale-btn.on {
+      border-color: var(--accent);
+      background: linear-gradient(180deg, #f0f4fc 0%, #e4ecf8 100%);
+      box-shadow: 0 0 0 3px rgba(46, 74, 122, 0.12);
+    }
+    textarea {
+      width: 100%;
+      min-height: 64px;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 0.6rem 0.7rem;
+      font-size: 0.92rem;
+      font-family: inherit;
+      resize: vertical;
+      background: #fafcfe;
+    }
+    .chk {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+      font-size: 0.88rem;
+      font-weight: 600;
+      margin: 0.35rem 0;
+    }
+    .chk input { width: 1.1rem; height: 1.1rem; margin-top: 0.15rem; accent-color: var(--accent); }
+    .hint { font-size: 0.7rem; color: var(--muted); margin-top: 0.35rem; line-height: 1.45; }
+    .kcal-box {
+      margin-top: 0.5rem;
+      padding: 0.55rem 0.65rem;
+      border-radius: 10px;
+      background: #f6f8fc;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+    .kcal-num { font-weight: 800; color: var(--main); font-size: 0.95rem; }
+    .submit-btn {
+      width: 100%;
+      border: none;
+      border-radius: 14px;
+      padding: 0.95rem 1rem;
+      font-size: 1rem;
+      font-weight: 700;
+      font-family: inherit;
+      color: #fff;
+      background: linear-gradient(180deg, var(--accent) 0%, var(--main) 100%);
+      cursor: pointer;
+      box-shadow: 0 6px 18px rgba(26, 43, 74, 0.25);
+      margin-top: 0.5rem;
+    }
+    .submit-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+    .ok-msg { display: none; text-align: center; padding: 1.5rem 0.5rem; font-weight: 700; color: var(--main); }
+    .ok-msg.show { display: block; }
+    #form-root.ok-hide { display: none; }
+    .bottom-nav {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 1000;
+      display: flex;
+      justify-content: space-around;
+      align-items: stretch;
+      gap: 0.25rem;
+      padding: 0.5rem 0.5rem calc(0.5rem + env(safe-area-inset-bottom, 0px));
+      background: #fff;
+      box-shadow: 0 -1px 0 rgba(26, 43, 74, 0.08);
+    }
+    .bottom-nav a {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.15rem;
+      min-width: 0;
+      padding: 0.3rem 0.1rem;
+      text-decoration: none;
+      color: var(--main);
+      font-size: 0.55rem;
+      font-weight: 500;
+      opacity: 0.55;
+      transition: opacity 0.15s ease;
+    }
+    .bottom-nav a svg { width: 1.2rem; height: 1.2rem; }
+    .bottom-nav a[aria-current="page"] { opacity: 1; font-weight: 700; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>今日のウェルネス記録</h1>
+      <p class="sub">歩数・睡眠・ストレス・トレーニング・食事などを1ページにまとめられます（端末内保存）。</p>
+    </header>
+    <div id="okMsg" class="ok-msg" role="status">保存しました。おつかれさまです。</div>
+    <div id="formRoot">
+      <form id="wf" novalidate>
+        <div class="card">
+          <h2>日付</h2>
+          <label class="lbl" for="recDate">記録する日</label>
+          <input type="date" id="recDate" name="recDate" required />
+        </div>
+        <div class="card">
+          <h2>歩数</h2>
+          <label class="lbl" for="steps">今日の歩数（目安）</label>
+          <input type="number" id="steps" name="steps" min="0" max="100000" placeholder="例: 6500" />
+        </div>
+        <div class="card">
+          <h2>睡眠</h2>
+          <label class="lbl" for="sleepHours">睡眠時間（時間）</label>
+          <input type="number" id="sleepHours" name="sleepHours" min="0" max="24" step="0.25" placeholder="例: 6.5" />
+          <p class="hint" style="margin-top:0.65rem">睡眠の満足度（1低い〜5高い）</p>
+          <div class="scale-row" id="sleepSatRow" role="group" aria-label="睡眠満足度"></div>
+        </div>
+        <div class="card">
+          <h2>ストレス（自己申告）</h2>
+          <p class="hint" style="margin-top:0">1が低く、5が高いストレス感です。</p>
+          <div class="scale-row" id="stressRow" role="group" aria-label="ストレス"></div>
+        </div>
+        <div class="card">
+          <h2>トレーニング</h2>
+          <label class="lbl" for="menu">今日のメニュー（メモ）</label>
+          <input type="text" id="menu" name="menu" maxlength="120" placeholder="例: 脚・有酸素20分" />
+          <label class="chk" style="margin-top:0.75rem">
+            <input type="checkbox" id="trainingDone" name="trainingDone" />
+            <span>実施した（完了チェック）</span>
+          </label>
+          <label class="lbl" for="trainComment" style="margin-top:0.5rem">コメント（任意）</label>
+          <textarea id="trainComment" maxlength="400" placeholder="きつかった点・気づきなど"></textarea>
+        </div>
+        <div class="card">
+          <h2>食事（簡易）</h2>
+          <label class="lbl" for="mealText">内容のメモ</label>
+          <input type="text" id="mealText" maxlength="200" placeholder="例: 玄米おにぎり、味噌汁" />
+          <label class="lbl" style="margin-top:0.65rem" for="mealPhoto">写真（任意）</label>
+          <input type="file" id="mealPhoto" accept="image/*" />
+          <div id="kcalOut" class="kcal-box" style="display:none">
+            画像からの<strong>参考</strong>カロリー（概算）: <span class="kcal-num" id="kcalNum">—</span> kcal
+            <div class="hint">※画素の明るさなどからの簡易式です。管理・医療用ではありません。</div>
+          </div>
+        </div>
+        <div class="card">
+          <h2>写真 or 一言</h2>
+          <label class="lbl" for="oneLine">今日のひとこと（任意）</label>
+          <textarea id="oneLine" maxlength="300" rows="2" placeholder="気持ちや出来事を短く"></textarea>
+        </div>
+        <div class="card">
+          <h2>「できた」チェック</h2>
+          <label class="chk">
+            <input type="checkbox" id="didWin" name="didWin" />
+            <span>今日は自分で言える「できた」があった</span>
+          </label>
+        </div>
+        <button type="submit" class="submit-btn" id="saveBtn">保存する</button>
+        <p class="hint">※リスク表示はあくまでセルフチェック用です。不安が強いときは専門窓口や医療機関もご検討ください。</p>
+      </form>
+    </div>
+  </div>
+  <nav class="bottom-nav" aria-label="メインメニュー">
+    <a href="./gym.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      ホーム
+    </a>
+    <a href="./check.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      記録
+    </a>
+    <a href="./history.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      データ
+    </a>
+    <a href="./chat.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      AI
+    </a>
+    <a href="./share_trainer.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+      共有
+    </a>
+  </nav>
+  <script src="/js/wellness-core.js"></script>
+  <script>
+    (function () {
+      var LOG_KEY = "momo_wellness_daily_v1";
+      var HEALTH_CTX = "eap_health_context_v1";
+
+      function pad2(n) { return String(n).length < 2 ? "0" + n : String(n); }
+      function ymdToday() {
+        var d = new Date();
+        return d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate());
+      }
+
+      function buildScale2(container, labels) {
+        var val = null;
+        container.querySelectorAll(".scale-btn").forEach(function (x) { x.remove(); });
+        for (var i = 1; i <= 5; i++) {
+          var b = document.createElement("button");
+          b.type = "button";
+          b.className = "scale-btn";
+          b.textContent = String(i) + (labels[i - 1] ? "\n" + labels[i - 1] : "");
+          b.dataset.v = String(i);
+          b.addEventListener("click", function () {
+            var me = this;
+            val = +me.dataset.v;
+            container.querySelectorAll(".scale-btn").forEach(function (x) {
+              x.classList.toggle("on", x === me);
+            });
+          });
+          container.appendChild(b);
+        }
+        return {
+          get: function () { return val; },
+          set: function (n) {
+            val = n == null ? null : +n;
+            container.querySelectorAll(".scale-btn").forEach(function (x) {
+              x.classList.toggle("on", +x.dataset.v === val);
+            });
+          }
+        };
+      }
+
+      var sleepSatRow = document.getElementById("sleepSatRow");
+      var stressRow = document.getElementById("stressRow");
+      var sleepCtl = buildScale2(sleepSatRow, ["低", "", "ふつう", "", "高"]);
+      var stressCtl = buildScale2(stressRow, ["低", "", "中", "", "高"]);
+
+      var recDate = document.getElementById("recDate");
+      recDate.value = ymdToday();
+
+      function loadDay(ymd) {
+        var list = [];
+        try { list = JSON.parse(localStorage.getItem(LOG_KEY) || "[]"); } catch (e) { list = []; }
+        if (!Array.isArray(list)) list = [];
+        var row = null;
+        for (var i = 0; i < list.length; i++) {
+          if (list[i] && list[i].date === ymd) row = list[i];
+        }
+        document.getElementById("steps").value = row && row.steps != null ? row.steps : "";
+        document.getElementById("sleepHours").value = row && row.sleepHours != null ? row.sleepHours : "";
+        sleepCtl.set(row ? row.sleepSat1to5 : null);
+        stressCtl.set(row ? row.stress1to5 : null);
+        document.getElementById("menu").value = row && row.trainingMenu ? row.trainingMenu : "";
+        document.getElementById("trainingDone").checked = !!(row && row.trainingDone);
+        document.getElementById("trainComment").value = row && row.trainingComment ? row.trainingComment : "";
+        document.getElementById("mealText").value = row && row.mealText ? row.mealText : "";
+        document.getElementById("oneLine").value = row && row.oneLine ? row.oneLine : "";
+        document.getElementById("didWin").checked = !!(row && row.didWin);
+        document.getElementById("kcalOut").style.display = row && row.mealKcalEst != null ? "block" : "none";
+        document.getElementById("kcalNum").textContent = row && row.mealKcalEst != null ? String(row.mealKcalEst) : "—";
+      }
+
+      recDate.addEventListener("change", function () {
+        loadDay(recDate.value);
+      });
+      loadDay(recDate.value);
+
+      function roughKcalFromImage(file, cb) {
+        if (!file || !file.type || file.type.indexOf("image/") !== 0) {
+          cb(null);
+          return;
+        }
+        var fr = new FileReader();
+        fr.onload = function () {
+          var url = fr.result;
+          var img = new Image();
+          img.onload = function () {
+            var c = document.createElement("canvas");
+            var w = 48;
+            var h = Math.max(1, Math.round(img.height * (w / img.width)));
+            c.width = w;
+            c.height = h;
+            var ctx = c.getContext("2d");
+            ctx.drawImage(img, 0, 0, w, h);
+            var data = ctx.getImageData(0, 0, w, h).data;
+            var sum = 0;
+            for (var i = 0; i < data.length; i += 4) {
+              var r = data[i], g = data[i + 1], b = data[i + 2];
+              sum += 0.299 * r + 0.587 * g + 0.114 * b;
+            }
+            var n = (data.length / 4) || 1;
+            var L = sum / n;
+            var kb = file.size / 1024;
+            var kcal = Math.round(200 + (255 - L) / 255 * 380 + Math.min(kb, 800) * 0.08);
+            kcal = Math.max(120, Math.min(950, kcal));
+            cb(kcal);
+          };
+          img.onerror = function () { cb(null); };
+          img.src = url;
+        };
+        fr.onerror = function () { cb(null); };
+        fr.readAsDataURL(file);
+      }
+
+      var lastKcal = null;
+      document.getElementById("mealPhoto").addEventListener("change", function () {
+        var f = this.files && this.files[0];
+        if (!f) {
+          document.getElementById("kcalOut").style.display = "none";
+          lastKcal = null;
+          return;
+        }
+        roughKcalFromImage(f, function (k) {
+          lastKcal = k;
+          if (k == null) {
+            document.getElementById("kcalOut").style.display = "none";
+            return;
+          }
+          document.getElementById("kcalOut").style.display = "block";
+          document.getElementById("kcalNum").textContent = String(k);
+        });
+      });
+
+      document.getElementById("wf").addEventListener("submit", function (e) {
+        e.preventDefault();
+        var ymd = recDate.value;
+        if (!ymd) return;
+        var sSat = sleepCtl.get();
+        var str = stressCtl.get();
+        if (sSat == null || str == null) {
+          alert("睡眠の満足度とストレス（1〜5）を選んでください。");
+          return;
+        }
+        var list = [];
+        try { list = JSON.parse(localStorage.getItem(LOG_KEY) || "[]"); } catch (e2) { list = []; }
+        if (!Array.isArray(list)) list = [];
+        var next = {
+          date: ymd,
+          steps: document.getElementById("steps").value ? Math.floor(Number(document.getElementById("steps").value)) : null,
+          sleepHours: document.getElementById("sleepHours").value ? Number(document.getElementById("sleepHours").value) : null,
+          sleepSat1to5: sSat,
+          stress1to5: str,
+          trainingMenu: (document.getElementById("menu").value || "").trim().slice(0, 120),
+          trainingDone: document.getElementById("trainingDone").checked,
+          trainingComment: (document.getElementById("trainComment").value || "").trim().slice(0, 400),
+          mealText: (document.getElementById("mealText").value || "").trim().slice(0, 200),
+          mealKcalEst: lastKcal,
+          oneLine: (document.getElementById("oneLine").value || "").trim().slice(0, 300),
+          didWin: document.getElementById("didWin").checked,
+          savedAt: new Date().toISOString()
+        };
+        var rep = [];
+        var replaced = false;
+        for (var i = 0; i < list.length; i++) {
+          if (list[i] && list[i].date === ymd) {
+            if (!replaced) { rep.push(next); replaced = true; }
+          } else rep.push(list[i]);
+        }
+        if (!replaced) rep.push(next);
+        rep.sort(function (a, b) { return String(a.date).localeCompare(String(b.date)); });
+        if (rep.length > 400) rep = rep.slice(-400);
+        try {
+          localStorage.setItem(LOG_KEY, JSON.stringify(rep));
+        } catch (err) {
+          alert("保存に失敗しました（容量など）。写真を外すと改善することがあります。");
+          return;
+        }
+
+        try {
+          var prev = {};
+          try { prev = JSON.parse(localStorage.getItem(HEALTH_CTX) || "{}"); } catch (e3) { prev = {}; }
+          if (!prev || typeof prev !== "object") prev = {};
+          var stressLabel = str >= 4 ? "high" : str === 3 ? "medium" : "low";
+          var sleepStr =
+            (next.sleepHours != null ? next.sleepHours + "時間程度" : "") +
+            (next.sleepHours != null ? "／" : "") +
+            "満足度" + sSat + "/5";
+          prev.date = ymd;
+          prev.sleep = sleepStr.slice(0, 40) || prev.sleep || "不明";
+          prev.stress = stressLabel;
+          prev.fatigue =
+            typeof prev.fatigue === "number" && prev.fatigue >= 1 && prev.fatigue <= 5
+              ? prev.fatigue
+              : 3;
+          prev.note = (next.oneLine || next.trainingComment || prev.note || "").toString().trim().slice(0, 280);
+          localStorage.setItem(HEALTH_CTX, JSON.stringify(prev));
+        } catch (e4) {}
+
+        document.getElementById("formRoot").classList.add("ok-hide");
+        document.getElementById("okMsg").classList.add("show");
+      });
+    })();
+  </script>
+  <script>
+    (function () {
+      var TENANT_KEY = "eap_tenant";
+      var OFFICE_KEY = "eap_office";
+      function slice64(s) {
+        return String(s == null ? "" : s).trim().slice(0, 64);
+      }
+      var params;
+      try { params = new URLSearchParams(window.location.search); } catch (e) { params = new URLSearchParams(); }
+      var tUrl = slice64(params.get("tenant"));
+      var oUrl = slice64(params.get("office"));
+      if (tUrl) try { localStorage.setItem(TENANT_KEY, tUrl); } catch (e) {}
+      if (oUrl) try { localStorage.setItem(OFFICE_KEY, oUrl); } catch (e) {}
+      var t = tUrl || slice64((function(){ try{return localStorage.getItem(TENANT_KEY);}catch(e){return"";} })());
+      var o = oUrl || slice64((function(){ try{return localStorage.getItem(OFFICE_KEY);}catch(e){return"";} })());
+      if (!t && !o) return;
+      function isAppHtmlHref(href) {
+        if (!href || /^https?:\/\//i.test(href)) return false;
+        var path = href.split("#")[0].split("?")[0];
+        return /\.html$/i.test(path);
+      }
+      document.querySelectorAll("a[href]").forEach(function (a) {
+        var href = a.getAttribute("href");
+        if (!isAppHtmlHref(href)) return;
+        var hashI = href.indexOf("#");
+        var hash = hashI >= 0 ? href.slice(hashI) : "";
+        var base = hashI >= 0 ? href.slice(0, hashI) : href;
+        var qI = base.indexOf("?");
+        var path = qI >= 0 ? base.slice(0, qI) : base;
+        var existing = qI >= 0 ? base.slice(qI + 1) : "";
+        var merged = new URLSearchParams(existing);
+        if (t && !merged.has("tenant")) merged.set("tenant", t);
+        if (o && !merged.has("office")) merged.set("office", o);
+        var mq = merged.toString();
+        a.setAttribute("href", path + (mq ? "?" + mq : "") + hash);
+      });
+    })();
+  </script>
+  <script src="/pwa-register.js" defer></script>
+</body>
+</html>

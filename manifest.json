@@ -1,7 +1,7 @@
 {
   "name": "momo fit",
   "short_name": "momo fit",
-  "description": "スポーツジム会員向けセルフ健康管理（記録・可視化・AI・トレーナー共有）",
+  "description": "スポーツジム会員向けウェルビーイング（心身のコンディション）：記録・可視化・AI・トレーナー共有",
   "start_url": "/gym.html",
   "scope": "/",
   "display": "standalone",
