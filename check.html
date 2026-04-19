@@ -206,6 +206,23 @@
       .emoji-btn .t { font-size: 0.52rem; }
       .type-grid { grid-template-columns: 1fr; }
     }
+    .btn-pulse-link {
+      display: block;
+      text-align: center;
+      margin-top: 0.65rem;
+      padding: 0.75rem 1rem;
+      border-radius: 12px;
+      font-size: 0.92rem;
+      font-weight: 700;
+      text-decoration: none;
+      color: var(--main);
+      border: 2px solid var(--accent);
+      background: #fff;
+      box-shadow: 0 3px 12px var(--shadow);
+      transition: background 0.15s, transform 0.12s;
+    }
+    .btn-pulse-link:active { transform: scale(0.98); }
+    .btn-pulse-link:hover { background: #f7f9fd; }
   </style>
   <link rel="stylesheet" href="/css/gym-app-shell.css" />
 </head>
@@ -231,6 +248,13 @@
     </div>
     <div id="form-root">
       <form id="checkForm" novalidate>
+        <section class="card" aria-labelledby="label-pulse">
+          <h2 id="label-pulse">自律神経チェック（任意）</h2>
+          <p class="hint" style="margin-top:0">
+            指先をカメラに当てて脈拍から<strong>今の体調の目安</strong>を出します。下のコンディション記録の<strong>前後</strong>、どちらでも構いません。
+          </p>
+          <a class="btn-pulse-link" href="./pulse.html?continue=check">自律神経をチェックする</a>
+        </section>
         <section class="card" aria-labelledby="label-body">
           <h2 id="label-body">1. 体の調子</h2>
           <div class="emoji-row" id="bodyRow" role="group" aria-labelledby="label-body"></div>

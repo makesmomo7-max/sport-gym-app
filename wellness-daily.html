@@ -162,6 +162,23 @@
     }
     .bottom-nav a svg { width: 1.2rem; height: 1.2rem; }
     .bottom-nav a[aria-current="page"] { opacity: 1; font-weight: 700; }
+    .btn-pulse-link {
+      display: block;
+      text-align: center;
+      margin-top: 0.65rem;
+      padding: 0.75rem 1rem;
+      border-radius: 12px;
+      font-size: 0.92rem;
+      font-weight: 700;
+      text-decoration: none;
+      color: var(--main);
+      border: 2px solid var(--accent);
+      background: #fff;
+      box-shadow: 0 4px 18px var(--shadow);
+      transition: background 0.15s, transform 0.12s;
+    }
+    .btn-pulse-link:active { transform: scale(0.98); }
+    .btn-pulse-link:hover { background: #f7f9fd; }
   </style>
   <link rel="stylesheet" href="/css/gym-app-shell.css" />
 </head>
@@ -189,6 +206,13 @@
           <h2>日付</h2>
           <label class="lbl" for="recDate">記録する日</label>
           <input type="date" id="recDate" name="recDate" required />
+        </div>
+        <div class="card">
+          <h2>自律神経チェック（任意）</h2>
+          <p class="hint" style="margin-top:0">
+            指先をカメラに当てて脈拍から<strong>今の体調の目安</strong>を出します。このページの他の項目の<strong>前後</strong>、どちらでも構いません。
+          </p>
+          <a class="btn-pulse-link" href="./pulse.html?continue=wellness">自律神経をチェックする</a>
         </div>
         <div class="card">
           <h2>歩数</h2>

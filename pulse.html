@@ -561,6 +561,40 @@
     .bottom-nav a[aria-current="page"] svg {
       transform: scale(1.12);
     }
+    .continue-hint {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--accent);
+      text-align: center;
+      margin: 0 0 1rem;
+      padding: 0.55rem 0.65rem;
+      background: #eef4ff;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      line-height: 1.45;
+    }
+    .continue-cta-wrap {
+      margin: 0.85rem 0 0;
+    }
+    .btn-continue {
+      display: block;
+      width: 100%;
+      text-align: center;
+      padding: 0.9rem 1rem;
+      border-radius: 14px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      font-family: inherit;
+      text-decoration: none;
+      color: #fff;
+      background: linear-gradient(180deg, var(--accent), var(--main));
+      box-shadow: 0 6px 18px rgba(26, 43, 74, 0.22);
+      border: none;
+      box-sizing: border-box;
+    }
+    .btn-continue:active {
+      transform: scale(0.99);
+    }
   </style>
 </head>
 <body>
@@ -573,6 +607,7 @@
     <!-- Screen 1: Guide -->
     <div class="screen active" id="screenGuide">
       <div class="card">
+        <p id="continueHint" class="continue-hint" hidden></p>
         <div class="guide-illust" aria-hidden="true">👆📱</div>
         <ol class="guide-steps">
           <li>
@@ -688,6 +723,9 @@
         </div>
       </div>
       <button class="btn-retry" id="btnRetry" type="button">もう一度測定する</button>
+      <div id="continueCtaWrap" class="continue-cta-wrap" hidden>
+        <a href="./check.html" class="btn-continue" id="continueCtaBtn">記録に戻る</a>
+      </div>
     </div>
 
     <!-- 全画面共通の履歴セクション（常に表示） -->
@@ -814,6 +852,67 @@
     var hrvBig = document.getElementById("hrvBig");
     var hrvStatus = document.getElementById("hrvStatus");
     var hrvMarker = document.getElementById("hrvMarker");
+
+    var continueMode = null;
+    try {
+      var cq = new URLSearchParams(window.location.search).get("continue");
+      if (cq === "check" || cq === "wellness") continueMode = cq;
+    } catch (eCont) {}
+
+    function getReturnQueryString() {
+      var out = new URLSearchParams();
+      try {
+        var p = new URLSearchParams(window.location.search);
+        var t = p.get("tenant");
+        var o = p.get("office");
+        if (t) out.set("tenant", String(t).trim().slice(0, 64));
+        if (o) out.set("office", String(o).trim().slice(0, 64));
+        if (!out.has("tenant")) {
+          try {
+            t = localStorage.getItem("eap_tenant");
+            if (t) out.set("tenant", String(t).trim().slice(0, 64));
+          } catch (e1) {}
+        }
+        if (!out.has("office")) {
+          try {
+            o = localStorage.getItem("eap_office");
+            if (o) out.set("office", String(o).trim().slice(0, 64));
+          } catch (e2) {}
+        }
+      } catch (e) {}
+      var s = out.toString();
+      return s ? "?" + s : "";
+    }
+
+    function applyContinueFlowHints() {
+      var hint = document.getElementById("continueHint");
+      if (!hint) return;
+      if (!continueMode) {
+        hint.setAttribute("hidden", "");
+        hint.textContent = "";
+        return;
+      }
+      hint.removeAttribute("hidden");
+      hint.textContent =
+        continueMode === "wellness"
+          ? "測定のあと、「1日の記録」に戻れます。"
+          : "測定のあと、「コンディション記録」に戻れます。";
+    }
+
+    function updateContinueCta() {
+      var wrap = document.getElementById("continueCtaWrap");
+      var btn = document.getElementById("continueCtaBtn");
+      if (!wrap || !btn) return;
+      if (!continueMode) {
+        wrap.setAttribute("hidden", "");
+        return;
+      }
+      var base = continueMode === "wellness" ? "./wellness-daily.html" : "./check.html";
+      var label = continueMode === "wellness" ? "1日の記録に戻る" : "コンディション記録に戻る";
+      btn.textContent = label;
+      btn.setAttribute("href", base + getReturnQueryString());
+      wrap.removeAttribute("hidden");
+    }
 
     var stream = null;
     var rafId = null;
@@ -1131,6 +1230,7 @@
         hrvMarker.style.left = pct + "%";
       }
       showScreen(screenResult);
+      updateContinueCta();
       saveToSheet(score, cond.label, bpm, hrv);
       saveToLocal(score, cond.label, bpm, hrv, aut.parasympathetic, aut.sympathetic);
     }
@@ -1284,6 +1384,7 @@
       refreshHistories();
     });
 
+    applyContinueFlowHints();
     refreshHistories();
   })();
   </script>
