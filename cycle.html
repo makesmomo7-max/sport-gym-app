@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>周期メモ | momo fit</title>
+  <meta name="theme-color" content="#1a2b4a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="momo fit" />
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=2" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2" />
+  <style>
+    :root {
+      --main: #1a2b4a;
+      --accent: #2e4a7a;
+      --bg: #f4f7fc;
+      --card: #ffffff;
+      --text: #1a2b4a;
+      --muted: #5a6b85;
+      --border: #d8e0ef;
+      --shadow: rgba(26, 43, 74, 0.08);
+      --period: #fce4ec;
+      --period-b: #f8bbd0;
+      --predict: #e3f2fd;
+      --predict-b: #90caf9;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100dvh;
+      font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
+      background: linear-gradient(165deg, #eef3fb 0%, var(--bg) 45%, #e8eef8 100%);
+      color: var(--text);
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+      padding-bottom: calc(4.25rem + env(safe-area-inset-bottom, 0px));
+    }
+    .wrap { max-width: 440px; margin: 0 auto; padding: 1.25rem 1rem 2.5rem; }
+    .card {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 1rem 0.95rem;
+      margin-bottom: 0.9rem;
+      box-shadow: 0 4px 20px var(--shadow);
+      border: 1px solid var(--border);
+    }
+    .card h2 {
+      margin: 0 0 0.55rem;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    .hint { font-size: 0.7rem; color: var(--muted); margin-top: 0.35rem; line-height: 1.5; }
+    label.lbl { display: block; font-size: 0.74rem; font-weight: 600; color: var(--muted); margin-bottom: 0.3rem; }
+    input[type="number"], input[type="date"], input[type="text"] {
+      width: 100%;
+      padding: 0.55rem 0.65rem;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      font-size: 0.95rem;
+      font-family: inherit;
+      background: #fafcfe;
+    }
+    input:focus { outline: none; border-color: var(--accent); }
+    .chk { display: flex; align-items: flex-start; gap: 0.5rem; font-size: 0.88rem; font-weight: 600; margin: 0.4rem 0; }
+    .chk input { width: 1.1rem; height: 1.1rem; margin-top: 0.12rem; accent-color: var(--accent); }
+    .pred-box {
+      margin-top: 0.65rem;
+      padding: 0.65rem 0.75rem;
+      border-radius: 12px;
+      background: #f5f8fc;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--main);
+    }
+    .pred-box em { font-style: normal; color: var(--accent); font-size: 1.05rem; }
+    .cal-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+    }
+    .cal-head strong { font-size: 0.95rem; }
+    .cal-nav {
+      border: none;
+      background: #eef2fa;
+      color: var(--accent);
+      width: 2.25rem;
+      height: 2.25rem;
+      border-radius: 10px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      line-height: 1;
+    }
+    .cal-nav:active { transform: scale(0.96); }
+    .cal-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 3px;
+      text-align: center;
+      font-size: 0.62rem;
+      font-weight: 700;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+    .cal-cells {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 3px;
+    }
+    .cal-cell {
+      aspect-ratio: 1;
+      max-height: 2.65rem;
+      border-radius: 10px;
+      border: 1px solid transparent;
+      background: #fafcfe;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--main);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      font-family: inherit;
+    }
+    .cal-cell.muted { color: #b0b8c8; background: transparent; cursor: default; }
+    .cal-cell.period { background: var(--period); border-color: var(--period-b); }
+    .cal-cell.predict { background: var(--predict); border-color: var(--predict-b); }
+    .cal-cell.selected { outline: 2px solid var(--accent); outline-offset: 1px; }
+    .cal-cell.today { font-weight: 800; color: var(--accent); }
+    .scale-row { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-bottom: 0.65rem; }
+    .scale-btn {
+      flex: 1 1 calc(20% - 0.25rem);
+      min-width: 44px;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      background: #fafcfe;
+      padding: 0.35rem 0.15rem;
+      cursor: pointer;
+      font: inherit;
+      font-size: 0.62rem;
+      font-weight: 700;
+      color: var(--main);
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .scale-btn.on {
+      border-color: var(--accent);
+      background: linear-gradient(180deg, #f0f4fc 0%, #e4ecf8 100%);
+      box-shadow: 0 0 0 2px rgba(46, 74, 122, 0.12);
+    }
+    .row-lbl { font-size: 0.72rem; font-weight: 700; color: var(--main); margin: 0.35rem 0 0.2rem; }
+    textarea {
+      width: 100%;
+      min-height: 56px;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 0.55rem 0.65rem;
+      font-size: 0.88rem;
+      font-family: inherit;
+      resize: vertical;
+      background: #fafcfe;
+    }
+    .submit-btn {
+      width: 100%;
+      border: none;
+      border-radius: 14px;
+      padding: 0.9rem 1rem;
+      font-size: 0.95rem;
+      font-weight: 700;
+      font-family: inherit;
+      color: #fff;
+      background: linear-gradient(180deg, var(--accent) 0%, var(--main) 100%);
+      cursor: pointer;
+      box-shadow: 0 6px 18px rgba(26, 43, 74, 0.25);
+      margin-top: 0.5rem;
+    }
+    .submit-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+    .main-block[hidden] { display: none !important; }
+    .bottom-nav {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 1000;
+      display: flex;
+      justify-content: space-around;
+      align-items: stretch;
+      gap: 0.25rem;
+      padding: 0.5rem 0.5rem calc(0.5rem + env(safe-area-inset-bottom, 0px));
+      background: #fff;
+      box-shadow: 0 -1px 0 rgba(26, 43, 74, 0.08);
+    }
+    .bottom-nav a {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.15rem;
+      min-width: 0;
+      padding: 0.3rem 0.1rem;
+      text-decoration: none;
+      color: var(--main);
+      font-size: 0.55rem;
+      font-weight: 500;
+      opacity: 0.55;
+      transition: opacity 0.15s ease;
+    }
+    .bottom-nav a svg { width: 1.2rem; height: 1.2rem; }
+    .bottom-nav a[aria-current="page"] { opacity: 1; font-weight: 700; }
+  </style>
+  <link rel="stylesheet" href="/css/gym-app-shell.css" />
+</head>
+<body>
+  <div class="wrap">
+    <div class="momo-app-top" role="banner">
+      <div class="momo-app-top-inner">
+        <div class="momo-app-top-text">
+          <h1>周期メモ</h1>
+          <p class="sub">自分用のざっくりカレンダーと主観ログです。端末内のみ保存（共有文面には含めません）。</p>
+        </div>
+        <div class="momo-app-top-art" aria-hidden="true">
+          <svg viewBox="0 0 88 88" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="44" cy="44" r="34" fill="none" stroke="rgba(255,255,255,0.32)" stroke-width="8" />
+            <circle cx="44" cy="44" r="22" fill="none" stroke="rgba(255,255,255,0.52)" stroke-width="8" stroke-linecap="round" stroke-dasharray="85 120" transform="rotate(-90 44 44)" />
+            <circle cx="44" cy="44" r="10" fill="none" stroke="rgba(255,255,255,0.72)" stroke-width="6" stroke-linecap="round" stroke-dasharray="48 120" transform="rotate(-90 44 44)" />
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>利用について</h2>
+      <p class="hint" style="margin-top:0">
+        医療診断・妊娠の有無の判断には使えません。体調に不安があるときは医療機関へ。データは<strong>このスマホの中だけ</strong>に保存されます。
+      </p>
+      <label class="chk">
+        <input type="checkbox" id="optIn" />
+        <span>周期メモを使う（オプトイン）</span>
+      </label>
+    </div>
+
+    <div id="mainBlock" class="main-block" hidden>
+      <div class="card">
+        <h2>前回の生理（ざっくり）</h2>
+        <label class="lbl" for="bleedStart">開始日</label>
+        <input type="date" id="bleedStart" />
+        <label class="lbl" for="bleedEnd" style="margin-top:0.65rem">終了日（不明なら空欄可）</label>
+        <input type="date" id="bleedEnd" />
+        <label class="lbl" for="avgCycle" style="margin-top:0.65rem">平均周期（日）</label>
+        <input type="number" id="avgCycle" min="21" max="45" step="1" value="28" />
+        <p class="hint">次回の生理開始の<strong>目安</strong>＝前回の開始日＋平均周期（生理が不順な場合はずれます）。</p>
+        <div id="predOut" class="pred-box" role="status">次回開始の目安: <em>—</em></div>
+      </div>
+
+      <div class="card">
+        <h2>カレンダー</h2>
+        <p class="hint" style="margin-top:0">ピンク＝前回の生理の期間（開始〜終了）、水色＝次回開始の目安。日付をタップすると下の主観ログを編集します。</p>
+        <div class="cal-head">
+          <button type="button" class="cal-nav" id="calPrev" aria-label="前の月">‹</button>
+          <strong id="calTitle">—</strong>
+          <button type="button" class="cal-nav" id="calNext" aria-label="次の月">›</button>
+        </div>
+        <div class="cal-grid"><span>日</span><span>月</span><span>火</span><span>水</span><span>木</span><span>金</span><span>土</span></div>
+        <div id="calCells" class="cal-cells"></div>
+      </div>
+
+      <div class="card">
+        <h2 id="dayEditTitle">主観ログ</h2>
+        <p class="hint" style="margin-top:0">1＝いい感じが少ない … 5＝いい感じが多い、くらいの主観で構いません。</p>
+        <p class="row-lbl">PMS のつらさ</p>
+        <div class="scale-row" id="rowPms" role="group" aria-label="PMS"></div>
+        <p class="row-lbl">からだ</p>
+        <div class="scale-row" id="rowBody" role="group" aria-label="体"></div>
+        <p class="row-lbl">こころ</p>
+        <div class="scale-row" id="rowMind" role="group" aria-label="こころ"></div>
+        <p class="row-lbl">肌</p>
+        <div class="scale-row" id="rowSkin" role="group" aria-label="肌"></div>
+        <p class="row-lbl">ダイエット・食欲のコントロール</p>
+        <div class="scale-row" id="rowDiet" role="group" aria-label="ダイエット"></div>
+        <label class="lbl" for="dayMemo">メモ（任意）</label>
+        <textarea id="dayMemo" maxlength="400" placeholder="気づき・体調メモなど"></textarea>
+        <button type="button" class="submit-btn" id="saveBtn">この日付を保存</button>
+      </div>
+    </div>
+  </div>
+
+  <nav class="bottom-nav" aria-label="メインメニュー">
+    <a href="./gym.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      ホーム
+    </a>
+    <a href="./record.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      記録
+    </a>
+    <a href="./history.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      データ
+    </a>
+    <a href="./chat.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      AI
+    </a>
+    <a href="./share_trainer.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+      共有
+    </a>
+  </nav>
+
+  <script>
+    (function () {
+      "use strict";
+      var STORAGE = "momo_cycle_v1";
+      var pad2 = function (n) { return String(n).length < 2 ? "0" + n : String(n); };
+      function ymdToday() {
+        var d = new Date();
+        return d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate());
+      }
+      function parseYmd(s) {
+        var p = String(s || "").split("-");
+        if (p.length !== 3) return null;
+        var y = +p[0], m = +p[1] - 1, day = +p[2];
+        var dt = new Date(y, m, day, 12, 0, 0);
+        return isNaN(dt.getTime()) ? null : dt;
+      }
+      function ymdFromDate(dt) {
+        return dt.getFullYear() + "-" + pad2(dt.getMonth() + 1) + "-" + pad2(dt.getDate());
+      }
+      function addDaysYmd(ymd, n) {
+        var d = parseYmd(ymd);
+        if (!d) return null;
+        d.setDate(d.getDate() + n);
+        return ymdFromDate(d);
+      }
+      function ymdCompare(a, b) {
+        if (!a || !b) return 0;
+        return a < b ? -1 : a > b ? 1 : 0;
+      }
+      function inRangeYmd(ymd, start, end) {
+        if (!ymd || !start) return false;
+        if (!end || end < start) return ymd === start;
+        return ymdCompare(ymd, start) >= 0 && ymdCompare(ymd, end) <= 0;
+      }
+
+      function loadStore() {
+        try {
+          var o = JSON.parse(localStorage.getItem(STORAGE) || "{}");
+          if (!o || typeof o !== "object") o = {};
+          if (!o.prefs || typeof o.prefs !== "object") o.prefs = {};
+          if (o.prefs.avgCycleDays == null || isNaN(+o.prefs.avgCycleDays)) o.prefs.avgCycleDays = 28;
+          if (typeof o.prefs.optIn !== "boolean") o.prefs.optIn = !!o.prefs.optIn;
+          if (!Array.isArray(o.days)) o.days = [];
+          return o;
+        } catch (e) {
+          return { prefs: { optIn: false, avgCycleDays: 28 }, days: [] };
+        }
+      }
+      function saveStore(data) {
+        try {
+          localStorage.setItem(STORAGE, JSON.stringify(data));
+        } catch (e2) {
+          alert("保存に失敗しました（容量など）。");
+        }
+      }
+
+      function buildScaleRow(containerId, labels) {
+        var container = document.getElementById(containerId);
+        if (!container) return { get: function () { return null; }, set: function () {} };
+        var val = null;
+        function render() {
+          container.innerHTML = "";
+          for (var i = 1; i <= 5; i++) {
+            var b = document.createElement("button");
+            b.type = "button";
+            b.className = "scale-btn";
+            b.textContent = String(i) + (labels[i - 1] ? "\n" + labels[i - 1] : "");
+            b.dataset.v = String(i);
+            b.addEventListener("click", function () {
+              var me = this;
+              val = +me.dataset.v;
+              container.querySelectorAll(".scale-btn").forEach(function (x) {
+                x.classList.toggle("on", x === me);
+              });
+            });
+            container.appendChild(b);
+          }
+        }
+        render();
+        return {
+          get: function () { return val; },
+          set: function (n) {
+            val = n == null ? null : +n;
+            container.querySelectorAll(".scale-btn").forEach(function (x) {
+              x.classList.toggle("on", +x.dataset.v === val);
+            });
+          }
+        };
+      }
+
+      var lbl5 = ["低", "", "中", "", "高"];
+      var cPms = buildScaleRow("rowPms", lbl5);
+      var cBody = buildScaleRow("rowBody", lbl5);
+      var cMind = buildScaleRow("rowMind", lbl5);
+      var cSkin = buildScaleRow("rowSkin", lbl5);
+      var cDiet = buildScaleRow("rowDiet", lbl5);
+
+      var optIn = document.getElementById("optIn");
+      var mainBlock = document.getElementById("mainBlock");
+      var bleedStart = document.getElementById("bleedStart");
+      var bleedEnd = document.getElementById("bleedEnd");
+      var avgCycle = document.getElementById("avgCycle");
+      var predOut = document.getElementById("predOut");
+      var calCells = document.getElementById("calCells");
+      var calTitle = document.getElementById("calTitle");
+      var calPrev = document.getElementById("calPrev");
+      var calNext = document.getElementById("calNext");
+      var dayMemo = document.getElementById("dayMemo");
+      var saveBtn = document.getElementById("saveBtn");
+      var dayEditTitle = document.getElementById("dayEditTitle");
+
+      var viewYear, viewMonth;
+      var selectedYmd = ymdToday();
+
+      function syncMainVisibility() {
+        var on = !!optIn.checked;
+        mainBlock.hidden = !on;
+      }
+
+      function readPrefsFromForm(store) {
+        if (!store.prefs) store.prefs = {};
+        store.prefs.optIn = !!optIn.checked;
+        store.prefs.bleedingStartYmd = bleedStart.value || null;
+        store.prefs.bleedingEndYmd = bleedEnd.value || null;
+        var ac = Math.floor(Number(avgCycle.value) || 28);
+        store.prefs.avgCycleDays = Math.max(21, Math.min(45, ac));
+        avgCycle.value = String(store.prefs.avgCycleDays);
+      }
+
+      function writePrefsToForm(p) {
+        optIn.checked = !!p.optIn;
+        bleedStart.value = p.bleedingStartYmd || "";
+        bleedEnd.value = p.bleedingEndYmd || "";
+        avgCycle.value = String(p.avgCycleDays != null ? p.avgCycleDays : 28);
+      }
+
+      function nextPredictedYmd(p) {
+        if (!p.bleedingStartYmd) return null;
+        var ac = p.avgCycleDays != null ? +p.avgCycleDays : 28;
+        if (ac < 21 || ac > 45) ac = 28;
+        return addDaysYmd(p.bleedingStartYmd, ac);
+      }
+
+      function updatePred() {
+        var st = loadStore();
+        readPrefsFromForm(st);
+        var next = nextPredictedYmd(st.prefs);
+        var em = predOut.querySelector("em");
+        if (em) em.textContent = next || "—";
+      }
+
+      function findDayRow(store, ymd) {
+        for (var i = 0; i < store.days.length; i++) {
+          if (store.days[i] && store.days[i].date === ymd) return store.days[i];
+        }
+        return null;
+      }
+
+      function loadDayEditor(ymd) {
+        selectedYmd = ymd;
+        var st = loadStore();
+        var row = findDayRow(st, ymd);
+        cPms.set(row ? row.pms1to5 : null);
+        cBody.set(row ? row.body1to5 : null);
+        cMind.set(row ? row.mind1to5 : null);
+        cSkin.set(row ? row.skin1to5 : null);
+        cDiet.set(row ? row.diet1to5 : null);
+        dayMemo.value = row && row.memo ? row.memo : "";
+        if (dayEditTitle) dayEditTitle.textContent = "主観ログ（" + ymd + "）";
+      }
+
+      function renderCalendar() {
+        var st = loadStore();
+        var p = st.prefs;
+        var next = nextPredictedYmd(p);
+        var y = viewYear;
+        var m = viewMonth;
+        calTitle.textContent = y + "年 " + (m + 1) + "月";
+
+        var first = new Date(y, m, 1, 12, 0, 0);
+        var startWeekday = first.getDay();
+        var lastDate = new Date(y, m + 1, 0, 12, 0, 0).getDate();
+
+        calCells.innerHTML = "";
+        var pad = 0;
+        for (var i = 0; i < startWeekday; i++) {
+          var e0 = document.createElement("div");
+          e0.className = "cal-cell muted";
+          calCells.appendChild(e0);
+          pad++;
+        }
+        var todayY = ymdToday();
+        for (var d = 1; d <= lastDate; d++) {
+          var ymd = y + "-" + pad2(m + 1) + "-" + pad2(d);
+          var btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "cal-cell";
+          btn.textContent = String(d);
+          btn.dataset.ymd = ymd;
+          if (inRangeYmd(ymd, p.bleedingStartYmd, p.bleedingEndYmd)) btn.classList.add("period");
+          if (next && ymd === next) btn.classList.add("predict");
+          if (ymd === todayY) btn.classList.add("today");
+          if (ymd === selectedYmd) btn.classList.add("selected");
+          btn.addEventListener("click", function () {
+            var ymd2 = this.dataset.ymd;
+            if (ymd2) loadDayEditor(ymd2);
+            renderCalendar();
+          });
+          calCells.appendChild(btn);
+        }
+        var total = pad + lastDate;
+        var tail = (7 - (total % 7)) % 7;
+        for (var j = 0; j < tail; j++) {
+          var e1 = document.createElement("div");
+          e1.className = "cal-cell muted";
+          calCells.appendChild(e1);
+        }
+      }
+
+      function initViewMonth() {
+        var t = parseYmd(selectedYmd) || new Date();
+        viewYear = t.getFullYear();
+        viewMonth = t.getMonth();
+      }
+
+      var st0 = loadStore();
+      writePrefsToForm(st0.prefs || {});
+      syncMainVisibility();
+      initViewMonth();
+      updatePred();
+      loadDayEditor(selectedYmd);
+      renderCalendar();
+
+      optIn.addEventListener("change", function () {
+        var st = loadStore();
+        readPrefsFromForm(st);
+        saveStore(st);
+        syncMainVisibility();
+        initViewMonth();
+        updatePred();
+        loadDayEditor(selectedYmd);
+        renderCalendar();
+      });
+      bleedStart.addEventListener("change", function () {
+        var st = loadStore();
+        readPrefsFromForm(st);
+        saveStore(st);
+        updatePred();
+        renderCalendar();
+      });
+      bleedEnd.addEventListener("change", function () {
+        var st = loadStore();
+        readPrefsFromForm(st);
+        saveStore(st);
+        updatePred();
+        renderCalendar();
+      });
+      avgCycle.addEventListener("change", function () {
+        var st = loadStore();
+        readPrefsFromForm(st);
+        saveStore(st);
+        updatePred();
+        renderCalendar();
+      });
+
+      calPrev.addEventListener("click", function () {
+        viewMonth--;
+        if (viewMonth < 0) { viewMonth = 11; viewYear--; }
+        renderCalendar();
+      });
+      calNext.addEventListener("click", function () {
+        viewMonth++;
+        if (viewMonth > 11) { viewMonth = 0; viewYear++; }
+        renderCalendar();
+      });
+
+      saveBtn.addEventListener("click", function () {
+        if (!optIn.checked) return;
+        var st = loadStore();
+        readPrefsFromForm(st);
+        var ymd = selectedYmd;
+        var pms = cPms.get();
+        var body = cBody.get();
+        var mind = cMind.get();
+        var skin = cSkin.get();
+        var diet = cDiet.get();
+        if (pms == null || body == null || mind == null || skin == null || diet == null) {
+          alert("PMS・からだ・こころ・肌・ダイエットの5項目すべて、1〜5を選んでください。");
+          return;
+        }
+        var row = {
+          date: ymd,
+          pms1to5: pms,
+          body1to5: body,
+          mind1to5: mind,
+          skin1to5: skin,
+          diet1to5: diet,
+          memo: (dayMemo.value || "").trim().slice(0, 400),
+          savedAt: new Date().toISOString()
+        };
+        var rep = [];
+        var replaced = false;
+        for (var i = 0; i < st.days.length; i++) {
+          if (st.days[i] && st.days[i].date === ymd) {
+            if (!replaced) {
+              rep.push(row);
+              replaced = true;
+            }
+          } else rep.push(st.days[i]);
+        }
+        if (!replaced) rep.push(row);
+        rep.sort(function (a, b) { return String(a.date).localeCompare(String(b.date)); });
+        if (rep.length > 800) rep = rep.slice(-800);
+        st.days = rep;
+        saveStore(st);
+        alert("保存しました。");
+        renderCalendar();
+      });
+    })();
+  </script>
+  <script>
+    (function () {
+      var TENANT_KEY = "eap_tenant";
+      var OFFICE_KEY = "eap_office";
+      function slice64(s) {
+        return String(s == null ? "" : s).trim().slice(0, 64);
+      }
+      var params;
+      try {
+        params = new URLSearchParams(window.location.search);
+      } catch (e) {
+        params = new URLSearchParams();
+      }
+      var tUrl = slice64(params.get("tenant"));
+      var oUrl = slice64(params.get("office"));
+      if (tUrl) {
+        try {
+          localStorage.setItem(TENANT_KEY, tUrl);
+        } catch (e) {}
+      }
+      if (oUrl) {
+        try {
+          localStorage.setItem(OFFICE_KEY, oUrl);
+        } catch (e) {}
+      }
+      var t = tUrl;
+      var o = oUrl;
+      if (!t) {
+        try {
+          t = slice64(localStorage.getItem(TENANT_KEY));
+        } catch (e) {
+          t = "";
+        }
+      }
+      if (!o) {
+        try {
+          o = slice64(localStorage.getItem(OFFICE_KEY));
+        } catch (e) {
+          o = "";
+        }
+      }
+      if (!t && !o) return;
+
+      function isAppHtmlHref(href) {
+        if (!href || /^https?:\/\//i.test(href)) return false;
+        var path = href.split("#")[0].split("?")[0];
+        return /\.html$/i.test(path);
+      }
+
+      document.querySelectorAll("a[href]").forEach(function (a) {
+        var href = a.getAttribute("href");
+        if (!isAppHtmlHref(href)) return;
+        var hashI = href.indexOf("#");
+        var hash = hashI >= 0 ? href.slice(hashI) : "";
+        var base = hashI >= 0 ? href.slice(0, hashI) : href;
+        var qI = base.indexOf("?");
+        var path = qI >= 0 ? base.slice(0, qI) : base;
+        var existing = qI >= 0 ? base.slice(qI + 1) : "";
+        var merged = new URLSearchParams(existing);
+        if (t && !merged.has("tenant")) merged.set("tenant", t);
+        if (o && !merged.has("office")) merged.set("office", o);
+        var mq = merged.toString();
+        a.setAttribute("href", path + (mq ? "?" + mq : "") + hash);
+      });
+    })();
+  </script>
+  <script src="/pwa-register.js" defer></script>
+</body>
+</html>
