@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>momo fit | ジム会員向けウェルビーイング</title>
-  <meta name="description" content="コンディション記録・1日のウェルネス記録・推移の確認・AI相談・トレーナー共有。目安の状態表示とLINE・フォーム等の相談導線。ジム会員向けウェルビーイング。" />
+  <meta name="description" content="ジム会員向け。記録は約1分。推移が見える。共有は本人のタイミングだけ。相談導線は施設設定で。" />
   <meta name="theme-color" content="#1a2b4a" />
   <style>
     :root {
@@ -498,18 +498,82 @@
     @media (min-width: 880px) {
       .grid-features { grid-template-columns: repeat(3, 1fr); }
     }
+    .hero-usp {
+      margin-top: 0.85rem;
+      font-size: clamp(1rem, 3vw, 1.18rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      opacity: 0.95;
+      max-width: 20em;
+      line-height: 1.35;
+    }
+    .after-use {
+      margin: 0 -1.25rem;
+      padding: 2.5rem 1.25rem 2.75rem;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef3fb 100%);
+      border-block: 1px solid var(--line);
+    }
+    .after-use-inner { max-width: 920px; margin: 0 auto; }
+    .after-use h2 {
+      text-align: center;
+      font-size: clamp(1.05rem, 3.2vw, 1.28rem);
+      font-weight: 800;
+      margin-bottom: 0.35rem;
+      color: var(--navy);
+    }
+    .after-use .sub {
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-bottom: 1.5rem;
+      font-weight: 600;
+    }
+    .after-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.85rem;
+    }
+    @media (max-width: 640px) {
+      .after-grid { grid-template-columns: 1fr; }
+    }
+    .after-card {
+      text-align: center;
+      padding: 1.15rem 0.85rem;
+      border-radius: 16px;
+      background: #fff;
+      border: 1px solid var(--line);
+      box-shadow: 0 6px 22px rgba(26, 43, 74, 0.06);
+    }
+    .after-card strong {
+      display: block;
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: var(--navy);
+      margin-bottom: 0.4rem;
+      line-height: 1.35;
+    }
+    .after-card span { font-size: 0.78rem; color: var(--muted); line-height: 1.5; font-weight: 600; }
+    .trust-line {
+      margin-top: 1rem;
+      font-size: 0.68rem;
+      opacity: 0.78;
+      max-width: 34em;
+      line-height: 1.55;
+    }
   </style>
 </head>
 <body>
   <header class="hero">
     <p class="hero-badge">Gym · Wellness</p>
     <h1>記録して、<br />つづける。</h1>
-    <p class="hero-lead">ウェルビーイングは、毎日のひとタップから。睡眠・ストレス・トレの目安と、いつでも開ける相談導線（AI・LINE・フォームは施設設定）をひとまとめに。</p>
+    <p class="hero-usp">ジム向け｜記録は約1分。相談は、いつでも開ける。</p>
+    <p class="hero-lead">タップで今日を残す。推移は見える。トレーナーへ送るのは、本人が押したときだけ。</p>
     <div class="hero-cta">
       <a class="btn btn-primary" id="ctaApp" href="./gym.html">アプリを開く</a>
-      <a class="btn btn-ghost" href="#numbers">数字で見る</a>
+      <a class="btn btn-ghost" href="#after">使うとどうなるか</a>
     </div>
-    <p class="hero-note">※本アプリの情報は医療診断ではありません。強い不調は医療機関へ。</p>
+    <p class="hero-note">※医療診断ではありません。強い不調は医療機関へ。</p>
+    <p class="trust-line">開発・提供には、産業医グループとアプリを届けてきた現場の知見（業務委託の協働含む）を反映しています。</p>
   </header>
 
   <div class="mosaic" aria-label="ウェルネス・トレーニングのイメージ写真">
@@ -549,33 +613,54 @@
       <div class="stat-item">
         <div class="stat-val"><span class="js-count" data-target="6" data-suffix="">0</span></div>
         <p class="stat-label">機能の柱</p>
-        <p class="stat-hint">記録・1日のまとめ・データ・AI・共有・相談</p>
+        <p class="stat-hint">記録〜相談まで一気通貫</p>
       </div>
       <div class="stat-item">
         <div class="stat-val"><span class="js-count" data-target="0" data-suffix="">0</span></div>
         <p class="stat-label">自動送信</p>
-        <p class="stat-hint">AIの内容がトレーナーへ勝手に送られることはありません</p>
+        <p class="stat-hint">AIは勝手に送らない</p>
       </div>
       <div class="stat-item">
         <div class="stat-val"><span class="js-count" data-target="1" data-suffix="">0</span><span class="stat-unit">分</span></div>
         <p class="stat-label">記録の目安</p>
-        <p class="stat-hint">コンディションはタップ中心（個人差あり）</p>
+        <p class="stat-hint">コンディションはタップ中心</p>
       </div>
     </div>
-    <p class="stats-foot">数値はサービス設計の要点を示す目安です。</p>
+    <p class="stats-foot">※数字は「何が速いか」の目安です。</p>
+  </section>
+
+  <section class="after-use" id="after" aria-labelledby="after-h">
+    <div class="after-use-inner">
+      <h2 id="after-h">使うと、こうなる</h2>
+      <p class="sub">くどい説明は省き、結果だけ。</p>
+      <div class="after-grid">
+        <div class="after-card">
+          <strong>会員</strong>
+          <span>自分のリズムが見える。続けやすい。</span>
+        </div>
+        <div class="after-card">
+          <strong>施設</strong>
+          <span>声かけのきっかけが揃う。相談導線も一本化。</span>
+        </div>
+        <div class="after-card">
+          <strong>トレーナー</strong>
+          <span>共有された内容だけが届く。押されない。</span>
+        </div>
+      </div>
+    </div>
   </section>
 
   <div class="wrap">
     <section class="section" id="how">
       <p class="section-title">How it works</p>
-      <h2 class="section-head">いつも、同じ3ステップ</h2>
+      <h2 class="section-head">3ステップだけ</h2>
       <div class="steps">
         <article class="step-card">
           <img src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=640&q=80" alt="" width="320" height="140" loading="lazy" decoding="async" />
           <div class="step-body">
             <div class="step-num">1</div>
             <p class="step-title">記録</p>
-            <p class="step-desc">体と気分をタップ。すぐ終わります。</p>
+            <p class="step-desc">体と気分をタップ。</p>
           </div>
         </article>
         <article class="step-card">
@@ -583,7 +668,7 @@
           <div class="step-body">
             <div class="step-num">2</div>
             <p class="step-title">確認</p>
-            <p class="step-desc">グラフで自分の推移を見る。</p>
+            <p class="step-desc">推移を見る。</p>
           </div>
         </article>
         <article class="step-card">
@@ -591,7 +676,7 @@
           <div class="step-body">
             <div class="step-num">3</div>
             <p class="step-title">共有</p>
-            <p class="step-desc">必要なときだけ、トレーナーへ。</p>
+            <p class="step-desc">必要なときだけ共有。</p>
           </div>
         </article>
       </div>
@@ -599,30 +684,30 @@
 
     <section class="section" id="wellbeing" aria-labelledby="wellbeing-h">
       <p class="section-title">Care</p>
-      <h2 class="section-head" id="wellbeing-h">支える。「指導する」ではなく。</h2>
-      <p style="text-align:center;max-width:38em;margin:-0.75rem auto 1.75rem;font-size:0.88rem;color:var(--muted);line-height:1.65;">
-        今日のひとこと（🟢良好 🟡注意 🔴要サポートの目安）と、常時表示の相談ボタン。しんどさが続くときはチャットに加え、施設が設定した<strong>LINE・フォーム</strong>へつながります（医療診断ではありません）。
+      <h2 class="section-head" id="wellbeing-h">指導しない。寄り添う。</h2>
+      <p style="text-align:center;max-width:32em;margin:-0.75rem auto 1.75rem;font-size:0.86rem;color:var(--muted);line-height:1.6;font-weight:600;">
+        目安（🟢🟡🔴）と相談ボタンは常時。LINE・フォームは施設設定（医療診断ではありません）。
       </p>
       <div class="steps">
         <article class="step-card step-card--plain">
           <div class="step-body">
             <div class="step-num" style="font-size:0.7rem;letter-spacing:0.02em;">🟢🟡🔴</div>
             <p class="step-title">目安の可視化</p>
-            <p class="step-desc">ストレス・睡眠・トレ記録などから、ルールベースで状態を表示。断定や治療指示はしません。</p>
+            <p class="step-desc">ルールで目安表示。断定はしない。</p>
           </div>
         </article>
         <article class="step-card step-card--plain">
           <div class="step-body">
             <div class="step-num">1日</div>
             <p class="step-title">まとめて記録</p>
-            <p class="step-desc">歩数・睡眠・ストレス・メニューと実施チェック・食事メモなど。コンディション記録とも連携。</p>
+            <p class="step-desc">歩数・睡眠・ストレス・トレを1画面に。</p>
           </div>
         </article>
         <article class="step-card step-card--plain">
           <div class="step-body">
             <div class="step-num">EAP</div>
             <p class="step-title">相談の入口</p>
-            <p class="step-desc">目安が重いときはポップアップで声かけ。無理のない相談動線を優先した設計です。</p>
+            <p class="step-desc">重い目安のときだけ、声かけ。</p>
           </div>
         </article>
       </div>
@@ -630,7 +715,7 @@
 
     <section class="section" aria-labelledby="viz-heading">
       <p class="section-title">Visual</p>
-      <h2 class="section-head" id="viz-heading">写真でざっくり理解</h2>
+      <h2 class="section-head" id="viz-heading">画面イメージ</h2>
       <div class="zig">
         <div class="zig-img zig-img--chart" aria-hidden="true">
           <svg viewBox="0 0 420 260" xmlns="http://www.w3.org/2000/svg">
@@ -672,8 +757,8 @@
         </div>
         <div class="zig-text">
           <span class="tag">RECORD</span>
-          <h3>毎日のコンディションを、軽く残す</h3>
-          <p>完璧な入力は不要です。続くかどうかだけを大事にしています。詳しくは「1日の記録」で歩数・睡眠・トレなどもまとめて残せます。</p>
+          <h3>毎日、軽く残す</h3>
+          <p>完璧不要。続くことだけ。</p>
           <div class="zig-metric">
             <span><strong>3</strong> タップで完了イメージ</span>
             <span><strong>100</strong> % 任意の共有</span>
@@ -683,10 +768,10 @@
       <div class="zig rev">
         <div class="zig-text">
           <span class="tag">VIEW</span>
-          <h3>推移を見える化</h3>
-          <p>睡眠や脈拍のログとあわせて、自分のリズムを把握しやすくします。</p>
+          <h3>推移が見える</h3>
+          <p>睡眠・脈拍などとも並べて把握。</p>
           <div class="zig-metric">
-            <span><strong>14</strong> 日分の傾向表示（画面により異なります）</span>
+            <span><strong>14</strong> 日イメージ</span>
           </div>
         </div>
         <div class="zig-img zig-img--mock" aria-label="アプリ画面のモック（記録イメージ）">
@@ -753,8 +838,8 @@
         </div>
         <div class="zig-text">
           <span class="tag">CONNECT</span>
-          <h3>トレーナーにつながるのは、あなたのタイミング</h3>
-          <p>共有ボタンを押した内容だけが伝わる設計です。</p>
+          <h3>共有は、本人のタイミング</h3>
+          <p>押した分だけ届く。</p>
           <div class="zig-metric">
             <span><strong>0</strong> 自動連携（しない）</span>
           </div>
@@ -782,13 +867,13 @@
           <circle cx="472" cy="95" r="7" fill="#fff" stroke="#1a2b4a" stroke-width="2.5"/>
           <text x="32" y="248" font-size="10" font-weight="600" fill="#8a96ad">※グラフはLP用のイメージです。実際の数値は端末の記録に基づきます。</text>
         </svg>
-        <p class="lp-chart-caption">ダッシュボード風の見た目で、続けやすさをイメージしてもらうための装飾です。</p>
+        <p class="lp-chart-caption">※LP用イメージ</p>
       </div>
     </section>
 
     <section class="section">
       <p class="section-title">Features</p>
-      <h2 class="section-head">迷わない。だから続く。</h2>
+      <h2 class="section-head">迷わせない。</h2>
       <div class="grid grid-features">
         <article class="card">
           <div class="card-ph">
@@ -796,7 +881,7 @@
           </div>
           <div class="card-body">
             <h3>コンディション</h3>
-            <p>タップだけ。負担を最小に。</p>
+            <p>タップだけ。</p>
           </div>
         </article>
         <article class="card">
@@ -805,7 +890,7 @@
           </div>
           <div class="card-body">
             <h3>マイデータ</h3>
-            <p>端末に保存。推移が見える。</p>
+            <p>端末に残る。</p>
           </div>
         </article>
         <article class="card">
@@ -814,7 +899,7 @@
           </div>
           <div class="card-body">
             <h3>AI（参考）</h3>
-            <p>短く実用的。診断はしません。</p>
+            <p>短文。診断はしない。</p>
           </div>
         </article>
         <article class="card">
@@ -823,7 +908,7 @@
           </div>
           <div class="card-body">
             <h3>トレーナー共有</h3>
-            <p>任意。自動送信はしません。</p>
+            <p>任意。自動送信なし。</p>
           </div>
         </article>
         <article class="card">
@@ -832,7 +917,7 @@
           </div>
           <div class="card-body">
             <h3>1日の記録</h3>
-            <p>歩数・睡眠満足度・ストレス・トレの実施チェック・食事メモなど。端末内に蓄積されます。</p>
+            <p>1日を1画面に。</p>
           </div>
         </article>
         <article class="card">
@@ -841,7 +926,7 @@
           </div>
           <div class="card-body">
             <h3>相談導線</h3>
-            <p>AIチャットに加え、施設設定で LINE・予約・フォームを表示。しんどいときに迷わない導線です。</p>
+            <p>AI＋LINE・フォームは施設設定。</p>
           </div>
         </article>
       </div>
@@ -850,8 +935,8 @@
     <section class="section" id="for-gyms" aria-labelledby="for-gyms-h">
       <p class="section-title">For gyms</p>
       <h2 class="section-head" id="for-gyms-h">導入担当・運営の方へ</h2>
-      <p style="text-align:center;max-width:40em;margin:-0.5rem auto 1rem;font-size:0.86rem;color:var(--muted);line-height:1.65;">
-        契約時のテナント設定・配布URL・法務まわりは<strong>運営者向け</strong>に、館内の声かけ・窓口整理・トレーナー説明は<strong>ジム向け</strong>に、<strong>ITに不慣れな管理者向けの詳細手順</strong>として書面化しています（ブラウザから印刷可）。
+      <p style="text-align:center;max-width:36em;margin:-0.5rem auto 1rem;font-size:0.84rem;color:var(--muted);line-height:1.6;font-weight:600;">
+        運営向け・ジム向けの<strong>詳細手順</strong>は印刷可。URL・QRは専用ツールへ。
       </p>
       <div class="doc-links">
         <a href="./docs/operator-onboarding-ja.html">運営者：契約企業オンボーディング</a>
