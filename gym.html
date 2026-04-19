@@ -38,7 +38,12 @@
     .hero {
       margin: 0 -1rem 1.75rem;
       padding: 2.25rem 1.35rem 2rem;
-      background: linear-gradient(155deg, var(--main) 0%, var(--accent) 48%, #3d5a8f 100%);
+      background-color: var(--main);
+      background-image:
+        linear-gradient(155deg, rgba(26, 43, 74, 0.9) 0%, rgba(46, 74, 122, 0.82) 48%, rgba(61, 90, 143, 0.78) 100%),
+        url("/assets/hero-gym.jpg");
+      background-size: cover;
+      background-position: center;
       color: #fff;
       border-radius: 0 0 28px 28px;
       box-shadow: 0 12px 40px rgba(26, 43, 74, 0.22);
@@ -62,7 +67,7 @@
       font-size: clamp(1.35rem, 4.5vw, 1.65rem);
       font-weight: 700;
       line-height: 1.45;
-      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+      text-shadow: 0 2px 20px rgba(0, 0, 0, 0.28);
     }
     .hero-sub { margin: 0; font-size: 0.92rem; line-height: 1.75; color: rgba(255, 255, 255, 0.92); font-weight: 500; }
     .hero-sub .brand { font-weight: 700; color: #fff; }
