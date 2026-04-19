@@ -162,36 +162,6 @@
     }
     .bottom-nav a svg { width: 1.2rem; height: 1.2rem; }
     .bottom-nav a[aria-current="page"] { opacity: 1; font-weight: 700; }
-    .steps-actions {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 0.5rem;
-      margin-top: 0.5rem;
-    }
-    .btn-clip {
-      flex: 1 1 auto;
-      min-width: 0;
-      border: 2px solid var(--accent);
-      border-radius: 12px;
-      padding: 0.55rem 0.75rem;
-      font-size: 0.78rem;
-      font-weight: 700;
-      font-family: inherit;
-      color: var(--accent);
-      background: #fff;
-      cursor: pointer;
-      transition: background 0.15s, transform 0.12s;
-    }
-    .btn-clip:active { transform: scale(0.98); }
-    .btn-clip:hover { background: #f4f7fc; }
-    .steps-clip-msg {
-      flex: 1 1 100%;
-      margin: 0;
-      font-size: 0.68rem;
-      font-weight: 600;
-      min-height: 1.2em;
-    }
   </style>
   <link rel="stylesheet" href="/css/gym-app-shell.css" />
 </head>
@@ -224,12 +194,8 @@
           <h2>歩数</h2>
           <label class="lbl" for="steps">今日の歩数（目安）</label>
           <input type="number" id="steps" name="steps" min="0" max="100000" placeholder="例: 6500" inputmode="numeric" autocomplete="off" />
-          <div class="steps-actions">
-            <button type="button" class="btn-clip" id="stepsFromClip">クリップボードから取り込む</button>
-            <p id="stepsClipMsg" class="steps-clip-msg" role="status" aria-live="polite"></p>
-          </div>
-          <p class="hint">
-            OSの万歩計と<strong>自動連携はWebでは不可</strong>のため、ヘルスケア／Google Fit などで表示している<strong>歩数の数字をコピー</strong>してから上のボタンを押すと、この欄に反映します（端末・ブラウザによっては許可ダイアログが出ます）。
+          <p class="hint" style="margin-top:0.5rem">
+            お手元のスマートフォン等（歩数計・ヘルスケアアプリなど）で<strong>今日の歩数を確認</strong>のうえ、上の欄に<strong>数字を入力</strong>してください。
           </p>
         </div>
         <div class="card">
@@ -380,68 +346,6 @@
         loadDay(recDate.value);
       });
       loadDay(recDate.value);
-
-      function nfkcDigits(s) {
-        return String(s || "")
-          .replace(/[０-９]/g, function (ch) {
-            return String.fromCharCode(ch.charCodeAt(0) - 0xff10 + 0x30);
-          })
-          .replace(/[，]/g, ",");
-      }
-      function parseStepsFromText(text) {
-        var t = nfkcDigits(text);
-        var matches = t.match(/\d{1,3}(?:,\d{3})+|\d+/g) || [];
-        var ints = matches
-          .map(function (m) {
-            return parseInt(m.replace(/,/g, ""), 10);
-          })
-          .filter(function (n) {
-            return !isNaN(n);
-          });
-        var inRange = ints.filter(function (n) {
-          return n >= 300 && n <= 200000;
-        });
-        if (!inRange.length) return null;
-        var plausible = inRange.filter(function (n) {
-          return n >= 800;
-        });
-        var pool = plausible.length ? plausible : inRange;
-        return Math.max.apply(null, pool);
-      }
-
-      var stepsClipBtn = document.getElementById("stepsFromClip");
-      var stepsClipMsg = document.getElementById("stepsClipMsg");
-      if (stepsClipBtn) {
-        stepsClipBtn.addEventListener("click", function () {
-          var stepsEl = document.getElementById("steps");
-          function setClipMsg(t, ok) {
-            if (!stepsClipMsg) return;
-            stepsClipMsg.textContent = t || "";
-            stepsClipMsg.style.color = ok ? "var(--accent)" : "#9a3412";
-          }
-          setClipMsg("", false);
-          if (!navigator.clipboard || typeof navigator.clipboard.readText !== "function") {
-            setClipMsg("この環境ではクリップボード読み取りに未対応です。数字を直接入力してください。", false);
-            return;
-          }
-          navigator.clipboard
-            .readText()
-            .then(function (text) {
-              var n = parseStepsFromText(text);
-              if (n == null) {
-                setClipMsg("歩数らしい数字（例: 6500）が見つかりませんでした。", false);
-                return;
-              }
-              if (n > 100000) n = 100000;
-              stepsEl.value = String(n);
-              stepsEl.focus();
-              setClipMsg("反映しました（" + n.toLocaleString("ja-JP") + " 歩）。", true);
-            })
-            .catch(function () {
-              setClipMsg("読み取れませんでした。権限の許可、または数字だけをコピーして再度お試しください。", false);
-            });
-        });
-      }
 
       function roughKcalFromImage(file, cb) {
         if (!file || !file.type || file.type.indexOf("image/") !== 0) {
