@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>momo fit ど素人向けガイド（企業用・会員の「私用」）| 2026年4月改訂</title>
+  <style>
+    body { font-family: "Hiragino Sans", "Noto Sans JP", sans-serif; color: #1a2b4a; line-height: 1.75; max-width: 820px; margin: 0 auto; padding: 1.5rem 1.25rem 3rem; }
+    h1 { font-size: 1.35rem; border-bottom: 3px solid #2e4a7a; padding-bottom: 0.5rem; line-height: 1.35; }
+    h2 { font-size: 1.1rem; margin-top: 2.25rem; color: #2e4a7a; border-bottom: 1px solid #d8e0ef; padding-bottom: 0.35rem; }
+    h3 { font-size: 0.98rem; margin-top: 1.15rem; color: #1a2b4a; }
+    p, li { font-size: 0.9rem; }
+    ul, ol { padding-left: 1.35rem; }
+    li { margin: 0.35rem 0; }
+    .meta { font-size: 0.82rem; color: #5a6b85; margin-bottom: 1rem; }
+    .box { background: #f4f7fc; border: 1px solid #d8e0ef; border-radius: 10px; padding: 0.9rem 1rem; margin: 1rem 0; font-size: 0.88rem; }
+    .box strong { color: #1a2b4a; }
+    .note { background: #fffdf8; border-left: 4px solid #b85c00; padding: 0.75rem 1rem; font-size: 0.86rem; margin: 1rem 0; }
+    .ok { background: #f1f8f4; border-left: 4px solid #2e7d32; padding: 0.75rem 1rem; font-size: 0.86rem; margin: 1rem 0; }
+    code { background: #eef2f8; padding: 0.12rem 0.4rem; border-radius: 4px; font-size: 0.82rem; word-break: break-all; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin: 0.75rem 0 1rem; }
+    th, td { border: 1px solid #d8e0ef; padding: 0.45rem 0.55rem; text-align: left; vertical-align: top; }
+    th { background: #eef3fb; font-weight: 700; width: 26%; }
+    .toc { background: #fff; border: 1px solid #d8e0ef; border-radius: 10px; padding: 0.85rem 1rem 0.85rem 1.25rem; margin: 1.25rem 0; font-size: 0.86rem; }
+    .toc a { color: #2e4a7a; }
+    pre.copy { background: #1a2b4a; color: #e8eef8; padding: 0.75rem 1rem; border-radius: 8px; font-size: 0.78rem; overflow-x: auto; white-space: pre-wrap; word-break: break-all; }
+    .tag { display: inline-block; font-size: 0.7rem; font-weight: 800; padding: 0.15rem 0.45rem; border-radius: 6px; margin-right: 0.35rem; }
+    .tag-corp { background: #e3f2fd; color: #0d47a1; }
+    .tag-self { background: #fce4ec; color: #880e4f; }
+    @media print { body { padding: 0; font-size: 11pt; } h2 { break-after: avoid; } }
+  </style>
+</head>
+<body>
+
+  <h1>momo fit ど素人向けガイド<br /><span style="font-size:0.68em;font-weight:600;color:#5a6b85">企業用（導入・運営）と、会員のスマホでの「私用」の説明を1冊にまとめた版 · 2026年4月改訂</span></h1>
+  <p class="meta"><strong>プログラムを書かない前提</strong>で読めます。医療診断ではありません。用語の詳しい辞典・チェックリストの全項目は、末尾リンクの<strong>詳細版2冊</strong>にも残してあります。</p>
+
+  <div class="box">
+    <strong>読み分け</strong><br />
+    <span class="tag tag-corp">企業用</span>…契約ジム向けにアプリを用意する<strong>貴社（導入元・運営担当）</strong>がやること。<br />
+    <span class="tag tag-self">私用イメージ</span>…会員が<strong>自分のスマホ</strong>で触る画面の説明・よくある質問。現場スタッフがそのまま読み上げ・印刷して使えます。
+  </div>
+
+  <nav class="toc" aria-label="目次">
+    <strong>目次</strong>
+    <ol style="margin:0.5rem 0 0;padding-left:1.2rem;">
+      <li><a href="#terms">用語を10秒で</a></li>
+      <li><a href="#corp-flow">【企業用】全体の流れ（何からやるか）</a></li>
+      <li><a href="#corp-url">【企業用】URL・QR・テナント</a></li>
+      <li><a href="#self-nav">【私用】会員の画面の歩き方（2026年4月時点）</a></li>
+      <li><a href="#self-record">【私用】記録・周期メモ・自律神経・歩数</a></li>
+      <li><a href="#privacy">共有とプライバシー（要点）</a></li>
+      <li><a href="#qr-policy">QRを「男性用／女性用」に分けない方がよい理由</a></li>
+      <li><a href="#trouble">困ったとき</a></li>
+      <li><a href="#links">リンク集・詳細版</a></li>
+    </ol>
+  </nav>
+
+  <h2 id="terms">用語を10秒で</h2>
+  <table>
+    <tr><th>テナントID</th><td>「どの契約ジムか」を表す<strong>英数字のコード</strong>。<code>?tenant=</code> の後ろに付きます。人名ではありません。</td></tr>
+    <tr><th>店舗ID（office）</th><td>同じ契約で店舗が複数あるときだけ。<strong>1店舗なら空欄でよい</strong>ことが多いです。</td></tr>
+    <tr><th>デプロイ</th><td>ファイルをインターネット上に載せて、全員がアクセスできるようにすること（例: Vercel）。</td></tr>
+    <tr><th>JSON</th><td>施設ごとの設定を書く <code>.json</code> ファイル。担当外なら開発者へ依頼でOKです。</td></tr>
+  </table>
+
+  <h2 id="corp-flow">【企業用】全体の流れ（何からやるか）</h2>
+  <ol>
+    <li>契約・文面（利用規約・個人情報の説明ができる状態）</li>
+    <li><strong>テナントIDを1つ決める</strong>（メモに残す。英小文字・数字・ハイフン推奨）</li>
+    <li><strong>設定</strong>… <code>config/tenants.v1.json</code> にブロックを追加（自分で無理なら開発者へ「依頼文」でOK）</li>
+    <li><strong>デプロイ</strong>… 本番URL（<code>https://</code> で始まる）が分かるまで依頼</li>
+    <li><strong>完成URL</strong>… <code>https://（本番）/gym.html?tenant=（テナントID）</code>（店舗分けするなら <code>&amp;office=（店舗ID）</code>）</li>
+    <li><strong>QR作成</strong>… サイト上の <a href="../qr-tenant.html">qr-tenant.html</a> から（社内規程で外部不可なら、許可されたツールで同じURLから作成）</li>
+    <li><strong>ジムへ渡す4点セット</strong>… ①完成URL ②QR画像 ③現場向けガイド ④問い合わせ先</li>
+    <li><strong>スマホで試す</strong>… 完成URLを丸ごと貼り付けてホームが開くか確認</li>
+  </ol>
+  <div class="ok"><strong>チェックリストの全表・依頼文テンプレ</strong>は <a href="./operator-onboarding-ja.html">契約企業オンボーディング（詳細版）</a> にあります。</div>
+
+  <h2 id="corp-url">【企業用】URL・QR・テナント</h2>
+  <p>会員に配るリンクは、<strong>必ずテナント付き</strong>にしてください。<code>?tenant=</code> が欠けると、企業別にデータを分けられません。</p>
+  <pre class="copy">https://（本番ドメイン）/gym.html?tenant=（テナントID）</pre>
+  <div class="note"><strong>全員同じ汎用URLだけ</strong>を配ると、テナントが空のまま送られることがあります。<strong>企業（施設）ごとに違うリンク</strong>を用意してください。</div>
+  <p>設定が反映されているかの確認（任意）: <code>https://（本番）/api/tenant-config?tenant=（テナントID）</code> をPCブラウザで開き、施設名などが含まれるか見ます。</p>
+
+  <h2 id="self-nav">【私用】会員の画面の歩き方（2026年4月時点）</h2>
+  <ul>
+    <li>会員が最初に開くのは多くの場合 <strong>gym.html</strong>（ホーム）。入口 <strong>index.html</strong> から自動でホームへ飛ぶこともあります。</li>
+    <li>画面<strong>下の5つ</strong>がメインメニューです。<strong>ホーム／記録／データ／AI／共有</strong>。</li>
+    <li><strong>「記録」</strong>を押すと <strong>record.html（記録ハブ）</strong>が開き、次の3つから選びます。
+      <ul>
+        <li><strong>1日の記録</strong>（歩数・睡眠・ストレス・トレなど）… <code>wellness-daily.html</code></li>
+        <li><strong>今日のコンディションだけ</strong>（体と気分をタップ）… <code>check.html</code></li>
+        <li><strong>周期メモ</strong>（任意・オプトイン）… <code>cycle.html</code>（生理のざっくりカレンダーと主観ログ。端末内のみ）</li>
+      </ul>
+    </li>
+    <li><strong>「データ」</strong>はこのスマホに保存された記録のグラフ・一覧です。</li>
+    <li><strong>「共有」</strong>は、会員が<strong>自分で送る操作</strong>をしたときだけ、トレーナー向けまとめなどに進みます。</li>
+  </ul>
+
+  <h2 id="self-record">【私用】記録・周期メモ・自律神経・歩数</h2>
+  <h3>自律神経チェック</h3>
+  <p><strong>1日の記録</strong>と<strong>コンディション記録</strong>のページの中に「自律神経をチェックする」があります。カメラで指先を測る画面（<code>pulse.html</code>）へ行き、測定後に<strong>元の記録画面へ戻る</strong>ボタンが出ます。</p>
+  <h3>周期メモ</h3>
+  <p>記録ハブから開きます。<strong>使う／使わないを自分で選ぶ（オプトイン）</strong>方式です。前回の生理の開始日・終了日と平均周期から、<strong>次回開始のざっくり目安</strong>を表示します（不順な周期にはずれます）。PMS・からだ・こころ・肌・ダイエットは<strong>1〜5の主観＋メモ</strong>です。</p>
+  <div class="note"><strong>周期メモのデータは共有文面に含めません</strong>（別の保存場所のため、トレーナー共有の自動まとめに乗りません）。</div>
+  <h3>歩数</h3>
+  <p>ブラウザのアプリだけでは、スマホの万歩計・Appleヘルス等と<strong>自動連携はできません</strong>。ヘルスケア等で今日の歩数を見て、<strong>数字を手で入力</strong>してください。</p>
+
+  <h2 id="privacy">共有とプライバシー（要点）</h2>
+  <ul>
+    <li><strong>AIチャットの内容は、トレーナーに自動では送られません。</strong></li>
+    <li>トレーナーに伝わるのは、会員が<strong>共有操作</strong>した内容が中心です。</li>
+    <li>コンディション記録をスプレッドシートに送る設定のときは、運営者の説明に従ってください。</li>
+    <li>周期メモは<strong>この端末の中だけ</strong>を想定しています。</li>
+  </ul>
+
+  <h2 id="qr-policy">QRを「男性用／女性用」に分けない方がよい理由</h2>
+  <p>性別でQRを分けると、<strong>誰がどのQRを読むかの前提</strong>が強くなり、公共の掲示でも居心地・プライバシーの面でデリケートになりがちです。運用も二重になります。</p>
+  <div class="ok"><strong>おすすめ:</strong> QRは<strong>施設（テナント）ごとに1本</strong>。用途で分けるなら「記録用」と「サービス案内（LP）用」など<strong>性別に依存しない分け方</strong>にしてください。</div>
+
+  <h2 id="trouble">困ったとき</h2>
+  <table>
+    <tr><th>QRを読んでも別施設っぽい</th><td><code>?tenant=</code> 以降が欠けている。QRを<strong>作り直し</strong>、古いポスターを撤去。</td></tr>
+    <tr><th>記録がどこか分からない</th><td>画面下の<strong>「記録」</strong>→ 記録ハブで「1日」か「コンディション」かを選ぶ。</td></tr>
+    <tr><th>LINEが出ない</th><td>施設が未設定のときは出ません。運営者へ設定依頼。</td></tr>
+  </table>
+
+  <h2 id="links">リンク集・詳細版</h2>
+  <table>
+    <tr><th>この統合版（本ページ）</th><td><code>docs/beginner-guide-ja.html</code> … 印刷・会議配布用の<strong>要約1冊</strong></td></tr>
+    <tr><th>企業向け・詳細手順</th><td><a href="./operator-onboarding-ja.html">operator-onboarding-ja.html</a>（設定・依頼文・FAQの全容）</td></tr>
+    <tr><th>ジム現場向け・詳細手順</th><td><a href="./gym-playbook-ja.html">gym-playbook-ja.html</a>（受け取りチェック・コピペ文・窓口表）</td></tr>
+    <tr><th>QR発行ツール</th><td><a href="../qr-tenant.html">qr-tenant.html</a></td></tr>
+    <tr><th>サービス案内（LP）</th><td><a href="../landing.html">landing.html</a></td></tr>
+  </table>
+
+  <p class="meta" style="margin-top:2rem;">改訂の記録（版数・社内承認）は貴社内メモで管理してください。</p>
+</body>
+</html>
